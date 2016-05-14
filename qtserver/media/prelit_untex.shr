@@ -1,0 +1,23 @@
+%%vertex
+uniform mat4 matWorldViewProj;
+uniform vec4 colDiffuse;
+
+attribute vec4 aPosition;
+varying vec4 vCol;
+
+void main()
+{
+    gl_Position = matWorldViewProj * aPosition;
+    vCol = colDiffuse;
+}
+
+%%fragment
+varying vec4 vCol;
+
+uniform sampler2D sTex;
+
+void main()
+{
+    gl_FragColor = vec4(vCol.x,vCol.y,vCol.z,vCol.w);
+}
+

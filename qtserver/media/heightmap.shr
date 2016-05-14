@@ -1,0 +1,53 @@
+%%vertex
+
+uniform mat4 matWorldViewProj;
+uniform mat4 matWorld;
+
+#include <Media\uniforms.inc>
+
+attribute vec4 aPosition;
+attribute vec2 aTexCoords;
+attribute vec2 aTexInterp;
+attribute vec4 aVertexCol;
+
+varying vec4 vCol;
+varying vec2 vTexCoords;
+varying vec2 vTexInterp;
+varying float vFog;
+
+void main()
+{
+
+    gl_Position = matWorldViewProj * aPosition;
+    
+    vTexCoords = aTexCoords;
+    vTexInterp = aTexInterp;
+    
+    float eyedist = gl_Position.z;
+    vFog = smoothstep(uFogDist[0],uFogDist[1],eyedist);
+    vCol = aVertexCol;
+}
+
+%%fragment
+
+precision mediump float;
+
+uniform sampler2D sTex1;
+uniform sampler2D sTex2;
+
+uniform vec4 uFogCol;
+varying vec4 vCol;
+varying vec2 vTexCoords;
+varying vec2 vTexInterp;
+varying float vFog;
+
+void main()
+{
+    vec4 baseCol = vec4(vCol.x,vCol.y,vCol.z,vCol.w);
+    vec4 texCol1 = texture2D(sTex1,vTexCoords);
+    vec4 texCol2 = texture2D(sTex2,vTexCoords);
+
+    vec4 col = baseCol * mix(texCol1,texCol2,vTexInterp.x);
+    gl_FragColor = mix(col,uFogCol,vFog);
+}
+

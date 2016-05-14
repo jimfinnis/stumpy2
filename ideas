@@ -1,0 +1,31 @@
+Patch - a digraph of Component
+    formed as an array of Component objects/references which refer
+     to each other by index
+    also contains a list of all PatchInstances
+    is a template for PatchInstances (that's how we do subroutines)
+
+Component -
+    has parameters and other data (text data, envelope curve)
+    has references to other components to form digraph -- probably
+     by index number (see Patch)
+    NOT real time internal data
+    reference to ComponentType
+    Index of component within patch (and patch instance!)
+    
+
+PatchInstance -
+    pointer to Patch
+    array of componentInstances, indexed using the same indices
+     as the corresponding components in the patch.
+    
+ComponentInstance -
+    input and output values
+    Component reference
+    internal data
+
+
+Subroutines:
+    a macro component contains a patch instance. Special components
+    within the instance refer to the macro component in the parent
+    patch --- the links are set up on creation.
+    

@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160515.1229>
+//  Last Modified : <160515.1313>
 //
 //  Description	
 //
@@ -385,9 +385,9 @@ static void setMeshMatrices(Matrix *view,Matrix *world,int wvpidx,int nmidx)
     
     Matrix m,m2;
     m=modelview;
-//    m.invert(modelview);
+    m.invert(modelview);
     float arr[9];
-    m.copyRotToFloatArray(arr);
+    m.copyRotToFloatArrayTrans(arr);
     
 //    modelview.dump();
     

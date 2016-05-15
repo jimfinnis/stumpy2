@@ -12,6 +12,7 @@ LIBS += -lGLU
 
 SOURCES += main.cpp \
     glwidget.cpp \
+    util/time.cpp \
     engine/maths.cpp \
     engine/texture.cpp \
     engine/tokeniser.cpp \
@@ -29,7 +30,10 @@ SOURCES += main.cpp \
     components/transforms.cpp\
     components/test.cpp\
     components/mul.cpp\
+    components/add.cpp\
+    components/ring.cpp\
     components/clock.cpp\
+    components/osc.cpp\
    
 
 HEADERS  += \

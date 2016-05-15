@@ -9,10 +9,11 @@ import org.pale.stumpy.model.paramtypes.FloatParam;
 public class AddComponent extends ComponentType {
 
     public AddComponent(){
-        super("add","numeric",70,70);
+        super("add","numeric",70,-1);
         ConnectionType f = ConnectionType.get("float");
         addInput(f,"input 1");
         addInput(f,"input 2");
+        layout();
     }
 
     @Override

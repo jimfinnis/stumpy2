@@ -27,6 +27,8 @@ public:
             throw SE_BADPARAMTYPE;
     }
     
+    virtual ~Parameter(){}
+    
     int idx;
 };
 

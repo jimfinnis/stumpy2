@@ -18,7 +18,7 @@ public class PrimComponentType extends ComponentType {
     List<String> primitiveNames = new ArrayList<String>();
     
     public PrimComponentType() {
-        super("primitive","generator",70,70);
+        super("primitive","generator",70,-1);
         
         addOutput(ConnectionType.get("flow"),"out");
         
@@ -40,6 +40,9 @@ public class PrimComponentType extends ComponentType {
                 new EnumParam("prim", names,0)}; 
     }
 
+    public void clearPrimitiveNames(){
+    	primitiveNames.clear();
+    }
 	public void addPrimitiveName(String string) {
 		// TODO Auto-generated method stub
 		primitiveNames.add(string);

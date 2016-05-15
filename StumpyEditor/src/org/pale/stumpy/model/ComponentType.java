@@ -40,6 +40,8 @@ abstract public class ComponentType {
 
 	private static final Color LIGHT_GREY = Color.decode("#c0c0c0");
 
+	private static final int DEFAULTHEIGHT = 30;
+
     /** The name of this component type */
     private String name;
     
@@ -130,7 +132,7 @@ abstract public class ComponentType {
     protected ComponentType(String n, String catName, int width, int height) {
         this.name = n;
         this.category = catName;
-        this.size = new Dimension(width, height);
+        this.size = new Dimension(width, height>0 ? height : DEFAULTHEIGHT);
         
     }
 

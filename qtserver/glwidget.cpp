@@ -27,7 +27,7 @@ void GLWidget::initializeGL(){
     
     printf("Starting GL\n%s\n",glGetString(GL_VERSION));
     
-    glClearColor(0,0,1,1);
+    glClearColor(0,0,0,1);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -42,14 +42,14 @@ void GLWidget::initializeGL(){
 
 void GLWidget::resizeGL(int width,int height){
     float aspect = ((float)width)/(float)height;
-    Matrix::setProjection(90,0.1,2000,aspect);
+    Matrix::setProjection(90,1,2000,aspect);
     glViewport(0,0,width,height);
 }
 
 void GLWidget::paintGL(){
     server->process();
     gTimerDevice.tick();
-        glClearColor(0,0,1,0);
+        glClearColor(0,0,0,0);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     printf("tick\n");
     lib.run();

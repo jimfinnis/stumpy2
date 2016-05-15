@@ -7,15 +7,6 @@
  * \date $Date$
  */
 
-/**
- * \file
- * Brief description. Longer description.
- *
- * 
- * \author $Author$
- * \date $Date$
- */
-
 #include "model/model.h"
 
 class ClockComponent : public ComponentType {

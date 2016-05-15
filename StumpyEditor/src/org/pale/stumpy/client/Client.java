@@ -73,6 +73,11 @@ public class Client {
             INSTANCE.disconnect();
         }else{
             /// send command to fetch prim names
+        	try {
+				((PrimComponentType)ComponentTypeRegistry.getInstance().getComponentType("primitive")).clearPrimitiveNames();
+			} catch (UnknownComponentTypeException e) {
+				notifyStatusListeners(false, "couldn't find the primitive component type");
+			}
             INSTANCE.sendCmd("startprims");
         }
     }
@@ -219,7 +224,7 @@ public class Client {
                                 return new CommsResult(520,"server closed connection");
                             }
                             inBuf.flip();
-                            System.out.println("Read: "+inBuf.toString());
+                            //System.out.println("Read: "+inBuf.toString());
 
                             // convert byte array to string, ugly and screws up
                             // encoding but that doesn't matter for us.

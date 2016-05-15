@@ -12,7 +12,7 @@ public class SimpleTransformComponentType extends ComponentType {
     
     protected SimpleTransformComponentType(String name){
         
-        super(name,"transforms",70,70);
+        super(name,"transforms",70,-1);
         
         addInput(ConnectionType.get("flow"),"in");
         addInput(ConnectionType.get("float"),"mod");

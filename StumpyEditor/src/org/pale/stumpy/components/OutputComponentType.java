@@ -14,7 +14,7 @@ import org.pale.stumpy.model.paramtypes.IntParam;
 public class OutputComponentType extends ComponentType {
     
     public OutputComponentType(){
-        super("output","control",200,100); // call the superclass with appropriate data
+        super("output","control",200,-1); // call the superclass with appropriate data
 
         ConnectionType flow = ConnectionType.get("flow");
         

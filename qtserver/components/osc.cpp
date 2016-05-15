@@ -1,0 +1,48 @@
+/**
+ * \file
+ * Brief description. Longer description.
+ *
+ * 
+ * \author $Author$
+ * \date $Date$
+ */
+
+#include "model/model.h"
+#include "util/time.h"
+#include <math.h>
+
+class OscComponent : public ComponentType {
+    float t;
+public:
+    OscComponent() : ComponentType("osc") {
+        setInput(0,T_FLOAT);
+        setOutput(0,T_FLOAT);
+    }
+    
+    virtual void initComponent(Component *c){
+        c->setParams(
+                     pFreq = new FloatParameter(0,5),
+                     pMod = new FloatParameter(-5,5),
+                     NULL
+                     );
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        float mod =  ci->isInputConnected(0) ? ci->getInput(0).f*
+                    pMod->get(c): 0;
+        
+        float freq = pFreq->get(c);
+        float v = Time::now()*freq;
+        
+        // phase mod
+        v += mod;
+        
+        ci->setOutput(0,ConnectionValue::makeFloat(sinf(v)));
+    }
+    
+private:
+    FloatParameter *pMod,*pFreq;
+};
+
+static OscComponent Oscreg;

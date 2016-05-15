@@ -14,12 +14,10 @@ static const char *meshNames[]=
     "ring.x",
     "cube.x",
     "sphere2.x",
-    "Cube.x",
     "sphere1.x",
     "aladdin.x",
     "massivesphere.x",
     "blob.x",
-    
     NULL
     
 };
@@ -38,7 +36,7 @@ public:
             if(!meshNames[ct])break;
         }
 
-        meshes = new Mesh *[--ct];
+        meshes = new Mesh *[ct];
         for(int i=0;i<ct;i++){
             meshes[i] = new Mesh("media",meshNames[i]);
             printf("Done %s\n",meshNames[i]);

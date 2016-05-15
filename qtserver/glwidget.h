@@ -21,7 +21,7 @@ public:
     }
     
     QSize sizeHint() const{
-        return QSize(400, 400);
+        return QSize(1000, 800);
     }
 signals:
     

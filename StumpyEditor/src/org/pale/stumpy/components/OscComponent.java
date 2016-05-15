@@ -11,7 +11,7 @@ import org.pale.stumpy.model.paramtypes.FloatParam;
 public class OscComponent extends ComponentType {
 
     public OscComponent() {
-        super("osc", "numeric",70,70);
+        super("osc", "numeric",70,-1);
         ConnectionType f = ConnectionType.get("float");
         addInput(f,"mod");
         addOutput(f,"out");
@@ -22,7 +22,7 @@ public class OscComponent extends ComponentType {
     @Override
     public Parameter[] createParameters(Component component) {
         return new Parameter [] {
-                new FloatParam("freq",0,100,1),
+                new FloatParam("freq",0,5,1),
                 new FloatParam("mod",-5,5,0)
         };
     }

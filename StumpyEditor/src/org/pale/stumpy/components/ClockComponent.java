@@ -9,7 +9,7 @@ import org.pale.stumpy.model.paramtypes.FloatParam;
 public class ClockComponent extends ComponentType {
     
     public ClockComponent(){
-        super("clock","numeric",70,70);
+        super("clock","numeric",70,-1);
         addOutput(ConnectionType.get("float"), "out");
         
         layout();

@@ -11,7 +11,7 @@ import org.pale.stumpy.model.paramtypes.IntParam;
 public class DiffuseLightComponentType extends ComponentType {
 
     public DiffuseLightComponentType(){
-        super("diffuse","lighting",150,100); // call the superclass with appropriate data
+        super("diffuse","lighting",150,-1); // call the superclass with appropriate data
 
         addInput(ConnectionType.get("flow"),"flow");
         addInput(ConnectionType.get("float"),"modulation");

@@ -20,6 +20,9 @@ typedef void (Controller::*CTRMETHOD)(int argc,char *argv[]);
 
 class Controller : public ServerListener {
     
+    /// send the currently iterated component type
+    void sendCurCT();
+    
     virtual void message(const char *s,int size){
         char *q = (char *)s; // so we can block the final char
         char *k = q;
@@ -62,6 +65,9 @@ class Controller : public ServerListener {
     DECMETHOD(UnlinkComponentOutput);
     DECMETHOD(ParamSet);
     DECMETHOD(RunPatch);
+    
+    DECMETHOD(StartComps);
+    DECMETHOD(NextComp);
     
     
     /// output to server if there is one

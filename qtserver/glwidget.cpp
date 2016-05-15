@@ -6,11 +6,13 @@
 #include <stdio.h>
 
 #include <QTimer>
+#include <QApplication>
 
 GLWidget::GLWidget(QWidget *parent) :
 QGLWidget(parent)
 {
     
+    fullsc=false;
     QTimer *timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
     timer->start(10);
@@ -46,12 +48,15 @@ void GLWidget::resizeGL(int width,int height){
     glViewport(0,0,width,height);
 }
 
+void GLWidget::quit(){
+    QApplication::quit();
+}
+
 void GLWidget::paintGL(){
     server->process();
     gTimerDevice.tick();
-        glClearColor(0,0,0,0);
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    printf("tick\n");
+    glClearColor(0,0,0,0);
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     lib.run();
     
 /*

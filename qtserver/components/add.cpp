@@ -47,3 +47,6 @@ private:
 };
 
 static AddComponent addreg;
+
+
+

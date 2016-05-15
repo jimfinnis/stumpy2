@@ -28,6 +28,7 @@ public class Configuration {
         ConnectionType.create("float", Color.BLUE);
         
         ComponentTypeRegistry r = ComponentTypeRegistry.getInstance();
+
         try {
             r.autoRegister();
         } catch (Exception e) {

@@ -5,11 +5,15 @@
  * 
  */
 
+
 #include "controller.h"
 #include <stdarg.h>
 
 #define REG(xx,cc,yy) regCommand(xx,cc,&Controller::method##yy)
 #define METHOD(xx) void Controller::method##xx (int argc,char *argv[])
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 Controller::Controller(PatchLibrary *l,Server *s){
     commandct=0;
@@ -20,6 +24,8 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("test",0,Test);
     REG("startprims",0,StartPrims);
     REG("nextprim",0,NextPrim);
+    REG("startcomps",0,StartComps);
+    REG("nextcomp",0,NextComp);
     REG("die",0,Die);
     
     REG("clear",0,Clear);
@@ -132,7 +138,50 @@ METHOD(DeleteComponent){
     p->deleteComponent(cid);
     server->success(cid);
 }
+
+static ComponentType *curCT = NULL;
+inline char getconntypestr(ConnectionType t){
+    switch(t){
+    case T_FLOW:return 'f';
+    case T_FLOAT:return 'n';
+    default:
+    case T_INVALID:return 'i';
+    }
+}
     
+void Controller::sendCurCT(){
+    char buf[1024];
+    
+    if(!curCT)
+        output("411 comps done");
+    else {
+        sprintf(buf,"410 %s ",curCT->name);
+        int n = strlen(buf);
+        for(int i=0;i<ComponentType::NUMINPUTS;i++){
+            buf[n++] = getconntypestr(curCT->inputTypes[i]);
+        }
+        buf[n++]=' ';
+        for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
+            buf[n++] = getconntypestr(curCT->outputTypes[i]);
+        }
+        buf[n]=0;
+    
+        output(buf);
+    }
+}
+
+METHOD(StartComps){
+    curCT = ComponentType::types->head();
+    sendCurCT();
+}
+
+METHOD(NextComp){
+    printf("PRE-----------------------%p %s\n",curCT,curCT?curCT->name:"nn");
+    if(curCT)
+        curCT = ComponentType::types->next(curCT);
+    printf("POST----------------------%p %s\n",curCT,curCT?curCT->name:"nn");
+    sendCurCT();
+}
     
 
 METHOD(LinkComponent){
@@ -211,3 +260,4 @@ METHOD(RunPatch){
     library->instantiateAsActive(pid);
     server->success();
 }
+#pragma GCC diagnostic pop

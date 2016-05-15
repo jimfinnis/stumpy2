@@ -50,5 +50,3 @@ HEADERS  += \
     model/server.h\
     model/controller.h\
     engine/tokeniser.h
-
-FORMS    +=

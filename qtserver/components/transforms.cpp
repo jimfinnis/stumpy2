@@ -102,7 +102,6 @@ public:
         m.setTranslation(0,0,0);
         m.makeRotate(rotx,roty,rotz,Matrix::ROT_YXZ);
         ms->mul(&m);
-        
         ci->getInput(0);
         
         ms->pop();

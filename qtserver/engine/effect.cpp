@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160514.1521>
+//  Last Modified : <160515.0203>
 //
 //  Description	
 //
@@ -320,6 +320,8 @@ void Effect::uploadLights(State *s,int lc1,int ld1,
     v.transform(s->light.dir[0],m);
     glUniform3fv(ld1,1,(float *)&v);
     
+//    v.dump();
+    
     v.transform(s->light.dir[1],m);
     glUniform3fv(ld2,1,(float *)&v);
     
@@ -359,7 +361,7 @@ static void setMeshMatrices(Matrix *view,Matrix *world,int wvpidx,int nmidx)
     float arr[9];
     m.copyRotToFloatArray(arr); // will transpose, I believe
     
-//    m.dump();
+//    modelview.dump();
     
     // upload. 
     glUniformMatrix3fv(nmidx,1,GL_FALSE,arr);

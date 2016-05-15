@@ -24,7 +24,7 @@ struct State {
         light.dir[2] = Vector(0,0,0,1);
         
         light.col[0] = Vector(1,0,0,0);
-        light.col[1] = Vector(0.0,1,0,1);
+        light.col[1] = Vector(0.0,0,0,1);
         light.col[2] = Vector(0.0,0,0,1);
     }
     

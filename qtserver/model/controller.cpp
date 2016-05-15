@@ -176,10 +176,8 @@ METHOD(StartComps){
 }
 
 METHOD(NextComp){
-    printf("PRE-----------------------%p %s\n",curCT,curCT?curCT->name:"nn");
     if(curCT)
         curCT = ComponentType::types->next(curCT);
-    printf("POST----------------------%p %s\n",curCT,curCT?curCT->name:"nn");
     sendCurCT();
 }
     

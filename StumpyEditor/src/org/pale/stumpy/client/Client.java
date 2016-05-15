@@ -220,6 +220,13 @@ public class Client {
 			queue.add(cmd);
 		}
 
+		// Important - if you want to do some chat with the server in here,
+		// use queueSend() to add to a queue of commands which run when these
+		// have been processed, otherwise you'll end up spinning out too many
+		// workers. Remember, the CommsTask doesn't exit until all commands
+		// have been used up OR the return code is an error (and we return nonerror
+		// [0] for the 400+ series).
+		
 		private CommsResult processSelectorLoop(){
 			for(;;){
 				queue = new LinkedList<String>();

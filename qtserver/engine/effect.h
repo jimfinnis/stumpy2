@@ -25,8 +25,10 @@ protected:
     Effect(){
         mpVShader = NULL;
         mpFShader = NULL;
+        mpGShader = NULL;
         vshader=0;
         fshader=0;
+        gshader=0;
         program=0xffffffff;
     }
     
@@ -59,10 +61,13 @@ protected:
     /// pointer to vertex shader text
     const char *mpVShader;
     
+    /// pointer to geometry shader text
+    const char *mpGShader;
+    
     /// pointer to fragment shader text
     const char *mpFShader;
     
-    GLuint vshader,fshader,program;
+    GLuint vshader,gshader,fshader,program;
     
     Matrix viewMatrix;
     

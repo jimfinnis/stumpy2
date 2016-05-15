@@ -84,5 +84,5 @@ Texture *TextureManager::createOrFind(QString name){
 void GLerrorcheck(const char *file,int line){
     int code = glGetError();
     if(code != GL_NO_ERROR)
-        throw  Exception().set("GL error at %s:%d - %d",file,line,code);
+        throw  Exception().set("GL error at %s:%d - 0x%x",file,line,code);
 }

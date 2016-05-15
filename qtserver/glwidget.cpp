@@ -24,6 +24,9 @@ QGLWidget(parent)
 Mesh *test;
 
 void GLWidget::initializeGL(){
+    
+    printf("Starting GL\n%s\n",glGetString(GL_VERSION));
+    
     glClearColor(0,0,1,1);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);

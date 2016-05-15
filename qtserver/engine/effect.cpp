@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160515.0203>
+//  Last Modified : <160515.1229>
 //
 //  Description	
 //
@@ -55,6 +55,7 @@ static int loadShader(GLenum type,const char *src)
     GLuint shader;
     GLint compiled;
     shader = glCreateShader(type);
+    ERRCHK;
     if(!shader)
         return 0;
     glShaderSource(shader,1,&src,NULL);
@@ -81,12 +82,21 @@ void Effect::compile(){
     ERRCHK;
     fshader = loadShader(GL_FRAGMENT_SHADER,mpFShader);
     ERRCHK;
+    if(mpGShader){
+        printf("%s\n",mpGShader);
+        gshader = loadShader(GL_GEOMETRY_SHADER,mpGShader);
+        ERRCHK;
+    }
     
     program = glCreateProgram();
     if(!program)
         throw Exception().set("cannot create program for shader '%s'",mName);
     glAttachShader(program,vshader);
     ERRCHK;
+    if(mpGShader){
+        glAttachShader(program,gshader);
+        ERRCHK;
+    }
     glAttachShader(program,fshader);
     ERRCHK;
     
@@ -213,7 +223,7 @@ void Effect::initFromFile(const char *name){
     file.close();
     
     
-    char *vshad,*fshad;
+    char *vshad,*fshad,*gshad=NULL;
     
     for(char *q=str;*q;q++)
     {
@@ -233,11 +243,25 @@ void Effect::initFromFile(const char *name){
                 q+=8;
                 fshad = q;
             }
+            else if(!strncmp(q,"geometry",8))
+            {
+                q+=8;
+                gshad = q;
+            }
         }
     }
     
+    if(!fshad)
+        throw Exception().set("fragment shader missing in %s",mName);
+    if(!vshad)
+        throw Exception().set("vertex shader missing in %s",mName);
+    
     mpVShader = handleInclusion(vshad);
     mpFShader = handleInclusion(fshad);
+    if(gshad)
+        mpGShader = handleInclusion(gshad);
+    else
+        mpGShader = NULL;
     
     compile();
 }
@@ -256,10 +280,14 @@ Effect::~Effect(){
         glDeleteShader(vshader);
     if(fshader)
         glDeleteShader(fshader);
+    if(gshader)
+        glDeleteShader(gshader);
     if(mpVShader)
         free((void *)mpVShader);
     if(mpFShader)
         free((void *)mpFShader);
+    if(mpGShader)
+        free((void *)mpGShader);
 }
 
 Effect *Effect::mCurEffect=NULL;
@@ -357,9 +385,9 @@ static void setMeshMatrices(Matrix *view,Matrix *world,int wvpidx,int nmidx)
     
     Matrix m,m2;
     m=modelview;
-    m.invert(modelview);
+//    m.invert(modelview);
     float arr[9];
-    m.copyRotToFloatArray(arr); // will transpose, I believe
+    m.copyRotToFloatArray(arr);
     
 //    modelview.dump();
     

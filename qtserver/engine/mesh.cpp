@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Tue May 4 14:28:42 2010
-//  Last Modified : <160515.1211>
+//  Last Modified : <160515.1312>
 //
 //  Description	
 //
@@ -555,7 +555,8 @@ void SingleMesh::parseMeshNormals()
     numnorms = (int)parsevalandsep(); // get number of normals
     norms = new triple[numnorms];
     
-//    Matrix *xform = gStack.top();
+    Matrix xform = *gStack.top();
+    xform.setTranslation(0,0,0);
     
     for(i=0;i<numnorms;i++)
     {
@@ -564,6 +565,8 @@ void SingleMesh::parseMeshNormals()
         v.y = parsevalandsep();
         v.z = parsevalandsep();
         v.w = 1;
+        
+        v.transformInPlace(xform);
         
         norms[i].x = v.x;
         norms[i].y = v.y;
@@ -866,10 +869,17 @@ void SingleMesh::build()
         v.y = thisv->y;
         v.z = thisv->z;
         triple *thisn = norms+normidxs[i];
-        
+#if 1
         v.nx = thisn->x;
         v.ny = thisn->y;
         v.nz = thisn->z;
+#else
+        // HACK NORMALS
+        Vector q,hack(v.x,v.y,v.z);q.normalize(hack);
+        v.nx = q.x;
+        v.ny = q.y;
+        v.nz = q.z;
+#endif
         
         if(uvs)
         {

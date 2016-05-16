@@ -17,11 +17,11 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pCount = new IntParameter(2,100),
-                     pRad = new FloatParameter(0,100),
-                     pScale = new FloatParameter(0,10),
-                     pRadMod = new FloatParameter(-10,10),
-                     pScaleMod = new FloatParameter(-10,10),
+                     pCount = new IntParameter(2,100,2),
+                     pRad = new FloatParameter(0,100,4),
+                     pScale = new FloatParameter(0,10,1),
+                     pRadMod = new FloatParameter(-10,10,0),
+                     pScaleMod = new FloatParameter(-10,10,0),
                      NULL
                      );
     }

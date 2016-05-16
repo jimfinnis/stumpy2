@@ -277,14 +277,17 @@ public class Client {
 								return new CommsResult(0,"prim added");
 							case 402:
 								return new CommsResult(0,"prims done");
-							case 410:
+							case 410: // new component
 								bits = bits[1].split("\\s+",3);
 								System.out.println("Component:"+bits[0]+" Inputs:"+bits[1]+
 										" Outputs:"+bits[2]);
 								queueSend("nextcomp");
 								return new CommsResult(0,"comp added");
-							case 411:
+							case 411: // end of components
 								return new CommsResult(0,"comps done");
+							case 412: // new component parameter for last comp
+								return new CommsResult(0,"comp param");
+								
 							default:
 								return new CommsResult(code,bits[1]);
 							}

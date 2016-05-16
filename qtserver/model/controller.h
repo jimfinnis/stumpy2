@@ -68,6 +68,8 @@ class Controller : public ServerListener {
     
     DECMETHOD(StartComps);
     DECMETHOD(NextComp);
+    DECMETHOD(CompParam);
+    DECMETHOD(CompEnum);
     
     
     /// output to server if there is one

@@ -38,8 +38,8 @@ public:
     
 
     virtual void initComponent(Component *c){
-        c->setParams(param1=new IntParameter(0,10),
-                     param2=new FloatParameter(0,10),NULL);
+        c->setParams(param1=new IntParameter(0,10,0),
+                     param2=new FloatParameter(0,10,0),NULL);
     }
 
 };

@@ -24,8 +24,13 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("test",0,Test);
     REG("startprims",0,StartPrims);
     REG("nextprim",0,NextPrim);
+    
     REG("startcomps",0,StartComps);
     REG("nextcomp",0,NextComp);
+    
+    REG("compparam",1,CompParam); // paramidx
+    REG("compenum",2,CompEnum); // paramidx enumidx
+    
     REG("die",0,Die);
     
     REG("clear",0,Clear);
@@ -149,12 +154,16 @@ inline char getconntypestr(ConnectionType t){
     }
 }
     
+// dummy component used for component parameter sends
+static Component *dummycomp=NULL;
+
 void Controller::sendCurCT(){
     char buf[1024];
     
     if(!curCT)
         output("411 comps done");
     else {
+        // first line - name and ins/outs
         sprintf(buf,"410 %s ",curCT->name);
         int n = strlen(buf);
         for(int i=0;i<ComponentType::NUMINPUTS;i++){
@@ -167,7 +176,31 @@ void Controller::sendCurCT(){
         buf[n]=0;
     
         output(buf);
+        
+        // set up the dummy
+        if(dummycomp)
+            delete dummycomp;
+        dummycomp = new Component();
+        curCT->initComponent(dummycomp);
     }
+}
+
+METHOD(CompParam){
+    char buf[1024];
+    int pidx = atoi(argv[0]);
+    if(pidx>=dummycomp->paramct)
+        throw SE_NOSUCHPARAM;
+    sprintf(buf,"412 %s",dummycomp->params[pidx]->getDesc());
+    output(buf);
+}
+
+METHOD(CompEnum){
+    int pidx = atoi(argv[0]);
+    if(pidx>=dummycomp->paramct)
+        throw SE_NOSUCHPARAM;
+    int eidx = atoi(argv[1]);
+    // DEAL WITH THIS
+    server->success();
 }
 
 METHOD(StartComps){

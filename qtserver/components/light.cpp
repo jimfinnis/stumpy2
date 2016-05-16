@@ -16,14 +16,14 @@ public:
     }
     virtual void initComponent(Component *c){
         c->setParams(
-                     pN = new IntParameter(0,3),
-                     pR = new FloatParameter(0,1),
-                     pG = new FloatParameter(0,1),
-                     pB = new FloatParameter(0,1),
-                     pModR = new FloatParameter(-1,1),
-                     pModG = new FloatParameter(-1,1),
-                     pModB = new FloatParameter(-1,1),
-                     pStack = new BoolParameter(),
+                     pN = new IntParameter(0,3,0),
+                     pR = new FloatParameter(0,1,0),
+                     pG = new FloatParameter(0,1,0),
+                     pB = new FloatParameter(0,1,0),
+                     pModR = new FloatParameter(-1,1,0),
+                     pModG = new FloatParameter(-1,1,0),
+                     pModB = new FloatParameter(-1,1,0),
+                     pStack = new BoolParameter(false),
                      NULL
                      );
     }

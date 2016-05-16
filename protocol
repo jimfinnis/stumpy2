@@ -1,0 +1,93 @@
+All protocol commands documented in the form:
+Client message
+Description
+                Server responses
+              
+
+
+
+====== Config setup commands =======
+
+startprims
+start iterating prims, and send the first one
+                    401 <name>
+                OR  402 prims done
+                
+nextprim
+get next primitive
+                    401 <name>
+                OR  402 prims done
+                
+
+startcomps
+start iterating component types, sending description of first one
+                    411 comps done
+                OR  412 <name> <inputtypes> <outputtypes> <nparams>
+                
+nextcomp
+move to next component type, send description
+                    411 comps done
+                OR  412 <name> <inputtypes> <outputtypes> <nparams>
+
+compparam <pidx>
+send description of current component type param pidx
+                    413 i <pidx> <name> <initval> <min> <max>
+                OR  413 f <pidx> <name> <initval> <min> <max>
+                OR  413 b <pidx> <name> <initval>
+                OR  413 e <pidx> <name> <initidx> <numvalues>
+                        (i.e. enumerated parameter with numvalues
+                        values, of which initidx is initially set)
+                OR  nnn error
+                
+compenum <pidx> <eidx>
+send enumeration string eidx for enumeration parameter pidx in current
+component
+                    414 <pidx> <name>
+                OR  nnn error
+                
+====== Editing commands =======
+
+
+clear
+clear the entire library
+                    000 OK
+                    
+np <pid>
+create a new patch in this library
+
+dp <pid>
+delete a patch in this library
+                    000 OK 
+                OR  nnn error
+
+nc <pid> <cid> <type>
+                    000 OK 
+                OR  nnn error
+
+dc <pid> <cid>
+                    000 OK 
+                OR  nnn error
+
+lc <pid> <incid> <inputidx> <outcid> <outputidx>
+                    000 OK 
+                OR  nnn error
+
+ui <pid> <cid> <inputidx>
+                    000 OK 
+                OR  nnn error
+
+uo <pid> <cid> <outputidx>
+                    000 OK 
+                OR  nnn error
+
+p <pid> <cid> <paramidx> <typecode> <encodedval>
+                    000 OK 
+                OR  nnn error
+
+run <pid>
+                    000 OK 
+                OR  nnn error
+
+
+
+

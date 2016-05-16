@@ -21,12 +21,12 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pX = new FloatParameter(-100,100),
-                     pY = new FloatParameter(-100,100),
-                     pZ = new FloatParameter(-100,100),
-                     pModX = new FloatParameter(-10,10),
-                     pModY = new FloatParameter(-10,10),
-                     pModZ = new FloatParameter(-10,10),
+                     pX = new FloatParameter(-100,100,0),
+                     pY = new FloatParameter(-100,100,0),
+                     pZ = new FloatParameter(-100,100,0),
+                     pModX = new FloatParameter(-10,10,0),
+                     pModY = new FloatParameter(-10,10,0),
+                     pModZ = new FloatParameter(-10,10,0),
                      NULL);
     }
     
@@ -61,6 +61,17 @@ public:
 class ScaleComponent : public SimpleTransformComponentType {
 public:
     ScaleComponent() : SimpleTransformComponentType("scale") {}
+    
+    virtual void initComponent(Component *c){
+        c->setParams(
+                     pX = new FloatParameter(-100,100,1),
+                     pY = new FloatParameter(-100,100,1),
+                     pZ = new FloatParameter(-100,100,1),
+                     pModX = new FloatParameter(-10,10,0),
+                     pModY = new FloatParameter(-10,10,0),
+                     pModZ = new FloatParameter(-10,10,0),
+                     NULL);
+    }
     
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;

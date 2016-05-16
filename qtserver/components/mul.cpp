@@ -19,10 +19,10 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pAdd1 = new FloatParameter(-100,100),
-                     pMul1 = new FloatParameter(-100,100),
-                     pAdd2 = new FloatParameter(-100,100),
-                     pMul2 = new FloatParameter(-100,100),
+                     pAdd1 = new FloatParameter(-100,100,0),
+                     pMul1 = new FloatParameter(-100,100,1),
+                     pAdd2 = new FloatParameter(-100,100,0),
+                     pMul2 = new FloatParameter(-100,100,1),
                      NULL
                      );
     }

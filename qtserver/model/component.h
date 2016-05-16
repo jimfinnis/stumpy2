@@ -208,13 +208,11 @@ private:
 
     Input inputs[ComponentType::NUMINPUTS];
     
-protected:
+public:
+    
     /// the number of pointers in the params array, also set
     /// up by the type's init method.
     int paramct;
-    
-public:
-    
     /// a pointer to an array of parameter pointers,
     /// set up by the component type's init method calling setParams().
     /// This is used by the parameter's get() function, when the component type's

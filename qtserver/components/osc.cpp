@@ -21,8 +21,8 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pFreq = new FloatParameter(0,5,1),
-                     pMod = new FloatParameter(-5,5,0),
+                     pFreq = new FloatParameter("freq",0,5,1),
+                     pMod = new FloatParameter("phase mod",-5,5,0),
                      NULL
                      );
     }

@@ -164,24 +164,28 @@ void Controller::sendCurCT(){
         output("411 comps done");
     else {
         // first line - name and ins/outs
-        sprintf(buf,"410 %s ",curCT->name);
+        sprintf(buf,"410 %s:",curCT->name);
         int n = strlen(buf);
         for(int i=0;i<ComponentType::NUMINPUTS;i++){
             buf[n++] = getconntypestr(curCT->inputTypes[i]);
         }
-        buf[n++]=' ';
+        buf[n++]=':';
         for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
             buf[n++] = getconntypestr(curCT->outputTypes[i]);
         }
         buf[n]=0;
-    
-        output(buf);
+        
         
         // set up the dummy
         if(dummycomp)
             delete dummycomp;
         dummycomp = new Component();
         curCT->initComponent(dummycomp);
+        
+        // output the param count
+        sprintf(buf+strlen(buf),":%d",dummycomp->paramct);
+        output(buf);
+    
     }
 }
 

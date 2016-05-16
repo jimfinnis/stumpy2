@@ -364,7 +364,7 @@ public class PatchLibrary implements PatchChangeListener {
         if(Client.isConnected()){
             List<String> cmds = new LinkedList<String>();
             writeSyncCommands(cmds);
-            Client.getInstance().send(cmds);
+            Client.getInstance().sendAndProcessResponse(cmds);
         }
     }
 }

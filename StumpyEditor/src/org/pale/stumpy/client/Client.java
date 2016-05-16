@@ -18,6 +18,7 @@ import javax.swing.SwingWorker;
 import org.pale.stumpy.components.PrimComponentType;
 import org.pale.stumpy.main.TopController;
 import org.pale.stumpy.model.ComponentTypeRegistry;
+import org.pale.stumpy.model.ProtocolException;
 import org.pale.stumpy.model.UnknownComponentTypeException;
 
 /**
@@ -72,14 +73,19 @@ public class Client {
 		if(!INSTANCE.isValid){
 			INSTANCE.disconnect();
 		}else{
-			/// send command to fetch prim names
+			/// send command to fetch component data etc.
 			try {
-				((PrimComponentType)ComponentTypeRegistry.getInstance().getComponentType("primitive")).clearPrimitiveNames();
+				INSTANCE.readConfiguration();
 			} catch (UnknownComponentTypeException e) {
 				notifyStatusListeners(false, "couldn't find the primitive component type");
+				destroy();
+			} catch (IOException e) {
+				notifyStatusListeners(false, "IOException occurred in setup");
+				destroy();
+			} catch (ProtocolException e) {
+				notifyStatusListeners(false, "ProtocolException occurred in setup: "+e.getError());
+				destroy();
 			}
-			INSTANCE.sendCmd("startprims");
-			INSTANCE.sendCmd("startcomps");
 		}
 	}
 
@@ -163,11 +169,11 @@ public class Client {
 	 */
 	public class CommsResult {
 		int code;
-		String errorMsg;
+		String status;
 
 		CommsResult(int code,String msg){
 			this.code=code;
-			errorMsg=msg;
+			status=msg;
 		}
 
 		/**
@@ -182,7 +188,7 @@ public class Client {
 		 * @return message
 		 */
 		public String getErrorMsg(){
-			return errorMsg;
+			return status;
 		}
 	}
 
@@ -196,6 +202,116 @@ public class Client {
 			socket.write(outBuf); // non blocking, but the loop will deal with it.
 
 	}
+
+	/**
+	 * This is used in a blocking style for stateful conversations,
+	 * typically getting the initial setup data from the server. 
+	 * @return
+	 */
+	private CommsResult syncRead() {
+		try {
+			selector.select(1000);
+		} catch (IOException e) {
+			return new CommsResult(501,"IO exception in select");
+		}
+		Set<SelectionKey> keys = selector.selectedKeys();
+		Iterator<SelectionKey> i = keys.iterator();
+		while(i.hasNext()){
+			SelectionKey k = i.next();
+			if(k.isReadable()){
+				try {
+					inBuf.clear();
+					int count = socket.read(inBuf);
+					if(count<0){
+						disconnect();
+						return new CommsResult(520,"server closed connection");
+					}
+					inBuf.flip();
+					//System.out.println("Read: "+inBuf.toString());
+
+					// convert byte array to string, ugly and screws up
+					// encoding but that doesn't matter for us.
+					byte[] arr = new byte[inBuf.remaining()];
+					inBuf.get(arr);
+					String s = new String(arr);
+
+
+					System.out.println("Read: "+s);
+					String bits[] = s.split("\\s+",2);
+					if(bits[0].length()!=3)
+						return new CommsResult(504,"return from server is invalid");
+					if(bits[0].replaceAll("\\d+","").length() > 0)
+						return new CommsResult(505,"return from server has non-numeric code");
+					int code = Integer.parseInt(bits[0]);
+					System.out.println(code);
+					return new CommsResult(code,bits[1]);
+				} catch (IOException e) {
+					return new CommsResult(503,"IO exception in read");
+				}
+			}
+		}
+		return new CommsResult(510,"timeout");
+	}
+
+
+	/// this is a synchronous chat with the server to load the initial
+	/// configuration data
+	public void readConfiguration() throws UnknownComponentTypeException, IOException, ProtocolException{
+		((PrimComponentType)ComponentTypeRegistry.getInstance().getComponentType("primitive")).clearPrimitiveNames();
+		doSend("startprims");
+		boolean primsDone=false;
+		while(!primsDone){
+			CommsResult r = syncRead();
+			switch(r.code){
+			case 401:
+				System.out.println("Got prim name: "+r.status);
+				addPrimitive(r.status);
+				doSend("nextprim");
+				break;
+			case 402:
+				primsDone=true;
+				break;
+			default:
+				throw new ProtocolException("Unexpected message "+r.code);
+			}
+		}
+
+		doSend("startcomps");
+		boolean compsDone = false;
+
+		while(!compsDone){
+			CommsResult r = syncRead();
+			switch(r.code){
+			case 410: // new component
+				String bits[] = r.status.split(":",4);
+				String name = bits[0];
+				String inputs = bits[1];
+				String outputs = bits[2];
+				int paramct = Integer.parseInt(bits[3]);
+				System.out.println("Component:"+name+" Inputs:"+inputs+
+						" Outputs:"+outputs+" ParamCount:"+paramct);
+				// get the params
+				for(int i=0;i<paramct;i++){
+					doSend("compparam "+i);
+					CommsResult pr = syncRead();
+					if(pr.code != 412)
+						throw new ProtocolException("Unexpected message "+pr.code);
+					System.out.println("Param "+i+" desc:"+pr.status);
+				}
+
+				doSend("nextcomp");		
+				break;
+			case 411:
+				compsDone=true;
+				break;
+			default:
+				throw new ProtocolException("Unexpected message "+r.code);
+			}
+			System.out.println("configuration read done");
+		}
+	}
+
+
 
 	/**
 	 * The swing worker for the asynchronous task of sending a load of commands to the
@@ -216,20 +332,14 @@ public class Client {
 			this.commands = commands;
 		}
 
-		private void queueSend(String cmd){
-			queue.add(cmd);
-		}
-
 		// Important - if you want to do some chat with the server in here,
-		// use queueSend() to add to a queue of commands which run when these
-		// have been processed, otherwise you'll end up spinning out too many
-		// workers. Remember, the CommsTask doesn't exit until all commands
+		// don't. Use something like the readConfiguration() above.
+		// Remember, the CommsTask doesn't exit until all commands
 		// have been used up OR the return code is an error (and we return nonerror
 		// [0] for the 400+ series).
-		
+
 		private CommsResult processSelectorLoop(){
 			for(;;){
-				queue = new LinkedList<String>();
 				try {
 					selector.select(1000);
 				} catch (IOException e) {
@@ -266,43 +376,16 @@ public class Client {
 							int code = Integer.parseInt(bits[0]);
 							System.out.println(code);
 
-							// Deal with the 400+ series of codes, which give us data
-							// about the server
-
-							switch(code){
-							case 401:
-								System.out.println("Got prim name: "+bits[1]);
-								addPrimitive(bits[1]);
-								queueSend("nextprim");
-								return new CommsResult(0,"prim added");
-							case 402:
-								return new CommsResult(0,"prims done");
-							case 410: // new component
-								bits = bits[1].split("\\s+",3);
-								System.out.println("Component:"+bits[0]+" Inputs:"+bits[1]+
-										" Outputs:"+bits[2]);
-								queueSend("nextcomp");
-								return new CommsResult(0,"comp added");
-							case 411: // end of components
-								return new CommsResult(0,"comps done");
-							case 412: // new component parameter for last comp
-								return new CommsResult(0,"comp param");
-								
-							default:
-								return new CommsResult(code,bits[1]);
-							}
-
+							// this might some some weird 400+ code, which isn't
+							// an error per se, but shouldn't arrive here.
+							return new CommsResult(code,bits[1]);
 
 						} catch (IOException e) {
 							return new CommsResult(503,"IO exception in read");
-						} catch (UnknownComponentTypeException e) {
-							// TODO Auto-generated catch block
-							return new CommsResult(504, "add primitive failed to find type");
 						}
 					}
 				}
 			}
-
 		}
 
 
@@ -335,7 +418,7 @@ public class Client {
 	 * another error occurred, deal. Will use a swing worker and run asynchronously.
 	 * @param s
 	 */
-	public void send(List<String> commands){
+	public void sendAndProcessResponse(List<String> commands){
 		CommsResult r = new CommsResult(510,"no processing occurred");
 		if(!isConnected()){
 			r = new CommsResult(520,"not connected!");
@@ -358,10 +441,10 @@ public class Client {
 
 	}
 
-	public void sendCmd(String s){
+	public void sendCmdAndProcessResponse(String s){
 		List<String> commands = new LinkedList<String>();
 		commands.add(s);        
-		send(commands);
+		sendAndProcessResponse(commands);
 
 	}
 

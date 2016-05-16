@@ -21,12 +21,12 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pX = new FloatParameter(-100,100,0),
-                     pY = new FloatParameter(-100,100,0),
-                     pZ = new FloatParameter(-100,100,0),
-                     pModX = new FloatParameter(-10,10,0),
-                     pModY = new FloatParameter(-10,10,0),
-                     pModZ = new FloatParameter(-10,10,0),
+                     pX = new FloatParameter("x",-100,100,0),
+                     pY = new FloatParameter("y",-100,100,0),
+                     pZ = new FloatParameter("z",-100,100,0),
+                     pModX = new FloatParameter("mod x",-10,10,0),
+                     pModY = new FloatParameter("mod y",-10,10,0),
+                     pModZ = new FloatParameter("mod z",-10,10,0),
                      NULL);
     }
     
@@ -64,12 +64,12 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pX = new FloatParameter(-100,100,1),
-                     pY = new FloatParameter(-100,100,1),
-                     pZ = new FloatParameter(-100,100,1),
-                     pModX = new FloatParameter(-10,10,0),
-                     pModY = new FloatParameter(-10,10,0),
-                     pModZ = new FloatParameter(-10,10,0),
+                     pX = new FloatParameter("x",-100,100,1),
+                     pY = new FloatParameter("y",-100,100,1),
+                     pZ = new FloatParameter("z",-100,100,1),
+                     pModX = new FloatParameter("mod x",-10,10,0),
+                     pModY = new FloatParameter("mod y",-10,10,0),
+                     pModZ = new FloatParameter("mod z",-10,10,0),
                      NULL);
     }
     

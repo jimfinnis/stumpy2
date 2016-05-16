@@ -22,19 +22,19 @@ get next primitive
 startcomps
 start iterating component types, sending description of first one
                     411 comps done
-                OR  412 <name> <inputtypes> <outputtypes> <nparams>
+                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>
                 
 nextcomp
 move to next component type, send description
                     411 comps done
-                OR  412 <name> <inputtypes> <outputtypes> <nparams>
+                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>
 
 compparam <pidx>
 send description of current component type param pidx
-                    413 i <pidx> <name> <initval> <min> <max>
-                OR  413 f <pidx> <name> <initval> <min> <max>
-                OR  413 b <pidx> <name> <initval>
-                OR  413 e <pidx> <name> <initidx> <numvalues>
+                    412 i:<pidx>:<name>:<initval>:<min>:<max>
+                OR  412 f:<pidx>:<name>:<initval>:<min>:<max>
+                OR  412 b:<pidx>:<name>:<initval>
+                OR  412 e:<pidx>:<name>:<initidx>:<numvalues>
                         (i.e. enumerated parameter with numvalues
                         values, of which initidx is initially set)
                 OR  nnn error

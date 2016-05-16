@@ -26,7 +26,7 @@ public:
     
     virtual void initComponent(Component *c){
         c->setParams(
-                     pMul = new FloatParameter(-100,100,0),
+                     pMul = new FloatParameter("rate",-100,100,0),
                      NULL
                      );
     }

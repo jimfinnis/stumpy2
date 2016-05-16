@@ -58,7 +58,7 @@ public:
     
     virtual void initComponent(Component *c){
         // deliberately set max large so we don't have to worry about it
-        c->setParams(primType = new IntParameter(0,100,0),
+        c->setParams(primType = new IntParameter("mesh",0,100,0),
                      NULL);
     }
 };

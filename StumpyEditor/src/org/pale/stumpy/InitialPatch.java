@@ -26,7 +26,7 @@ public class InitialPatch extends Patch {
             LinkedList<String> cmds = new LinkedList<String>();
             writeSyncCommands(cmds);
             if(Client.isConnected())
-                Client.getInstance().send(cmds);
+                Client.getInstance().sendAndProcessResponse(cmds);
             
             
         

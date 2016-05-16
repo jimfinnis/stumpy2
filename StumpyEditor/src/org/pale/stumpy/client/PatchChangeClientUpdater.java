@@ -50,7 +50,7 @@ public class PatchChangeClientUpdater implements PatchChangeListener {
         }
         
         if(cmds.size()!=0){
-            c.send(cmds);
+            c.sendAndProcessResponse(cmds);
         }
             
         

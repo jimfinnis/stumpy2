@@ -14,7 +14,7 @@ class Component;
 
 struct Parameter {
     char code; // type code
-    
+    const char *name; // name in UI
     /// set the value given the encoded string
     /// 
     virtual void setValue(
@@ -31,6 +31,10 @@ struct Parameter {
     /// return a static description string, for sending to the client
     virtual const char *getDesc()=0;
     
+    Parameter(const char *n){
+        name = n;
+    }
+    
     virtual ~Parameter(){}
     
     int idx;
@@ -41,7 +45,7 @@ private:
     int value;
     int minVal,maxVal;
 public:
-    IntParameter(int mn,int mx,int init){
+    IntParameter(const char *n,int mn,int mx,int init) : Parameter(n){
         code = 'i';
         minVal = mn;
         maxVal = mx;
@@ -50,7 +54,7 @@ public:
     
     virtual const char *getDesc(){
         static char buf[1024];
-        sprintf(buf,"i %d %d %d",
+        sprintf(buf,"i:%s:%d:%d:%d",name,
                 minVal,maxVal,value);
         return buf;
     }
@@ -73,7 +77,8 @@ private:
     float value;
     float minVal,maxVal;
 public:
-    FloatParameter(float mn,float mx,float init){
+    FloatParameter(const char *n,float mn,float mx,float init)
+     : Parameter(n){
         code = 'f';
         minVal = mn;
         maxVal = mx;
@@ -82,7 +87,7 @@ public:
     
     virtual const char *getDesc(){
         static char buf[1024];
-        sprintf(buf,"i %f %f %f",
+        sprintf(buf,"f:%s:%f:%f:%f",name,
                 minVal,maxVal,value);
         return buf;
     }
@@ -103,14 +108,14 @@ private:
     bool value;
 public:
     
-    BoolParameter(bool init){
+    BoolParameter(const char *n,bool init) : Parameter(n){
         code = 'b';
         value = init;
     }
     
     virtual const char *getDesc(){
         static char buf[1024];
-        sprintf(buf,"i %c",
+        sprintf(buf,"b:%s:%c",name,
                 value?'y':'n');
         return buf;
     }

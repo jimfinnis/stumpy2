@@ -25,6 +25,11 @@ public class ConnectionType {
     private String name;
     
     /**
+     * The ID code character from the server
+     */
+    private char id;
+    
+    /**
      * The colour for use in the editor
      */
     Color col;
@@ -33,15 +38,21 @@ public class ConnectionType {
      * static map to get from string to value type object. 
      */
     static Map<String,ConnectionType> mapStrToType = new HashMap<String,ConnectionType>();
+    /**
+     * And another static map to get from char to object.
+     */
+    static Map<Character,ConnectionType> mapCharToType = new HashMap<Character,ConnectionType>();
     
     /**
      * private constructor, which will also add the object to the map.
      * @param name
      */
-    private ConnectionType(String name,Color c){
+    private ConnectionType(String name,char id,Color c){
         this.name = name;
         this.col = c;
+        this.id = id;
         mapStrToType.put(name,this);
+        mapCharToType.put(id,this);
     }
     
     /**
@@ -65,16 +76,23 @@ public class ConnectionType {
         return t;
     }
     
+    static public ConnectionType get(char id){
+        ConnectionType t =mapCharToType.get(id);
+        if(t==null)
+            throw new RuntimeException("value type unknown, id: "+id);
+        return t;
+    }
+    
     /**
      * Use this to create value type objects.
      * @param name the name 
      * @param c the colour for rendering connector/connections of this type
      * @return the new object (which you probably won't use here)
      */
-    static public ConnectionType create(String name, Color c){
+    static public ConnectionType create(String name, char id,Color c){
         if(mapStrToType.get(name)!=null)
             throw new RuntimeException("double create of value type : "+name);
-        return new ConnectionType(name,c);
+        return new ConnectionType(name,id,c);
     }
     
 }

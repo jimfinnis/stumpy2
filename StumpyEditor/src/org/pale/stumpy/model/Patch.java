@@ -140,6 +140,9 @@ public class Patch {
 
     public Component addComponent(String name, Point pos)
             throws UnknownComponentTypeException, NoCurrentPatchException {
+    	
+    	System.out.println("Trying to make "+name);
+    	
         ComponentType t = ComponentTypeRegistry.getInstance().getComponentType(
                 name);
         Component c = t.create(pos);

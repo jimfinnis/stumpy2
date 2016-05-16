@@ -15,9 +15,8 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.pale.stumpy.components.PrimComponentType;
+import org.pale.stumpy.Configuration;
 import org.pale.stumpy.main.TopController;
-import org.pale.stumpy.model.ComponentTypeRegistry;
 import org.pale.stumpy.model.ProtocolException;
 import org.pale.stumpy.model.UnknownComponentTypeException;
 
@@ -75,7 +74,7 @@ public class Client {
 		}else{
 			/// send command to fetch component data etc.
 			try {
-				INSTANCE.readConfiguration();
+				Configuration.readConfiguration(INSTANCE);
 			} catch (UnknownComponentTypeException e) {
 				notifyStatusListeners(false, "couldn't find the primitive component type");
 				destroy();
@@ -168,8 +167,8 @@ public class Client {
 	 *
 	 */
 	public class CommsResult {
-		int code;
-		String status;
+		public int code;
+		public String status;
 
 		CommsResult(int code,String msg){
 			this.code=code;
@@ -192,7 +191,7 @@ public class Client {
 		}
 	}
 
-	private void doSend(String cmd) throws IOException{
+	public void doSend(String cmd) throws IOException{
 		System.out.println("sending "+cmd);
 		outBuf.clear();
 		outBuf.put(cmd.getBytes());
@@ -208,7 +207,7 @@ public class Client {
 	 * typically getting the initial setup data from the server. 
 	 * @return
 	 */
-	private CommsResult syncRead() {
+	public CommsResult syncRead() {
 		try {
 			selector.select(1000);
 		} catch (IOException e) {
@@ -254,63 +253,6 @@ public class Client {
 	}
 
 
-	/// this is a synchronous chat with the server to load the initial
-	/// configuration data
-	public void readConfiguration() throws UnknownComponentTypeException, IOException, ProtocolException{
-		((PrimComponentType)ComponentTypeRegistry.getInstance().getComponentType("primitive")).clearPrimitiveNames();
-		doSend("startprims");
-		boolean primsDone=false;
-		while(!primsDone){
-			CommsResult r = syncRead();
-			switch(r.code){
-			case 401:
-				System.out.println("Got prim name: "+r.status);
-				addPrimitive(r.status);
-				doSend("nextprim");
-				break;
-			case 402:
-				primsDone=true;
-				break;
-			default:
-				throw new ProtocolException("Unexpected message "+r.code);
-			}
-		}
-
-		doSend("startcomps");
-		boolean compsDone = false;
-
-		while(!compsDone){
-			CommsResult r = syncRead();
-			switch(r.code){
-			case 410: // new component
-				String bits[] = r.status.split(":",4);
-				String name = bits[0];
-				String inputs = bits[1];
-				String outputs = bits[2];
-				int paramct = Integer.parseInt(bits[3]);
-				System.out.println("Component:"+name+" Inputs:"+inputs+
-						" Outputs:"+outputs+" ParamCount:"+paramct);
-				// get the params
-				for(int i=0;i<paramct;i++){
-					doSend("compparam "+i);
-					CommsResult pr = syncRead();
-					if(pr.code != 412)
-						throw new ProtocolException("Unexpected message "+pr.code);
-					System.out.println("Param "+i+" desc:"+pr.status);
-				}
-
-				doSend("nextcomp");		
-				break;
-			case 411:
-				compsDone=true;
-				break;
-			default:
-				throw new ProtocolException("Unexpected message "+r.code);
-			}
-			System.out.println("configuration read done");
-		}
-	}
-
 
 
 	/**
@@ -323,7 +265,7 @@ public class Client {
 	public class CommsTask extends SwingWorker<CommsResult,Void> {
 
 		private List<String> commands;
-		private List<String> queue;
+
 		/**
 		 * Construct the task with a list of commands to send to the server
 		 * @param commands list to send
@@ -393,29 +335,24 @@ public class Client {
 		@Override
 		protected CommsResult doInBackground() throws Exception {
 			CommsResult r=new CommsResult(502,"return never processed");
-			for(;;){
-				for(String cmd: commands){
-					doSend(cmd);
-					// handle read responses
 
-					r = processSelectorLoop();
-					System.out.println("Code: "+r.getCode());
-					if(r.getCode()!=0)
-						break;
-				}
-				if(queue.isEmpty())
-					return r;
-				else {
-					commands = queue;
-					queue = new LinkedList<String>();
-				}
+			for(String cmd: commands){
+				doSend(cmd);
+				// handle read responses
+
+				r = processSelectorLoop();
+				System.out.println("Code: "+r.getCode());
+				if(r.getCode()!=0)
+					break;
 			}
+			return r;
 		}        
 	}
 
 	/**
 	 * Send a set of commands and await a reply. If the reply is not valid (i.e. the return code is non-zero) or
-	 * another error occurred, deal. Will use a swing worker and run asynchronously.
+	 * another error occurred, deal. Will use a swing worker, heaven knows why
+	 * because it immediately blocks. 
 	 * @param s
 	 */
 	public void sendAndProcessResponse(List<String> commands){
@@ -427,8 +364,13 @@ public class Client {
 		CommsTask t = new CommsTask(commands);
 		r = new CommsResult(510,"no processing occurred");
 		try {
+			System.out.println("Command batch:::::::::::::::::::::::");
+			for(String c: commands){
+				System.out.println("---- "+c);
+			}
 			t.execute();
 			r = t.get();
+			System.out.println(r);
 			notifyStatusListeners(r.getCode()==0,r.getErrorMsg());
 		} catch (InterruptedException e) {
 			notifyStatusListeners(false, "interrupted");
@@ -448,8 +390,4 @@ public class Client {
 
 	}
 
-	private void addPrimitive(String string) throws UnknownComponentTypeException {
-		PrimComponentType pc = (PrimComponentType)ComponentTypeRegistry.getInstance().getComponentType("primitive");
-		pc.addPrimitiveName(string);
-	}
 }

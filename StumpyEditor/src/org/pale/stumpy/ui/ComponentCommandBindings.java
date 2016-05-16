@@ -142,6 +142,7 @@ public class ComponentCommandBindings implements ActionListener {
         try {
             handle((Component) arg0.getSource());
         } catch (Exception e) {
+        	e.printStackTrace();
             JOptionPane.showMessageDialog(null,
                     "CCB Error: " + e.getMessage());
         }

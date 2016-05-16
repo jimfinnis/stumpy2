@@ -18,11 +18,6 @@ import org.pale.stumpy.model.ComponentAndConnection.ComponentClickType;
  * to one of these. Information includes: name, size of box on screen;
  * connections, with types, names and positions. The connection positions are
  * automatically calculated (although I may make this overridable.)
- * 
- * To create a new type, create one of these, call addInput/addOutput a few
- * times, then call layout to lay out the connections. Also, write the createParameters() method
- * to create parameters for the new component.
- * 
  * There's a lot of "view" stuff in here, simply because separating out the graphics code
  * would be too confusing. For me, anyway.
  * 
@@ -31,7 +26,7 @@ import org.pale.stumpy.model.ComponentAndConnection.ComponentClickType;
  * @author white
  * 
  */
-abstract public class ComponentType {
+public class ComponentType {
     /** size of a connection pad on screen for drawing purposes */
     public static final int CONNECTION_WIDTH = 10;
 
@@ -129,7 +124,7 @@ abstract public class ComponentType {
      * @param height
      *            height on screen
      */
-    protected ComponentType(String n, String catName, int width, int height) {
+    public ComponentType(String n, String catName, int width, int height) {
         this.name = n;
         this.category = catName;
         this.size = new Dimension(width, height>0 ? height : DEFAULTHEIGHT);
@@ -144,7 +139,7 @@ abstract public class ComponentType {
      * @param name
      *            name of input
      */
-    protected void addInput(ConnectionType v, String name) {
+    public void addInput(ConnectionType v, String name) {
         inputList.add(new ConnectionInfo(v, name));
     }
 
@@ -156,7 +151,7 @@ abstract public class ComponentType {
      * @param name
      *            name of output
      */
-    protected void addOutput(ConnectionType v, String name) {
+    public void addOutput(ConnectionType v, String name) {
         outputList.add(new ConnectionInfo(v, name));
     }
     
@@ -164,7 +159,7 @@ abstract public class ComponentType {
     /**
      * Perform layout, once all connections added - will set their positions.
      */
-    protected void layout() {
+    public void layout() {
         layoutConnectionSetHorizontally(0, inputList);
         layoutConnectionSetHorizontally((int) (size.getHeight() - 1),
                 outputList);
@@ -386,7 +381,23 @@ abstract public class ComponentType {
             return null;
         }
     }
+    
+    // the parameter specifications are actually just parameters
+    // which get cloned into the individual parameters for the actual
+    // components. We do this by hacking with a memento!
+    List<Parameter> parameterSpecs = new ArrayList<Parameter>();
+    public void addParameter(Parameter p){
+    	parameterSpecs.add(p);
+    }
 
-    abstract public Parameter[] createParameters(Component component);
+    public Parameter[] createParameters(Component component){
+    	Parameter[] ps = new Parameter[parameterSpecs.size()];
+    	for(int i=0;i<parameterSpecs.size();i++){
+    		Parameter proto = parameterSpecs.get(i);
+    		Parameter.Memento m = proto.createMemento();
+    		ps[i]=m.create();
+    	}
+    	return ps;
+    }
 
 }

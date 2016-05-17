@@ -134,7 +134,7 @@ struct ComponentInstance {
     /// and is not set to "run always", will just return the output. Otherwise
     /// will run the component for that output
     inline ConnectionValue &getOutput(int n){
-        if(component->type->runAlways[n] || isFirstCallThisFrameForOutput(n))
+        if(component->runAlways[n] || isFirstCallThisFrameForOutput(n))
             component->type->run(this,n);
         return outputs[n];
     }

@@ -63,6 +63,7 @@ class Controller : public ServerListener {
     DECMETHOD(LinkComponent);
     DECMETHOD(UnlinkComponentInput);
     DECMETHOD(UnlinkComponentOutput);
+    DECMETHOD(SetRunAlways);
     DECMETHOD(ParamSet);
     DECMETHOD(RunPatch);
     

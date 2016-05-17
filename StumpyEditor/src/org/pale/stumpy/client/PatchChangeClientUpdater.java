@@ -23,6 +23,11 @@ public class PatchChangeClientUpdater implements PatchChangeListener {
         LinkedList<String> cmds = new LinkedList<String>();
         
         switch(change.getType()){
+        case RUNALWAYS:
+        	// the input number in the change structure is actually the output - see
+        	// PatchChange for why.
+        	change.getC().writeSyncRunAlwaysCommands(cmds, p.getID(), change.getInput());
+        	break;
         case NAME:
         case ADD:
             change.getC().writeSyncCreateCommands(cmds, p.getID());

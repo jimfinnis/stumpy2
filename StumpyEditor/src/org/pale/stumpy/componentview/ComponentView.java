@@ -5,12 +5,18 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.pale.stumpy.model.Component;
 import org.pale.stumpy.model.Parameter;
@@ -41,7 +47,7 @@ public class ComponentView extends JFrame  {
      * @param patch the patch the component is in
      * @param component the component to edit
      */
-    public ComponentView(Patch patch, Component component) {
+    public ComponentView(final Patch patch, final Component component) {
         this.component = component;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -56,16 +62,45 @@ public class ComponentView extends JFrame  {
 
         setTitle(component.getType().getName());
 
-        // add the inputs/outputs legend
+        // add the inputs/outputs
 
         JPanel ptmp = new JPanel(new FlowLayout());
+        // inputs is just a list of names
         ptmp.add(buildLegend("inputs", component.getType().getAllInputNames()));
-        ptmp.add(buildLegend("outputs", component.getType().getAllOutputNames()));
+        // outputs have buttons, indicating whether the system should run
+        // the component always when that output is invoked, or whether it should
+        // only run it the first time in a frame (doesn't always apply - e.g.
+        // rendering prims always run always).
+        
+        JPanel outputPanel = new JPanel();
+        outputPanel.setLayout(new BoxLayout(outputPanel,BoxLayout.PAGE_AXIS));
+        outputPanel.add(new JLabel("<html><u>outputs/runalways</u></html>"));
+        List<String> opnames = component.getType().getAllOutputNames();
+        for(int i=0;i<opnames.size();i++){
+        	final int index = i;
+        	final JCheckBox ch=new JCheckBox(opnames.get(i));
+        	ch.setSelected(false);
+        	ch.addItemListener(new ItemListener(){
+				@Override
+				public void itemStateChanged(ItemEvent arg0) {
+					boolean state = ch.isSelected();
+					component.setRunOutputAlways(index,state);
+	                patch.update(new PatchChange(PatchChangeType.RUNALWAYS,
+	                		component,index));
+
+					System.out.println("Output "+index+" now "+state);
+				}
+        	});
+        	outputPanel.add(ch);
+        }
+        
+        ptmp.add(outputPanel);
         pane.add(ptmp,c);
         c.gridy++;
         
+        
 
-        // now add the components! Also create an object to handle when we get a parameter change, and 
+        // now add the parameters! Also create an object to handle when we get a parameter change, and 
         // tell the patch
         List<JComponent> list = component.createEditors(patch,new ParameterChangeListener(component,patch) {
             @Override

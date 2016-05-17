@@ -36,8 +36,8 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("clear",0,Clear);
     REG("np",1,NewPatch); // patchid
     REG("dp",1,DelPatch); // patchid
+    REG("sra",4,SetRunAlways); // patchid componentid outputidx y/n
     REG("nc",3,NewComponent); // patchid componentid type
-    
     REG("dc",2,DeleteComponent); // patchid componentid
     REG("lc",5,LinkComponent); // patchid incomponentid input outcomponentid output
     REG("ui",3,UnlinkComponentInput); // patchid componentid input
@@ -120,6 +120,23 @@ METHOD(Clear){
     library->clear();
     server->success();
 }
+
+METHOD(SetRunAlways){
+    uint32_t pid = atoi(argv[0]);
+    Patch *p = library->get(pid);
+    if(!p)throw SE_NOSUCHPATCH;
+    uint32_t cid = atoi(argv[1]);
+    Component *c = p->getComponent(cid);
+    if(!c)throw SE_NOSUCHCOMP;
+    uint32_t oid = atoi(argv[2]);
+    if(oid>=ComponentType::NUMOUTPUTS)throw SE_OUTPUTRANGE;
+    if(c->type->outputTypes[oid]==T_INVALID)
+        throw SE_OUTPUTRANGE;
+    c->setOutputRunAlways(oid);
+    server->success();
+}
+    
+    
     
 METHOD(NewComponent){
     uint32_t pid = atoi(argv[0]);

@@ -40,6 +40,7 @@ union ConnectionValue {
     float f;
     int i;
     
+    // for flow values
     ConnectionValue(){
         i=0;
     }
@@ -54,7 +55,6 @@ union ConnectionValue {
         t.i = i;
         return t;
     }
-    
 };
 
 
@@ -77,10 +77,6 @@ public:
     
     bool isRoot;
     
-    /// if this is set for a given output, the component will run for that 
-    /// output whether it has already done so for this tick or not.
-    bool runAlways[NUMOUTPUTS];
-    
     const char *name,*category;
     
     /// make me able to be in one list
@@ -100,9 +96,7 @@ public:
         name = n;
         category = cat;
         for(int i=0;i<NUMINPUTS;i++)inputTypes[i]=T_INVALID;
-        for(int i=0;i<NUMOUTPUTS;i++){outputTypes[i]=T_INVALID;
-            runAlways[i]=false;
-        }
+        for(int i=0;i<NUMOUTPUTS;i++)outputTypes[i]=T_INVALID;
         
         if(!types)
             types = new LinkedList<ComponentType,0>();
@@ -177,12 +171,6 @@ protected:
         assertOutputInRange(n);
         outputTypes[n]=t;
     }
-    /// make the component always run when a value for this output
-    /// is requested, even if this is done multiple times in the same tick.
-    void setOutputRunAlways(int n){
-        runAlways[n] = true;
-    }
-    
 };
 
 
@@ -231,6 +219,12 @@ public:
         if(paramnum>=paramct)
             throw SE_NOSUCHPARAM;
         params[paramnum]->setValue(code,val);
+    }
+    
+    /// make the component always run when a value for this output
+    /// is requested, even if this is done multiple times in the same tick.
+    void setOutputRunAlways(int n){
+        runAlways[n] = true;
     }
     
     /// the containing class
@@ -291,6 +285,9 @@ public:
         for(int i=0;i<ComponentType::NUMINPUTS;i++){
             inputs[i].c=NULL;
         }
+        for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
+            runAlways[i]=false;
+        }
     }
     
         
@@ -335,6 +332,10 @@ public:
     }
     
     ComponentType *type; //!< the component type
+    
+    /// if this is set for a given output, the component will run for that 
+    /// output whether it has already done so for this tick or not.
+    bool runAlways[ComponentType::NUMOUTPUTS];
     
     /// set up the component according to it's type; completes
     /// the initialisation

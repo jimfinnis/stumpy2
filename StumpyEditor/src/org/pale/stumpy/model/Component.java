@@ -64,6 +64,15 @@ public class Component implements Visitable {
             this.output = output;
         }
     }
+    
+    /// array indicating whether getting a particular output always
+    /// runs the component, or whether the cached version is used if it
+    /// has been run before in this frame
+    boolean[] runOutputAlways;
+	public void setRunOutputAlways(int index, boolean state) {
+		runOutputAlways[index]=state;
+	}
+	
 
     /**
      * return the connection to this input.
@@ -93,6 +102,7 @@ public class Component implements Visitable {
         this.id = idcounter++;
         this.type = type;
         this.inputs = new Input[type.getInputCount()];
+        this.runOutputAlways = new boolean[type.getOutputCount()];
         this.rect = new Rectangle(pos, type.getSize());
         this.params = type.createParameters(this);
         if(this.params==null){
@@ -257,8 +267,17 @@ public class Component implements Visitable {
          * component's output
          */
         int[][] inputData;
+        boolean[] runOutputAlways;
 
-        public int[][] getInputData() {
+        public boolean[] getRunOutputAlways() {
+			return runOutputAlways;
+		}
+
+		public void setRunOutputAlways(boolean[] runOutputAlways) {
+			this.runOutputAlways = runOutputAlways;
+		}
+
+		public int[][] getInputData() {
             return inputData;
         }
 
@@ -307,6 +326,7 @@ public class Component implements Visitable {
         Memento m = new Memento();
         m.setType(getType().getName());
         m.setLocation(new Point(rect.x, rect.y));
+        m.setRunOutputAlways(runOutputAlways);
 
         Parameter.Memento p[] = new Parameter.Memento[params.length];
         for (int i = 0; i < params.length; i++) {
@@ -331,7 +351,7 @@ public class Component implements Visitable {
         Point pos = cm.getLocation();
         this.inputs = new Input[type.getInputCount()];
         this.rect = new Rectangle(pos, type.getSize());
-
+        this.runOutputAlways = cm.getRunOutputAlways();
         // create the parameters from the parameter mementoes
         Parameter.Memento[] pms = cm.getParameters();
         params = new Parameter[pms.length];
@@ -349,9 +369,20 @@ public class Component implements Visitable {
      */
     public void writeSyncCreateCommands(List<String> cmds, int patchid) {
         cmds.add("nc " + patchid + " " + id + " " + type.getName());
+        for(int i=0;i<type.getOutputCount();i++){
+        	writeSyncRunAlwaysCommands(cmds,patchid,i);
+        }
         // and commands to initialise the parameters
         writeSyncParamCommands(cmds, patchid);
 
+    }
+    
+    /**
+     * Append a command to update the runalways state of an output
+     */
+    public void writeSyncRunAlwaysCommands(List<String> cmds, int patchid,int output){
+    	cmds.add("sra "+patchid+" "+id+" "+output+" "+(runOutputAlways[output]?"y":"n"));
+    	
     }
 
     /**
@@ -391,5 +422,6 @@ public class Component implements Visitable {
     public int getID() {
         return id;
     }
+
     
 }

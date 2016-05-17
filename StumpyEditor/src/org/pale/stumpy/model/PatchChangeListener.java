@@ -32,7 +32,11 @@ public interface PatchChangeListener {
         /** A set of components as been added */
         ADDSET,
         /** a parameter value has changed */
-        PARAMETER
+        PARAMETER,
+        /** a "run always" value has changed on a component's output : in this
+         * case, the "input" value actually contains the number of the output
+         * because of how these constructors work. Hackhackhack. */
+        RUNALWAYS,
     }
 
     /**
@@ -62,6 +66,7 @@ public interface PatchChangeListener {
         private int output;
         /**
          * In the case of a new connection or disconnection, the input.
+         * In the case of RUNALWAYS, the actual output number. Yes, I know.
          */
         private int input;
         /**

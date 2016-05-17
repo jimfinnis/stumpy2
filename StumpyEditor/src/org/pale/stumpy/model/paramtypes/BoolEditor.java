@@ -39,7 +39,7 @@ public class BoolEditor extends JPanel implements ChangeListener {
             param.setEncodedValue("y");
         else
             param.setEncodedValue("n");
-        
+        paramChangeListener.onChange(param);
     }
 
 

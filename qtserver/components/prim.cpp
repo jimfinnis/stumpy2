@@ -24,7 +24,7 @@ static const char *meshNames[]=
     
 
 class PrimComponent : public ComponentType {
-    IntParameter *primType;
+    EnumParameter *primType;
     static Mesh **meshes;
     
 public:
@@ -43,7 +43,7 @@ public:
         }
     }
 
-    PrimComponent() : ComponentType("primitive") {
+    PrimComponent() : ComponentType("primitive","render") {
         setOutput(0,T_FLOW);
     }
     
@@ -58,7 +58,7 @@ public:
     
     virtual void initComponent(Component *c){
         // deliberately set max large so we don't have to worry about it
-        c->setParams(primType = new IntParameter("mesh",0,100,0),
+        c->setParams(primType = new EnumParameter("mesh",meshNames,0),
                      NULL);
     }
 };

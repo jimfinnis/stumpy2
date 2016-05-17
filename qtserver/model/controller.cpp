@@ -182,8 +182,8 @@ void Controller::sendCurCT(){
         dummycomp = new Component();
         curCT->initComponent(dummycomp);
         
-        // output the param count
-        sprintf(buf+strlen(buf),":%d",dummycomp->paramct);
+        // output the param count and category
+        sprintf(buf+strlen(buf),":%d:%s",dummycomp->paramct,curCT->category);
         output(buf);
     
     }
@@ -199,12 +199,20 @@ METHOD(CompParam){
 }
 
 METHOD(CompEnum){
+    char buf[1024];
     int pidx = atoi(argv[0]);
     if(pidx>=dummycomp->paramct)
         throw SE_NOSUCHPARAM;
+    if(dummycomp->params[pidx]->code != 'e')
+        throw SE_BADPARAMTYPE;
+    
+    EnumParameter *ep = (EnumParameter *)(dummycomp->params[pidx]);
     int eidx = atoi(argv[1]);
-    // DEAL WITH THIS
-    server->success();
+    if(eidx >= ep->getCount())
+        throw SE_ENUMOUTOFRANGE;
+    
+    sprintf(buf,"413 %s",ep->getString(eidx));
+    output(buf);
 }
 
 METHOD(StartComps){
@@ -217,6 +225,8 @@ METHOD(NextComp){
         curCT = ComponentType::types->next(curCT);
     sendCurCT();
 }
+
+
     
 
 METHOD(LinkComponent){

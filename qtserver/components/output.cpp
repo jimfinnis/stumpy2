@@ -3,7 +3,7 @@
 
 class OutputComponent : public ComponentType {
 public:
-    OutputComponent() : ComponentType("output"){
+    OutputComponent() : ComponentType("output","control"){
         setInput(0,T_FLOW);
         setInput(1,T_FLOW);
         setInput(2,T_FLOW);

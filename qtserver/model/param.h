@@ -71,6 +71,48 @@ public:
     int get(Component *c);
 };
 
+class EnumParameter : public Parameter {
+private:
+    int value;
+    int count; // number of values
+    const char **strings; // string data
+public:
+    /// s is a null-terminated array of strings
+    EnumParameter(const char *n,const char **s,int ini) : Parameter(n){
+        code = 'e';
+        count = 0;
+        while(s[count])count++;
+        printf("String count: %d\n",count);
+        strings = s;
+        value = ini;
+    }
+    
+    
+    virtual const char *getDesc(){
+        static char buf[1024];
+        sprintf(buf,"e:%s:%d:%d",name,count,value);
+        return buf;
+    }
+    
+    int getCount(){
+        return count;
+    }
+    
+    const char *getString(int i){
+        return strings[i];
+    }
+    
+    virtual void setValue(char c, const char *s){
+        checkCode(c);
+        int v = atoi(s);
+        if(v<0 || v>=count)
+            throw SE_PARAMOUTOFRANGE;
+        value = v;
+    }
+    
+    int get(Component *c);
+};
+
 
 class FloatParameter : public Parameter {
 private:

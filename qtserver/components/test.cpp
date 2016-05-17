@@ -6,7 +6,7 @@ private:
     IntParameter *param1;
     FloatParameter *param2;
 public:
-    TestComponent() : ComponentType("test"){
+    TestComponent() : ComponentType("test","control"){
         setInput(0,T_FLOW);
         setInput(1,T_FLOW);
         setInput(2,T_FLOAT);

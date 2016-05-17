@@ -510,8 +510,16 @@ public class Patch {
             c.writeSyncLinkCommands(cmds, id);
             c.writeSyncParamCommands(cmds, id);
         }
-
+        synced=true;
     }
+    
+    /// indicates that the patch has been uploaded to the server, so
+    /// change commands should be sent there.
+	private boolean synced=false;
+
+	public boolean isSynced(){
+		return synced;
+	}
 
     /**
      * Append a command to instantiate this patch - to actually start running it

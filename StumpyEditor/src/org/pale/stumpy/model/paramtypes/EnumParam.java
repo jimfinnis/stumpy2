@@ -62,7 +62,7 @@ public class EnumParam extends Parameter {
 
     @Override
     public char getCodeChar() {
-        return 'i'; // same as IntParam
+        return 'e'; // same as IntParam
     }
 
     @Override

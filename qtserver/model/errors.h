@@ -58,4 +58,7 @@ extern const char *errorStrings[];
 /// parameter ID out of range in parameter set
 #define SE_NOSUCHPARAM 14
 
+/// enumeration out of range
+#define SE_ENUMOUTOFRANGE 15
+
 #endif /* __ERRORS_H */

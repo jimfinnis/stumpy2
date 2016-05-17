@@ -237,3 +237,8 @@ bool BoolParameter::get(Component *c){
     return p->value;
 }
 
+int EnumParameter::get(Component *c){
+    EnumParameter *p = (EnumParameter *)c->params[idx];
+    return p->value;
+}
+

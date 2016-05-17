@@ -2,6 +2,7 @@ package org.pale.stumpy;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.pale.stumpy.client.Client;
 import org.pale.stumpy.client.Client.CommsResult;
@@ -12,6 +13,7 @@ import org.pale.stumpy.model.Parameter;
 import org.pale.stumpy.model.ProtocolException;
 import org.pale.stumpy.model.UnknownComponentTypeException;
 import org.pale.stumpy.model.paramtypes.BoolParam;
+import org.pale.stumpy.model.paramtypes.EnumParam;
 import org.pale.stumpy.model.paramtypes.FloatParam;
 import org.pale.stumpy.model.paramtypes.IntParam;
 
@@ -40,14 +42,14 @@ public class Configuration {
 			CommsResult r = c.syncRead();
 			switch(r.code){
 			case 410: // new component
-				String bits[] = r.status.split(":",4);
+				String bits[] = r.status.split(":",5);
 				String name = bits[0];
 				String inputs = bits[1];
 				String outputs = bits[2];
 				int paramct = Integer.parseInt(bits[3]);
 				System.out.println("Component:"+name+" Inputs:"+inputs+
 						" Outputs:"+outputs+" ParamCount:"+paramct);
-				ComponentType ct = new ComponentType(name,"category",70,30);
+				ComponentType ct = new ComponentType(name,bits[4],70,30);
 				// create the inputs
 				for(int i=0;i<inputs.length();i++){
 					char cc = inputs.charAt(i);
@@ -70,7 +72,7 @@ public class Configuration {
 						throw new ProtocolException("Unexpected message "+pr.code);
 					System.out.println("Param "+i+" desc:"+pr.status);
 
-					Parameter p = createParamFromDesc(pr.status);
+					Parameter p = createParamFromDesc(c,i,pr.status);
 					ct.addParameter(p);
 				}
 				ct.layout();
@@ -87,8 +89,23 @@ public class Configuration {
 			System.out.println("configuration read done");
 		}
 	}
+	
+	private static String[] readEnumStrings(Client c,int pidx,int ct) throws IOException, ProtocolException{
+		LinkedList<String> list = new LinkedList<String>();
+		
+		for(int i=0;i<ct;i++){
+			c.doSend("compenum "+pidx+" "+i);
+			CommsResult r = c.syncRead();
+			if(r.code==413)
+				list.add(r.status);
+			else
+				throw new ProtocolException("unexpected message in enumeration "+r.code);
+		}
+		
+		return list.toArray(new String[list.size()]);
+	}
 
-	private static Parameter createParamFromDesc(String status) throws ProtocolException {
+	private static Parameter createParamFromDesc(Client c,int pidx,String status) throws ProtocolException, NumberFormatException, IOException {
 		String s[] = status.split(":");
 		Parameter p = null;
 		switch(s[0].charAt(0)){
@@ -104,6 +121,8 @@ public class Configuration {
 			p = new BoolParam(s[1], s[2].charAt(0)=='y');
 			break;
 		case 'e':
+			String[] enumStrings = readEnumStrings(c,pidx,Integer.parseInt(s[2]));
+			p = new EnumParam(s[1],enumStrings,Integer.parseInt(s[3]));
 			break; // Hm.
 		default:
 			throw new ProtocolException("bad parameter type: "+s[0]);

@@ -9,7 +9,7 @@
 
 class RingComponent : public ComponentType {
 public:
-    RingComponent() : ComponentType("ring") {
+    RingComponent() : ComponentType("ring","transforms") {
         setInput(0,T_FLOW);
         setInput(1,T_FLOAT);
         setOutput(0,T_FLOW);

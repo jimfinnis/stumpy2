@@ -8,7 +8,7 @@
 
 class DiffuseLightComponent : public ComponentType {
 public:
-    DiffuseLightComponent() : ComponentType("diffuse") {
+    DiffuseLightComponent() : ComponentType("diffuse","light") {
         setInput(0,T_FLOW);
         setInput(1,T_FLOAT);
         

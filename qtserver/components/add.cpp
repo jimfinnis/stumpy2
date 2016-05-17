@@ -16,7 +16,7 @@
 
 class AddComponent : public ComponentType {
 public:
-    AddComponent() : ComponentType("add") {
+    AddComponent() : ComponentType("add","maths") {
         setInput(0,T_FLOAT);
         setInput(1,T_FLOAT);
         setOutput(0,T_FLOAT);

@@ -24,5 +24,6 @@ const char *errorStrings[] = {
     "Parameter value out of range",
     "Parameter ID out of range",
     
-    "??","??","??","??","??",
+    "Enum ID out of range",
+    "??","??","??","??",
 };

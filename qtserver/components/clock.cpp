@@ -12,7 +12,7 @@
 class ClockComponent : public ComponentType {
     float t;
 public:
-    ClockComponent() : ComponentType("clock") {
+    ClockComponent() : ComponentType("clock","time") {
         setOutput(0,T_FLOAT);
     }
     

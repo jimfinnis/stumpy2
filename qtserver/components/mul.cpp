@@ -11,7 +11,7 @@
 
 class MulComponent : public ComponentType {
 public:
-    MulComponent() : ComponentType("mul") {
+    MulComponent() : ComponentType("mul","maths") {
         setInput(0,T_FLOAT);
         setInput(1,T_FLOAT);
         setOutput(0,T_FLOAT);

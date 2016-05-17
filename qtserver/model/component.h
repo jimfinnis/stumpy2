@@ -81,7 +81,7 @@ public:
     /// output whether it has already done so for this tick or not.
     bool runAlways[NUMOUTPUTS];
     
-    const char *name;
+    const char *name,*category;
     
     /// make me able to be in one list
     ListNode<ComponentType> listnodes[1];
@@ -95,9 +95,10 @@ public:
     /// type to the internal static type list (initialising it if
     /// necessary)
     
-    ComponentType(const char *n){
+    ComponentType(const char *n,const char *cat){
         isRoot=false;
-        name = strdup(n);
+        name = n;
+        category = cat;
         for(int i=0;i<NUMINPUTS;i++)inputTypes[i]=T_INVALID;
         for(int i=0;i<NUMOUTPUTS;i++){outputTypes[i]=T_INVALID;
             runAlways[i]=false;

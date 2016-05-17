@@ -10,11 +10,15 @@ public class PatchChangeClientUpdater implements PatchChangeListener {
 
     @Override
     public void update(Patch p, PatchChange change) {
+    	// don't sync if the client is not connected
         if(!Client.isConnected())
             return;
         Client c = Client.getInstance();
         if(!c.isValid())
             return;
+        // don't sync if this patch has not been uploaded to the server
+        if(!p.isSynced())
+        	return;
         
         LinkedList<String> cmds = new LinkedList<String>();
         

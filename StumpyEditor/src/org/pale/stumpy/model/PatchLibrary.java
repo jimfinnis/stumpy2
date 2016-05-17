@@ -76,7 +76,10 @@ public class PatchLibrary implements PatchChangeListener {
     }
     
     Pattern suffixPattern = Pattern.compile("\\s+\\([0-9]+\\)\\s*");
-    
+
+
+
+
 
     /**
      * Add a patch. If there is a patch with the same name, generate a new name which will be unique.
@@ -174,7 +177,7 @@ public class PatchLibrary implements PatchChangeListener {
     }
     
     /**
-     * Rebuild the patch library from a memento
+     * Rebuild the patch library from a memento (used in loading)
      * @param m
      * @throws UnknownComponentTypeException
      * @throws ConnectionOutOfRangeException
@@ -187,7 +190,10 @@ public class PatchLibrary implements PatchChangeListener {
         patchList.clear();
         
         for(Patch.Memento pm : m.getPatchList()){
-            patchList.add(new Patch(pm));
+        	Patch p = new Patch(pm);
+            patchList.add(p);
+            p.addPatchChangeListener(this);
+            p.addPatchChangeListener(patchChangeUpdater);
         }
         
         if(m.getActivePatchIndex() != -1){
@@ -341,7 +347,6 @@ public class PatchLibrary implements PatchChangeListener {
         if(activePatch!=null){
         	activePatch.writeInstantiateCommand(cmds);
         }
-        
     }
 
     /**

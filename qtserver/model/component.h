@@ -21,6 +21,10 @@
 #include "errors.h"
 #include "param.h"
 
+// default client screen data
+#define DEFAULTWIDTH 70
+#define DEFAULTHEIGHT 30
+
 class Component;
 class ComponentInstance;
 
@@ -71,6 +75,9 @@ public:
     static const int NUMINPUTS = 16;
     static const int NUMOUTPUTS = 16;
     
+    /// editor data, not used here but uploaded to the client
+    int width,height;
+    
     /// this boolean is only set for components with no
     /// outputs which are run directly by PatchInstance::run()
     /// such as the "output" component.
@@ -93,8 +100,13 @@ public:
     
     ComponentType(const char *n,const char *cat){
         isRoot=false;
+        
         name = n;
         category = cat;
+        
+        width=DEFAULTWIDTH;
+        height=DEFAULTHEIGHT;
+              
         for(int i=0;i<NUMINPUTS;i++)inputTypes[i]=T_INVALID;
         for(int i=0;i<NUMOUTPUTS;i++)outputTypes[i]=T_INVALID;
         
@@ -214,6 +226,11 @@ public:
     /// component type's init method.
     void setParams(Parameter *p,...);
     
+    /// another way of setting parameters, this time passing in an
+    /// array which will be copied into the component param array.
+    void setParamsFromArray(Parameter **p,int ct);
+    
+    
     /// set a parameter's value from an encoded value and type code.
     void setParamValue(int paramnum,char code,const char *val){
         if(paramnum>=paramct)
@@ -223,8 +240,8 @@ public:
     
     /// make the component always run when a value for this output
     /// is requested, even if this is done multiple times in the same tick.
-    void setOutputRunAlways(int n){
-        runAlways[n] = true;
+    void setOutputRunAlways(int n,bool v){
+        runAlways[n] = v;
     }
     
     /// the containing class

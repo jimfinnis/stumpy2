@@ -12,6 +12,26 @@
 
 class Component;
 
+/**
+ * The way parameters work is ODD. Notice that in a component type, when a component
+ * is initialised in initComponent() we do something like
+ *   c->setParams(pParamFoo=new SomeParam()...)
+ * so we set the parameter in the *component*, but also set members in the *type*.
+ * The setParams() method actually puts the newly allocated parameters into an array
+ * private for each component. BUT they are also set into the component type, so
+ * that the last component's parameters act as the prototypes for the parameters of
+ * the whole type. Note how this works in IntParameter::get():
+ *     int IntParameter::get(Component *c){
+ *       IntParameter *p = (IntParameter *)c->params[idx];
+ *       return p->value;
+ *     }
+ * So we call this on whatever is in the *type* (as pParamFoo above), but the it
+ * knows its index in the parameter array for the component, and looks up the REAL
+ * parameter in the component itself.
+ * 
+ * This is either really clever or really stupid. I can't make up my mind.
+ */
+
 struct Parameter {
     char code; // type code
     const char *name; // name in UI

@@ -22,12 +22,12 @@ get next primitive
 startcomps
 start iterating component types, sending description of first one
                     411 comps done
-                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>:<category>
+                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>:<category>:<width>:<height>
                 
 nextcomp
 move to next component type, send description
                     411 comps done
-                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>:<category>
+                OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>:<category>:<width>:<height>
 
 compparam <pidx>
 send description of current component type param pidx

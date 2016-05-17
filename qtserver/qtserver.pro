@@ -34,6 +34,7 @@ SOURCES += main.cpp \
     components/ring.cpp\
     components/clock.cpp\
     components/osc.cpp\
+    components/mixer.cpp\
    
 
 HEADERS  += \

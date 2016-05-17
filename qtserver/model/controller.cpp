@@ -132,7 +132,7 @@ METHOD(SetRunAlways){
     if(oid>=ComponentType::NUMOUTPUTS)throw SE_OUTPUTRANGE;
     if(c->type->outputTypes[oid]==T_INVALID)
         throw SE_OUTPUTRANGE;
-    c->setOutputRunAlways(oid);
+    c->setOutputRunAlways(oid,*argv[3]=='y');
     server->success();
 }
     
@@ -199,8 +199,8 @@ void Controller::sendCurCT(){
         dummycomp = new Component();
         curCT->initComponent(dummycomp);
         
-        // output the param count and category
-        sprintf(buf+strlen(buf),":%d:%s",dummycomp->paramct,curCT->category);
+        // output the param count etc.
+        sprintf(buf+strlen(buf),":%d:%s:%d:%d",dummycomp->paramct,curCT->category,curCT->width,curCT->height);
         output(buf);
     
     }

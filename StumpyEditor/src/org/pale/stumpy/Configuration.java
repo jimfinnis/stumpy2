@@ -42,14 +42,17 @@ public class Configuration {
 			CommsResult r = c.syncRead();
 			switch(r.code){
 			case 410: // new component
-				String bits[] = r.status.split(":",5);
+				String bits[] = r.status.split(":",7);
 				String name = bits[0];
 				String inputs = bits[1];
 				String outputs = bits[2];
 				int paramct = Integer.parseInt(bits[3]);
+				String category = bits[4];
+				int width = Integer.parseInt(bits[5]);
+				int height = Integer.parseInt(bits[6]);
 				System.out.println("Component:"+name+" Inputs:"+inputs+
 						" Outputs:"+outputs+" ParamCount:"+paramct);
-				ComponentType ct = new ComponentType(name,bits[4],70,30);
+				ComponentType ct = new ComponentType(name,category,width,height);
 				// create the inputs
 				for(int i=0;i<inputs.length();i++){
 					char cc = inputs.charAt(i);

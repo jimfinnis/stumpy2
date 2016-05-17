@@ -196,31 +196,37 @@ void PatchInstance::run(){
 
 void Component::setParams(Parameter *p,...){
     Parameter *tmp[32];
+    int ct=0;
     
     va_list ap;
     va_start(ap,p);
     
-    paramct=0;
     if(!p){ // special case for no parameters at all
-        params=NULL;
+        params=NULL;paramct=0;
         return;
     }
     while(p){
-        if(paramct==32)
+        if(ct==32)
             throw Exception("too many parameters");
-        tmp[paramct++]=p;
+        tmp[ct++]=p;
         p=va_arg(ap,Parameter *);
-        printf("adding parameter %d...\n",paramct);
+//        printf("adding parameter %d...\n",paramct);
     }
     va_end(ap);
     
+    setParamsFromArray(tmp,ct);
+}
+
+void Component::setParamsFromArray(Parameter **p,int ct){
+    paramct=ct;
     params = new Parameter * [paramct];
     for(int i=0;i<paramct;i++){
-        printf("copying parameter..\n");
-        params[i] = tmp[i];
+//        printf("copying parameter..\n");
+        params[i] = p[i];
         params[i]->idx= i;
     }
 }
+    
 
 int IntParameter::get(Component *c){
     IntParameter *p = (IntParameter *)c->params[idx];

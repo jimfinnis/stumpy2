@@ -12,7 +12,7 @@
  *  Author        : $Author$
  *  Created By    : Jim Finnis
  *  Created       : Tue May 4 14:27:17 2010
- *  Last Modified : <130317.1359>
+ *  Last Modified : <160518.2106>
  *
  *  Description	
  *
@@ -100,8 +100,9 @@ protected:
     /// actually deletes the data
     void lost();
     
-    // render textured components
-    virtual void renderTex(Matrix *view,Matrix *world);
+    // render textured components - possibly replacing all textures
+    // with another one
+    virtual void renderTex(Matrix *view,Matrix *world,Texture *overrideTex=NULL);
     // render untextured components
     virtual void renderUntex(Matrix *view,Matrix *world);
     

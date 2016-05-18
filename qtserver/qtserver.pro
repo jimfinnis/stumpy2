@@ -35,6 +35,8 @@ SOURCES += main.cpp \
     components/clock.cpp\
     components/osc.cpp\
     components/mixer.cpp\
+    components/diffusecomp.cpp\
+    components/textcomp.cpp
    
 
 HEADERS  += \

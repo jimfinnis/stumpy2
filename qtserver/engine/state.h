@@ -42,6 +42,8 @@ struct State {
         fog.color = Vector(0,0,0,1);
         fog.neardist = 10000;
         fog.fardist = 20000;
+        texture = NULL;
+        overrides = 0;
     }
     
     /// LIGHT states
@@ -64,6 +66,14 @@ struct State {
     
     /// view matrix
     Matrix view;
+    // texture if any
+    class Texture *texture;
+    
+    // other overrides are determined by some flags
+#define STO_DIFFUSE 1
+    int overrides;
+    Vector diffuse;
+    
 };
 
 

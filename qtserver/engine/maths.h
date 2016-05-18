@@ -749,6 +749,10 @@ struct Matrix
     
     Matrix(){}
     
+    Matrix(const Matrix &a){
+        for(int i=0;i<16;i++)mf[i]=a.mf[i];
+    }
+    
     Matrix(float a,float b,float c,float d,
            float e,float f,float g,float h,
            float i,float j,float k,float l,

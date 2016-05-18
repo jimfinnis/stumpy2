@@ -238,7 +238,7 @@ public class PatchView extends ToolbarFrame implements PatchChangeListener, Wind
      * @throws MementoizationException 
      */
     public void pasteFromClipboard() throws UnknownComponentTypeException, ConnectionOutOfRangeException, ConnectionTypeMismatchException, MementoizationException {
-        Collection<Component> cs = patch.resetFromMemento(clipboard);
+        Collection<Component> cs = patch.resetFromMemento(clipboard,false);
         
         canvas.unselectAll();
         for(Component c: cs){

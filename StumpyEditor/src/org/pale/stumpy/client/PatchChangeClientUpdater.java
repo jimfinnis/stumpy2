@@ -29,6 +29,7 @@ public class PatchChangeClientUpdater implements PatchChangeListener {
         	change.getC().writeSyncRunAlwaysCommands(cmds, p.getID(), change.getInput());
         	break;
         case NAME:
+        	break; // I think this should do nothing on the server.
         case ADD:
             change.getC().writeSyncCreateCommands(cmds, p.getID());
             break;

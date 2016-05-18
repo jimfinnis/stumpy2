@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,504 +33,525 @@ import org.pale.stumpy.model.PatchChangeListener.PatchChangeType;
  * 
  */
 public class Patch {
-    /** counter used to construct unique IDs */
-    static int idcounter;
-    /**
-     * Unique (for all patches) id used by server
-     */
-    int id;
+	/** counter used to construct unique IDs */
+	static int idcounter;
+	/**
+	 * Unique (for all patches) id used by server
+	 */
+	int id;
 
-    /**
-     * Our list of components (it's a list because there's an implicit
-     * ordering for selection.)
-     */
-    private LinkedList<Component> components = new LinkedList<Component>();
+	/**
+	 * Our list of components (it's a list because there's an implicit
+	 * ordering for selection.)
+	 */
+	private LinkedList<Component> components = new LinkedList<Component>();
 
-    /**
-     * The name of the patch; initially untitled
-     */
-    private String name = "untitled";
+	/**
+	 * The name of the patch; initially untitled
+	 */
+	private String name = "untitled";
 
-    /**
-     * A set of items listening for patch changes. Add with
-     * addPatchChangeListener(). Remove with removePatchChangeListener().
-     * 
-     */
-    private Set<PatchChangeListener> patchChangeListeners = new HashSet<PatchChangeListener>();
+	/**
+	 * A set of items listening for patch changes. Add with
+	 * addPatchChangeListener(). Remove with removePatchChangeListener().
+	 * 
+	 */
+	private Set<PatchChangeListener> patchChangeListeners = new HashSet<PatchChangeListener>();
 
-    /**
-     * list of open views. We can't do anything with them apart from get rid of
-     * them!
-     */
-    private List<JFrame> views = new LinkedList<JFrame>();
+	/**
+	 * list of open views. We can't do anything with them apart from get rid of
+	 * them!
+	 */
+	private List<JFrame> views = new LinkedList<JFrame>();
 
-    /**
-     * Constructor for creating a patch from a memento
-     * 
-     * @param pm
-     * @throws ConnectionTypeMismatchException
-     * @throws ConnectionOutOfRangeException
-     * @throws UnknownComponentTypeException
-     */
-    public Patch(Memento pm) throws UnknownComponentTypeException,
-            ConnectionOutOfRangeException, ConnectionTypeMismatchException {
-        this();
-        resetFromMemento(pm);
-    }
+	/**
+	 * Constructor for creating a patch from a memento
+	 * 
+	 * @param pm
+	 * @throws ConnectionTypeMismatchException
+	 * @throws ConnectionOutOfRangeException
+	 * @throws UnknownComponentTypeException
+	 */
+	public Patch(Memento pm) throws UnknownComponentTypeException,
+	ConnectionOutOfRangeException, ConnectionTypeMismatchException {
+		this();
+		resetFromMemento(pm,true);
+	}
 
-    /**
-     * Default constructor for an empty patch; also sets the ID
-     */
-    public Patch() {
-        id = idcounter++;
-    }
+	/**
+	 * Default constructor for an empty patch; also sets the ID
+	 */
+	public Patch() {
+		id = idcounter++;
+	}
 
-    /**
-     * Run a visitor over my innards
-     * 
-     * @param v
-     *            a Visitor object to perform an operation over each component
-     */
-    public void visitAll(Visitor v) {
-        for (Component c : components) {
-            c.accept(v);
-        }
-    }
-    
-    /**
-     * Return the ID of the patch within the library
-     */
-    public int getID(){
-        return id;
-    }
+	/**
+	 * Run a visitor over my innards
+	 * 
+	 * @param v
+	 *            a Visitor object to perform an operation over each component
+	 */
+	public void visitAll(Visitor v) {
+		for (Component c : components) {
+			c.accept(v);
+		}
+	}
 
-    /**
-     * Find a component which intersects the given position, and whether we were
-     * on an input or output. This runs through the list of items backwards,
-     * so that items at the end (drawn last) are scanned first.
-     * 
-     * @param p
-     *            a point on the canvas
-     * @return an object describing what's at the click, or null for no
-     *         component
-     */
+	/**
+	 * Return the ID of the patch within the library
+	 */
+	public int getID(){
+		return id;
+	}
 
-    public ComponentAndConnection getComponentAtPoint(final Point p) {
-    	Iterator<Component> ri = components.descendingIterator();
-    	while(ri.hasNext()){
-    		Component c = ri.next();
-            ComponentAndConnection cc = c.getComponentClick(p);
-            if (null != cc)
-                return cc;
-        }
-        return null;
-    }
+	/**
+	 * Find a component which intersects the given position, and whether we were
+	 * on an input or output. This runs through the list of items backwards,
+	 * so that items at the end (drawn last) are scanned first.
+	 * 
+	 * @param p
+	 *            a point on the canvas
+	 * @return an object describing what's at the click, or null for no
+	 *         component
+	 */
 
-    /**
-     * add a component by name, returning the new component. Adds the component
-     * to the start of the list.
-     * 
-     * @param name
-     *            the name of the component type
-     * @param pos
-     *            the position of the new component in the editor canvas
-     * @return the new component
-     * @throws UnknownComponentTypeException
-     * @throws NoCurrentPatchException
-     */
+	public ComponentAndConnection getComponentAtPoint(final Point p) {
+		Iterator<Component> ri = components.descendingIterator();
+		while(ri.hasNext()){
+			Component c = ri.next();
+			ComponentAndConnection cc = c.getComponentClick(p);
+			if (null != cc)
+				return cc;
+		}
+		return null;
+	}
 
-    public Component addComponent(String name, Point pos)
-            throws UnknownComponentTypeException, NoCurrentPatchException {
-    	
-    	System.out.println("Trying to make "+name);
-    	
-        ComponentType t = ComponentTypeRegistry.getInstance().getComponentType(
-                name);
-        Component c = t.create(pos);
-        components.addLast(c);
+	/**
+	 * add a component by name, returning the new component. Adds the component
+	 * to the start of the list.
+	 * 
+	 * @param name
+	 *            the name of the component type
+	 * @param pos
+	 *            the position of the new component in the editor canvas
+	 * @return the new component
+	 * @throws UnknownComponentTypeException
+	 * @throws NoCurrentPatchException
+	 */
 
-        update(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));
+	public Component addComponent(String name, Point pos)
+			throws UnknownComponentTypeException, NoCurrentPatchException {
 
-        return c;
-    }
-    
-    /**
-     * Bring the given component to the front of the list, so it will
-     * be drawn last and selected first.
-     * @param c
-     */
-    public void toFront(Component c){
-    	components.remove(c);
-    	components.addLast(c);
-    }
+		System.out.println("Trying to make "+name);
 
-    /**
-     * Remove a component from the collection, deleting any links it may have to
-     * other components. If you want to remove components yourself, call
-     * removeSet() instead.
-     * 
-     * @param c
-     */
-    private void remove(final Component c) {
-        components.remove(c);
+		ComponentType t = ComponentTypeRegistry.getInstance().getComponentType(
+				name);
+		Component c = t.create(pos);
+		components.addLast(c);
 
-        visitAll(new Visitor() {
-            @Override
-            public void visitComponent(Component p) {
-                p.removeInputConnections(c, -1);
-            }
-        });
-    }
+		update(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));
 
-    /**
-     * Remove a set of components
-     * 
-     * @param selected
-     */
+		return c;
+	}
 
-    public void removeSet(Set<Component> set) {
-        for (Component c : set) {
-            remove(c);
-        }
-        update(new PatchChangeListener.PatchChange(PatchChangeType.REMOVESET,
-                set));
+	/**
+	 * Bring the given component to the front of the list, so it will
+	 * be drawn last and selected first.
+	 * @param c
+	 */
+	public void toFront(Component c){
+		components.remove(c);
+		components.addLast(c);
+	}
 
-    }
+	/**
+	 * Remove a component from the collection, deleting any links it may have to
+	 * other components. If you want to remove components yourself, call
+	 * removeSet() instead.
+	 * 
+	 * @param c
+	 */
+	private void remove(final Component c) {
+		components.remove(c);
 
-    /**
-     * Unlink an output connection. Finds all matching inputs and unlinks them.
-     * 
-     * @param c
-     *            the component
-     * @param output
-     *            the output index
-     */
-    public void unlinkOutput(final Component c, final int output) {
-        visitAll(new Visitor() {
-            @Override
-            public void visitComponent(Component p) {
-                p.removeInputConnections(c, output);
-            }
-        });
-        update(new PatchChangeListener.PatchChange(
-                PatchChangeType.UNLINKOUTPUT, c, 0, null, output));
-    }
+		visitAll(new Visitor() {
+			@Override
+			public void visitComponent(Component p) {
+				p.removeInputConnections(c, -1);
+			}
+		});
+	}
 
-    /**
-     * Unlink an input connection.
-     * 
-     * @param c
-     * @param input
-     * @throws ConnectionOutOfRangeException
-     */
-    public void unlinkInput(Component c, int input)
-            throws ConnectionOutOfRangeException {
-        c.unsetInput(input);
-        update(new PatchChangeListener.PatchChange(PatchChangeType.UNLINKINPUT,
-                c, input));
-    }
+	/**
+	 * Remove a set of components
+	 * 
+	 * @param selected
+	 */
 
-    /**
-     * Get the patch name
-     * 
-     * @return the patch name
-     */
-    public String getName() {
-        return name;
-    }
+	public void removeSet(Set<Component> set) {
+		for (Component c : set) {
+			remove(c);
+		}
+		update(new PatchChangeListener.PatchChange(PatchChangeType.REMOVESET,
+				set));
 
-    /**
-     * return the patch name
-     */
-    public String toString() {
-        return getName();
-    }
+	}
 
-    /**
-     * Set the patch name an notify all listeners. Will clear the copyNumber.
-     * 
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-        update(new PatchChangeListener.PatchChange(PatchChangeType.NAME));
-    }
+	/**
+	 * Unlink an output connection. Finds all matching inputs and unlinks them.
+	 * 
+	 * @param c
+	 *            the component
+	 * @param output
+	 *            the output index
+	 */
+	public void unlinkOutput(final Component c, final int output) {
+		visitAll(new Visitor() {
+			@Override
+			public void visitComponent(Component p) {
+				p.removeInputConnections(c, output);
+			}
+		});
+		update(new PatchChangeListener.PatchChange(
+				PatchChangeType.UNLINKOUTPUT, c, 0, null, output));
+	}
 
-    /**
-     * add a view to the view list
-     */
-    public void addToViews(JFrame v) {
-        views.add(v);
-    }
+	/**
+	 * Unlink an input connection.
+	 * 
+	 * @param c
+	 * @param input
+	 * @throws ConnectionOutOfRangeException
+	 */
+	public void unlinkInput(Component c, int input)
+			throws ConnectionOutOfRangeException {
+		c.unsetInput(input);
+		update(new PatchChangeListener.PatchChange(PatchChangeType.UNLINKINPUT,
+				c, input));
+	}
 
-    /**
-     * remove a view from the list of open views of this patch
-     */
-    public void removeFromViews(JFrame v) {
-        views.remove(v);
-    }
+	/**
+	 * Get the patch name
+	 * 
+	 * @return the patch name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * 
-     * @return true if the patch has open views
-     */
-    public boolean hasOpenViews() {
-        return views.size() > 0;
-    }
+	/**
+	 * return the patch name
+	 */
+	public String toString() {
+		return getName();
+	}
 
-    /**
-     * Close all open views of this patch
-     */
-    public void closeAllViews() {
-        for (JFrame v : views) {
-            v.dispose();
-        }
-    }
+	/**
+	 * Set the patch name an notify all listeners. Will clear the copyNumber.
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+		update(new PatchChangeListener.PatchChange(PatchChangeType.NAME));
+	}
 
-    /**
-     * add a new patch change listener
-     * 
-     * @param p
-     */
-    public void addPatchChangeListener(PatchChangeListener p) {
-        patchChangeListeners.add(p);
-    }
+	/**
+	 * add a view to the view list
+	 */
+	public void addToViews(JFrame v) {
+		views.add(v);
+	}
 
-    /**
-     * Remove a listener from the list of patch change listeners.
-     * 
-     * @param p
-     */
-    public void removePatchChangeListener(PatchChangeListener p) {
-        patchChangeListeners.remove(p);
-    }
+	/**
+	 * remove a view from the list of open views of this patch
+	 */
+	public void removeFromViews(JFrame v) {
+		views.remove(v);
+	}
 
-    /**
-     * Send a message to all PatchChangeListeners. The type of the change is an
-     * EnumSet.
-     * 
-     * @param change
-     *            the change which has occurred
-     */
-    public void update(PatchChangeListener.PatchChange change) {
-        for (PatchChangeListener p : patchChangeListeners) {
-            p.update(this, change);
+	/**
+	 * 
+	 * @return true if the patch has open views
+	 */
+	public boolean hasOpenViews() {
+		return views.size() > 0;
+	}
 
-        }
-    }
+	/**
+	 * Close all open views of this patch
+	 */
+	public void closeAllViews() {
+		for (JFrame v : views) {
+			v.dispose();
+		}
+	}
 
-    /**
-     * create a memento object
-     * 
-     * @param subset
-     *            if not null, only use this subset to create the memento,
-     *            otherwise use the entire patch.
-     * @return
-     * @throws MementoizationException
-     */
-    public Memento createMemento(Set<Component> subset)
-            throws MementoizationException {
-        Memento m = new Memento();
-        List<Component.Memento> componentList = new LinkedList<Component.Memento>();
-        for (Component c : components) {
-            if (subset == null || subset.contains(c)) {
-                // create the basics
-                Component.Memento cm = c.createMemento();
+	/**
+	 * add a new patch change listener
+	 * 
+	 * @param p
+	 */
+	public void addPatchChangeListener(PatchChangeListener p) {
+		patchChangeListeners.add(p);
+	}
 
-                // create the input wiring data
-                int inct = c.getType().getInputCount();
-                int[][] inputData = new int[inct][]; // an array of pairs of
-                                                     // ints describes the
-                                                     // inputs
-                for (int i = 0; i < inct; i++) {
-                    Component.Input inp = c.getInput(i);
-                    if (inp != null) {
-                        int[] d = new int[2]; // data about each input is stored
-                                              // in the memento as 2 ints:
-                                              // (component index, output index)
-                        d[0] = getComponentIndex(inp.c);
-                        d[1] = inp.output;
-                        inputData[i] = d;
-                    }
-                }
-                cm.setInputData(inputData); // and write to the memento for the
-                                            // component
+	/**
+	 * Remove a listener from the list of patch change listeners.
+	 * 
+	 * @param p
+	 */
+	public void removePatchChangeListener(PatchChangeListener p) {
+		patchChangeListeners.remove(p);
+	}
 
-                componentList.add(cm);
-            }
-        }
-        m.setComponentList(componentList);
-        m.setName(name);
-        return m;
-    }
+	/**
+	 * Send a message to all PatchChangeListeners. The type of the change is an
+	 * EnumSet.
+	 * 
+	 * @param change
+	 *            the change which has occurred
+	 */
+	public void update(PatchChangeListener.PatchChange change) {
+		for (PatchChangeListener p : patchChangeListeners) {
+			p.update(this, change);
 
-    /**
-     * Adds components to a patch from a memento - used in both cut/paste and
-     * loading. Returns a collection of the new components (which is used to add
-     * a positional offset in cut/paste)
-     * 
-     * @param m
-     * @throws UnknownComponentTypeException
-     * @throws ConnectionTypeMismatchException
-     * @throws ConnectionOutOfRangeException
-     */
-    public Collection<Component> resetFromMemento(Memento m)
-            throws UnknownComponentTypeException,
-            ConnectionOutOfRangeException, ConnectionTypeMismatchException {
+		}
+	}
 
-        // set the straightforward properties
-        setName(m.getName());
+	/**
+	 * create a memento object
+	 * 
+	 * @param subset
+	 *            if not null, only use this subset to create the memento,
+	 *            otherwise use the entire patch.
+	 * @return
+	 * @throws MementoizationException
+	 */
+	public Memento createMemento(Set<Component> subset)
+			throws MementoizationException {
+		Memento m = new Memento();
+		List<Component.Memento> componentList = new LinkedList<Component.Memento>();
 
-        // useful class for associating mementoes with their components
-        class Pairing {
-            public Pairing(Component.Memento cm, Component c2) {
-                m = cm;
-                c = c2;
-            }
+		// we need to build a map which maps from component number in the patch
+		// to component number in the subset, so we can wire things correctly
+		// when we're only copying part of the patch.
 
-            Component.Memento m;
-            Component c;
-        }
-        Pairing[] pairing = new Pairing[m.componentList.size()];
+		HashMap<Integer,Integer> mapFromPatchToSubsetIdx = new HashMap<Integer,Integer>();
 
-        // this is for notification purposes
-        Set<Component> notification = new HashSet<Component>();
-        
-        // first pass - create the components
-        int i = 0;
-        for (Component.Memento cm : m.getComponentList()) {
-            Component c = new Component(cm);
-            components.addLast(c); // append to end
-            notification.add(c);
-            pairing[i] = new Pairing(cm, c);
-            i++;
-        }
+		int ct=0;
+		for (Component c : components) {
+			if(subset == null || subset.contains(c))
+				mapFromPatchToSubsetIdx.put(getComponentIndex(c), ct++);
+		}
 
-        // now wire them up
 
-        for (i = 0; i < pairing.length; i++) {
-            Component.Memento cm = pairing[i].m;
+		for (Component c : components) {
+			if (subset == null || subset.contains(c)) {
+				// create the basics
+				Component.Memento cm = c.createMemento();
 
-            int inputData[][] = cm.getInputData();
-            for (int j = 0; j < inputData.length; j++) {
-                int d[] = inputData[j];
-                if (d != null) {
-                    Component out = pairing[d[0]].c;
-                    int outIndex = d[1];
-                    pairing[i].c.setInput(j, out, outIndex);
-                }
-            }
-        }
-        update(new PatchChangeListener.PatchChange(PatchChangeType.ADDSET,
-                notification));
-        return notification;
+				// create the input wiring data
+				int inct = c.getType().getInputCount();
+				int[][] inputData = new int[inct][]; // an array of pairs of
+				// ints describes the
+				// inputs
+				for (int i = 0; i < inct; i++) {
+					Component.Input inp = c.getInput(i);
+					if (inp != null) {
+						int outCompIdx = getComponentIndex(inp.c);
+						// if the output we want this input connected to
+						// is in our subset (which could be the whole patch)
+						// add it to to the input data with the index in the subset
+						// we worked out and stored in our map.
+						if(mapFromPatchToSubsetIdx.containsKey(outCompIdx)){
+							int[] d = new int[2]; // data about each input is stored
+							// in the memento as 2 ints:
+							// (component index, output index)
+							d[0] = mapFromPatchToSubsetIdx.get(outCompIdx);
+							d[1] = inp.output;
+							inputData[i] = d;
+						}
+					}
+				}
+				cm.setInputData(inputData); // and write to the memento for the
+				// component
 
-    }
+				componentList.add(cm);
+			}
+		}
+		m.setComponentList(componentList);
+		m.setName(name);
+		return m;
+	}
 
-    /**
-     * Return the index of a given component within the component list
-     * 
-     * @param c
-     * @return
-     * @throws MementoizationException
-     */
+	/**
+	 * Adds components to a patch from a memento - used in both cut/paste and
+	 * loading. Returns a collection of the new components (which is used to add
+	 * a positional offset in cut/paste)
+	 * 
+	 * @param m
+	 * @throws UnknownComponentTypeException
+	 * @throws ConnectionTypeMismatchException
+	 * @throws ConnectionOutOfRangeException
+	 */
+	public Collection<Component> resetFromMemento(Memento m,boolean setName)
+			throws UnknownComponentTypeException,
+			ConnectionOutOfRangeException, ConnectionTypeMismatchException {
 
-    private int getComponentIndex(Component c) throws MementoizationException {
-        int cs = components.size();
-        int i = 0;
-        for (Component cInList : components) {
-            if (cInList == c)
-                return i;
-            i++;
-        }
-        throw new MementoizationException("could not find index of component");
-    }
+		// set the straightforward properties
+		setName(m.getName());
 
-    /**
-     * The memento class
-     */
-    public static class Memento {
-        String name;
+		// useful class for associating mementoes with their components
+		class Pairing {
+			public Pairing(Component.Memento cm, Component c2) {
+				m = cm;
+				c = c2;
+			}
 
-        public String getName() {
-            return name;
-        }
+			Component.Memento m;
+			Component c;
+		}
+		Pairing[] pairing = new Pairing[m.componentList.size()];
 
-        public void setName(String name) {
-            this.name = name;
-        }
+		// this is for notification purposes
+		Set<Component> notification = new HashSet<Component>();
 
-        List<Component.Memento> componentList;
+		// first pass - create the components
+		int i = 0;
+		for (Component.Memento cm : m.getComponentList()) {
+			Component c = new Component(cm);
+			components.addLast(c); // append to end
+			notification.add(c);
+			pairing[i] = new Pairing(cm, c);
+			i++;
+		}
 
-        public List<Component.Memento> getComponentList() {
-            return componentList;
-        }
+		// now wire them up
 
-        public void setComponentList(List<Component.Memento> componentList) {
-            this.componentList = componentList;
-        }
-    }
+		for (i = 0; i < pairing.length; i++) {
+			Component.Memento cm = pairing[i].m;
 
-    /**
-     * Link the input of one component to the output of another. Will also use
-     * update() to notify listeners of the change.
-     * 
-     * @param c
-     *            the component whose input we want to link
-     * @param input
-     *            the index of the input
-     * @param c2
-     *            the component to which we want to link
-     * @param output
-     *            the index of the output in c2
-     * @throws ConnectionOutOfRangeException
-     * @throws ConnectionTypeMismatchException
-     */
+			int inputData[][] = cm.getInputData();
+			for (int j = 0; j < inputData.length; j++) {
+				int d[] = inputData[j];
+				if (d != null) {
+					Component out = pairing[d[0]].c;
+					int outIndex = d[1];
+					pairing[i].c.setInput(j, out, outIndex);
+				}
+			}
+		}
+		update(new PatchChangeListener.PatchChange(PatchChangeType.ADDSET,
+				notification));
+		return notification;
 
-    public void setComponentInput(Component c, int input, Component c2,
-            int output) throws ConnectionOutOfRangeException,
-            ConnectionTypeMismatchException {
-        c.setInput(input, c2, output);
-        update(new PatchChange(PatchChangeType.LINK, c, input, c2, output));
-    }
+	}
 
-    /**
-     * Append synchronisation commands
-     * 
-     * @param cmds
-     */
-    public void writeSyncCommands(List<String> cmds) {
-        cmds.add("np " + id);
+	/**
+	 * Return the index of a given component within the component list
+	 * 
+	 * @param c
+	 * @return
+	 * @throws MementoizationException
+	 */
 
-        // first, output the components themselves
-        for (Component c : components) {
-            c.writeSyncCreateCommands(cmds, id);
-        }
-        // then write the linkages and parameters
-        for (Component c : components) {
-            c.writeSyncLinkCommands(cmds, id);
-            c.writeSyncParamCommands(cmds, id);
-        }
-        synced=true;
-    }
-    
-    /// indicates that the patch has been uploaded to the server, so
-    /// change commands should be sent there.
+	private int getComponentIndex(Component c) throws MementoizationException {
+		int cs = components.size();
+		int i = 0;
+		for (Component cInList : components) {
+			if (cInList == c)
+				return i;
+			i++;
+		}
+		throw new MementoizationException("could not find index of component");
+	}
+
+	/**
+	 * The memento class
+	 */
+	public static class Memento {
+		String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		List<Component.Memento> componentList;
+
+		public List<Component.Memento> getComponentList() {
+			return componentList;
+		}
+
+		public void setComponentList(List<Component.Memento> componentList) {
+			this.componentList = componentList;
+		}
+	}
+
+	/**
+	 * Link the input of one component to the output of another. Will also use
+	 * update() to notify listeners of the change.
+	 * 
+	 * @param c
+	 *            the component whose input we want to link
+	 * @param input
+	 *            the index of the input
+	 * @param c2
+	 *            the component to which we want to link
+	 * @param output
+	 *            the index of the output in c2
+	 * @throws ConnectionOutOfRangeException
+	 * @throws ConnectionTypeMismatchException
+	 */
+
+	public void setComponentInput(Component c, int input, Component c2,
+			int output) throws ConnectionOutOfRangeException,
+			ConnectionTypeMismatchException {
+		c.setInput(input, c2, output);
+		update(new PatchChange(PatchChangeType.LINK, c, input, c2, output));
+	}
+
+	/**
+	 * Append synchronisation commands
+	 * 
+	 * @param cmds
+	 */
+	public void writeSyncCommands(List<String> cmds) {
+		cmds.add("np " + id);
+
+		// first, output the components themselves
+		for (Component c : components) {
+			c.writeSyncCreateCommands(cmds, id);
+		}
+		// then write the linkages and parameters
+		for (Component c : components) {
+			c.writeSyncLinkCommands(cmds, id);
+			c.writeSyncParamCommands(cmds, id);
+		}
+		synced=true;
+	}
+
+	/// indicates that the patch has been uploaded to the server, so
+	/// change commands should be sent there.
 	private boolean synced=false;
 
 	public boolean isSynced(){
 		return synced;
 	}
 
-    /**
-     * Append a command to instantiate this patch - to actually start running it
-     * as the primary patch
-     * 
-     * @param cmds
-     */
+	/**
+	 * Append a command to instantiate this patch - to actually start running it
+	 * as the primary patch
+	 * 
+	 * @param cmds
+	 */
 
-    public void writeInstantiateCommand(List<String> cmds) {
-        cmds.add("run " + id);
+	public void writeInstantiateCommand(List<String> cmds) {
+		cmds.add("run " + id);
 
-    }
+	}
 }

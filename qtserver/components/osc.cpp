@@ -17,14 +17,11 @@ public:
     OscComponent() : ComponentType("osc","time") {
         setInput(0,T_FLOAT);
         setOutput(0,T_FLOAT);
-    }
-    
-    virtual void initComponent(Component *c){
-        c->setParams(
-                     pFreq = new FloatParameter("freq",0,5,1),
-                     pMod = new FloatParameter("phase mod",-5,5,0),
-                     NULL
-                     );
+        setParams(
+                  pFreq = new FloatParameter("freq",0,5,1),
+                  pMod = new FloatParameter("phase mod",-5,5,0),
+                  NULL
+                  );
     }
     
     virtual void run(ComponentInstance *ci,int out){

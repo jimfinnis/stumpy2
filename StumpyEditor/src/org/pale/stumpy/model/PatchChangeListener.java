@@ -133,7 +133,7 @@ public interface PatchChangeListener {
             this.p=p;
         }
     
-        public PatchChange(PatchChangeType t,Set s){
+        public PatchChange(PatchChangeType t,Set<Component> s){
             this(t);
             this.set=s;
         }

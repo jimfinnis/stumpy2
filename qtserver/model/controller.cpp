@@ -146,7 +146,7 @@ METHOD(NewComponent){
     uint32_t cid = atoi(argv[1]);
     
     const char *type = argv[2];
-    Component *c = p->createComponent(cid,type);
+    p->createComponent(cid,type);
     server->success(cid);
 }
 
@@ -155,6 +155,7 @@ METHOD(DeleteComponent){
     uint32_t cid = atoi(argv[1]);
     
     Patch *p = library->get(pid);
+    p->dump();
     if(!p)throw SE_NOSUCHPATCH;
     
     p->deleteComponent(cid);
@@ -171,9 +172,6 @@ inline char getconntypestr(ConnectionType t){
     }
 }
     
-// dummy component used for component parameter sends
-static Component *dummycomp=NULL;
-
 void Controller::sendCurCT(){
     char buf[1024];
     
@@ -193,14 +191,9 @@ void Controller::sendCurCT(){
         buf[n]=0;
         
         
-        // set up the dummy
-        if(dummycomp)
-            delete dummycomp;
-        dummycomp = new Component();
-        curCT->initComponent(dummycomp);
-        
         // output the param count etc.
-        sprintf(buf+strlen(buf),":%d:%s:%d:%d",dummycomp->paramct,curCT->category,curCT->width,curCT->height);
+        sprintf(buf+strlen(buf),":%d:%s:%d:%d",
+                curCT->paramct,curCT->category,curCT->width,curCT->height);
         output(buf);
     
     }
@@ -209,21 +202,21 @@ void Controller::sendCurCT(){
 METHOD(CompParam){
     char buf[1024];
     int pidx = atoi(argv[0]);
-    if(pidx>=dummycomp->paramct)
+    if(pidx>=curCT->paramct)
         throw SE_NOSUCHPARAM;
-    sprintf(buf,"412 %s",dummycomp->params[pidx]->getDesc());
+    sprintf(buf,"412 %s",curCT->params[pidx]->getDesc());
     output(buf);
 }
 
 METHOD(CompEnum){
     char buf[1024];
     int pidx = atoi(argv[0]);
-    if(pidx>=dummycomp->paramct)
+    if(pidx>=curCT->paramct)
         throw SE_NOSUCHPARAM;
-    if(dummycomp->params[pidx]->code != 'e')
+    if(curCT->params[pidx]->code != 'e')
         throw SE_BADPARAMTYPE;
     
-    EnumParameter *ep = (EnumParameter *)(dummycomp->params[pidx]);
+    EnumParameter *ep = (EnumParameter *)(curCT->params[pidx]);
     int eidx = atoi(argv[1]);
     if(eidx >= ep->getCount())
         throw SE_ENUMOUTOFRANGE;

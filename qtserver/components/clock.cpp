@@ -14,6 +14,10 @@ class ClockComponent : public ComponentType {
 public:
     ClockComponent() : ComponentType("clock","time") {
         setOutput(0,T_FLOAT);
+        setParams(
+                  pMul = new FloatParameter("rate",-100,100,1),
+                  NULL
+                  );
     }
     
     virtual void initComponentInstance(ComponentInstance *ci){
@@ -22,13 +26,6 @@ public:
     }
     virtual void shutdownComponentInstance(ComponentInstance *ci){
        free(ci->privateData);
-    }
-    
-    virtual void initComponent(Component *c){
-        c->setParams(
-                     pMul = new FloatParameter("rate",-100,100,1),
-                     NULL
-                     );
     }
     
     virtual void run(ComponentInstance *ci,int out){

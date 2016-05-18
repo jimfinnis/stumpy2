@@ -13,21 +13,19 @@ public:
         setInput(1,T_FLOAT);
         
         setOutput(0,T_FLOW);
+    
+        setParams(
+                  pN = new IntParameter("index",0,3,0),
+                  pR = new FloatParameter("red",0,1,0),
+                  pG = new FloatParameter("green",0,1,0),
+                  pB = new FloatParameter("blue",0,1,0),
+                  pModR = new FloatParameter("red mod",-1,1,0),
+                  pModG = new FloatParameter("green mod",-1,1,0),
+                  pModB = new FloatParameter("blue mod",-1,1,0),
+                  pStack = new BoolParameter("unused",false),
+                  NULL
+                  );
     }
-    virtual void initComponent(Component *c){
-        c->setParams(
-                     pN = new IntParameter("index",0,3,0),
-                     pR = new FloatParameter("red",0,1,0),
-                     pG = new FloatParameter("green",0,1,0),
-                     pB = new FloatParameter("blue",0,1,0),
-                     pModR = new FloatParameter("red mod",-1,1,0),
-                     pModG = new FloatParameter("green mod",-1,1,0),
-                     pModB = new FloatParameter("blue mod",-1,1,0),
-                     pStack = new BoolParameter("unused",false),
-                     NULL
-                     );
-    }
-                     
     
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;

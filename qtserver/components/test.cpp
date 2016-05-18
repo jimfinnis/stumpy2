@@ -14,6 +14,8 @@ public:
         setOutput(0,T_FLOW);
         setOutput(1,T_FLOW);
         setOutput(2,T_FLOAT);
+        setParams(param1=new IntParameter("foo",0,10,0),
+                  param2=new FloatParameter("bar",0,10,0),NULL);
     }
     
     virtual void run(ComponentInstance *ci,int out){
@@ -35,12 +37,5 @@ public:
             printf("%f\n",t);
         }
     }
-    
-
-    virtual void initComponent(Component *c){
-        c->setParams(param1=new IntParameter("foo",0,10,0),
-                     param2=new FloatParameter("bar",0,10,0),NULL);
-    }
-
 };
 static TestComponent reg;

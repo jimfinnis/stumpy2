@@ -194,57 +194,72 @@ void PatchInstance::run(){
     
 }
 
-void Component::setParams(Parameter *p,...){
-    Parameter *tmp[32];
-    int ct=0;
-    
+
+void ComponentType::setParams(Parameter *p,...){
     va_list ap;
     va_start(ap,p);
+    paramct=0;
     
-    if(!p){ // special case for no parameters at all
-        params=NULL;paramct=0;
-        return;
-    }
     while(p){
-        if(ct==32)
-            throw Exception("too many parameters");
-        tmp[ct++]=p;
-        p=va_arg(ap,Parameter *);
-//        printf("adding parameter %d...\n",paramct);
+        addParameter(p);
+        p = va_arg(ap,Parameter *);
     }
     va_end(ap);
-    
-    setParamsFromArray(tmp,ct);
 }
 
-void Component::setParamsFromArray(Parameter **p,int ct){
-    paramct=ct;
-    params = new Parameter * [paramct];
-    for(int i=0;i<paramct;i++){
-//        printf("copying parameter..\n");
-        params[i] = p[i];
-        params[i]->idx= i;
-    }
-}
-    
 
+
+/*
+ * Parameter getters and setters
+ *
+ */
+
+void IntParameter::set(Component *comp,char c, const char *s){
+    checkCode(c);
+    int v = atoi(s);
+    if(v<minVal || v>maxVal)
+        throw SE_PARAMOUTOFRANGE;
+    comp->paramVals[idx].i = v;
+}
 int IntParameter::get(Component *c){
-    IntParameter *p = (IntParameter *)c->params[idx];
-    return p->value;
+    return c->paramVals[idx].i;
 }
 
+void FloatParameter::set(Component *comp,char c, const char *s){
+    checkCode(c);
+    float v = atof(s);
+    if(v<minVal || v>maxVal)
+        throw SE_PARAMOUTOFRANGE;
+    comp->paramVals[idx].f = v;
+}
 float FloatParameter::get(Component *c){
-    FloatParameter *p = (FloatParameter *)c->params[idx];
-    return p->value;
+    return c->paramVals[idx].f;
 }
 
+void BoolParameter::set(Component *comp,char c, const char *s){
+    checkCode(c);
+    bool v;
+    switch(*s){
+    case 'y':v=true;break;
+    case 'n':v=false;break;
+    default:
+            throw SE_PARAMOUTOFRANGE;
+        break;
+    }
+    comp->paramVals[idx].b = v;
+}    
 bool BoolParameter::get(Component *c){
-    BoolParameter *p = (BoolParameter *)c->params[idx];
-    return p->value;
+    return c->paramVals[idx].b;
 }
 
+void EnumParameter::set(Component *comp,char c, const char *s){
+    checkCode(c);
+    int v = atoi(s);
+    if(v<0 || v>=count)
+        throw SE_PARAMOUTOFRANGE;
+    comp->paramVals[idx].i = v;
+}
 int EnumParameter::get(Component *c){
-    EnumParameter *p = (EnumParameter *)c->params[idx];
-    return p->value;
+    return c->paramVals[idx].i;
 }
 

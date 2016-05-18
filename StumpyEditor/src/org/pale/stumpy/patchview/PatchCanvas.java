@@ -63,6 +63,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 					DeleteCommand c = new DeleteCommand(patch, selected);
 					try {
 						view.getController().handle(c);
+						unselectAll();
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(PatchCanvas.this,
 								"PC Error: " + e1.getMessage());
@@ -339,6 +340,10 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 				unselect(c);
 			}
 		});
+		// now, some components may have been deleted so they don't appear
+		// in the patch's list, but are still in my selected list. Deal with
+		// this just by clearing the selected list to make sure.
+		selected.clear();
 	}
 
 	/**

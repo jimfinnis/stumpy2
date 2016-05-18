@@ -71,6 +71,21 @@ public:
         valid = true;
     }
     
+    /// dump all components (type and ID) to stdout
+    void dump(){
+        IteratorPtr<uint32_t> iterator(components.createKeyIterator());
+    
+        for(iterator->first();!iterator->isDone();iterator->next()){
+            uint32_t key = iterator->current();
+            if(components.find(key)){
+               printf("%d : %s\n",key,components.getval()->type->name); 
+            } else 
+                printf("%d : --- ERROR cannot retrieve key, but is in iterator\n",key);
+        }
+    }
+        
+        
+    
     /// create a new component and assign it a slot and a type.
     Component *createComponent(uint32_t id,const char *type);
     

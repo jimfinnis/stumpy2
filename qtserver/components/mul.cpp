@@ -15,10 +15,7 @@ public:
         setInput(0,T_FLOAT);
         setInput(1,T_FLOAT);
         setOutput(0,T_FLOAT);
-    }
-    
-    virtual void initComponent(Component *c){
-        c->setParams(
+        setParams(
                      pAdd1 = new FloatParameter("add 1",-100,100,0),
                      pMul1 = new FloatParameter("mul 1",-100,100,1),
                      pAdd2 = new FloatParameter("add 2",-100,100,0),
@@ -27,7 +24,7 @@ public:
                      );
     }
     
-    virtual void run(ComponentInstance *ci,int out){
+   virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         
         float a = (ci->getInput(0).f+pAdd1->get(c))*pMul1->get(c);

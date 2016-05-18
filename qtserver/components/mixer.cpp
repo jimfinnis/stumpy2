@@ -11,6 +11,7 @@ public:
             sprintf(buf,"clr depth after %d",i);
             mName[i]=strdup(buf);
             pClearDepth[i]=new BoolParameter(mName[i],false);
+            addParameter(pClearDepth[i]);
             setInput(i,T_FLOW);
         }
         setOutput(0,T_FLOW);
@@ -30,11 +31,6 @@ public:
             if(pClearDepth[i]->get(c))
                 glClear( GL_DEPTH_BUFFER_BIT );
         }
-    }
-    
-    virtual void initComponent(Component *c){
-        // this is another way of settings params
-        c->setParamsFromArray((Parameter **)pClearDepth,NUMMIXERINS);
     }
     
 private:

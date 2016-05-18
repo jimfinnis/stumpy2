@@ -61,4 +61,7 @@ extern const char *errorStrings[];
 /// enumeration out of range
 #define SE_ENUMOUTOFRANGE 15
 
+/// too many params
+#define SE_TOOMANYPARAMS 16
+
 #endif /* __ERRORS_H */

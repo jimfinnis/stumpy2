@@ -9,6 +9,9 @@ public:
         setInput(2,T_FLOW);
         setInput(3,T_FLOW);
         
+        // no parameters
+        setParams(NULL);
+        
         isRoot=true;
     }
     
@@ -24,13 +27,6 @@ public:
         ci->getInput(2);
         ci->getInput(3);
     }
-    
-    virtual void initComponent(Component *c){
-        // no parameters
-        c->setParams(NULL);
-    }
-          
-    
 };
 
 static OutputComponent reg;

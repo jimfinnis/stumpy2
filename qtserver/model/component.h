@@ -71,9 +71,11 @@ union ConnectionValue {
 /// if it doesn't exist and add the new object to it.
 
 class ComponentType {
+    friend class Component;
 public:
     static const int NUMINPUTS = 16;
     static const int NUMOUTPUTS = 16;
+    static const int MAXPARAMS = 32;
     
     /// editor data, not used here but uploaded to the client
     int width,height;
@@ -85,6 +87,12 @@ public:
     bool isRoot;
     
     const char *name,*category;
+    
+    /// the parameter list - each component also has a copy
+    /// of this list, containing a copy of these.
+    Parameter *params[MAXPARAMS];
+    /// number of parameters
+    int paramct;
     
     /// make me able to be in one list
     ListNode<ComponentType> listnodes[1];
@@ -113,6 +121,7 @@ public:
         if(!types)
             types = new LinkedList<ComponentType,0>();
         types->addToTail(this);
+        paramct=0;
         
         printf("Component registered: %s\n",n);
     }
@@ -131,8 +140,9 @@ public:
     virtual void run(ComponentInstance *ci, int output) = 0;
     
     /// initialise a component of this type, as it appears in the patch, not each instance.
-    /// Creates the parameter array and sets up the parameters.
-    virtual void initComponent(Component *c)=0;
+    /// Sometimes it does nothing at all, since parameter and connector
+    /// setting is done by the framework. 
+    virtual void initComponent(UNUSED Component *c){}
     
     /// shutdown a component of this type
     virtual void shutdownComponent(UNUSED Component *c){}
@@ -183,6 +193,21 @@ protected:
         assertOutputInRange(n);
         outputTypes[n]=t;
     }
+    
+    /// add a parameter to this component type - you might also
+    /// want to add it as a member of the subclass. Will set the
+    /// index field of the parameter.
+    void addParameter(Parameter *p){
+        if(paramct==MAXPARAMS)
+            throw SE_TOOMANYPARAMS;
+        p->idx = paramct;
+        params[paramct++]=p;
+    }
+    
+    /// set the array of parameters. Terminate will NULL.
+    /// Allocate each with new. This should be called from
+    /// the constructor of the subclass
+    void setParams(Parameter *p,...);
 };
 
 
@@ -211,31 +236,15 @@ private:
     
 public:
     
-    /// the number of pointers in the params array, also set
-    /// up by the type's init method.
-    int paramct;
-    /// a pointer to an array of parameter pointers,
-    /// set up by the component type's init method calling setParams().
-    /// This is used by the parameter's get() function, when the component type's
-    /// parameter pointer (actually a pointer to the last created component's
-    /// parameter) uses this table to get the component's own parameters.
-    Parameter **params;
-    
-    /// set the array of parameters. Terminate will NULL.
-    /// Allocate each with new. This should be called from the
-    /// component type's init method.
-    void setParams(Parameter *p,...);
-    
-    /// another way of setting parameters, this time passing in an
-    /// array which will be copied into the component param array.
-    void setParamsFromArray(Parameter **p,int ct);
-    
+    /// pointer to an array of parameter value unions, set up
+    /// by init() from the ComponentType data.
+    ParameterValue *paramVals;
     
     /// set a parameter's value from an encoded value and type code.
     void setParamValue(int paramnum,char code,const char *val){
-        if(paramnum>=paramct)
+        if(paramnum>=type->paramct)
             throw SE_NOSUCHPARAM;
-        params[paramnum]->setValue(code,val);
+        type->params[paramnum]->set(this,code,val);
     }
     
     /// make the component always run when a value for this output
@@ -299,6 +308,7 @@ public:
     Component(){
         slot = -1;
         type = NULL;
+        paramVals = NULL;
         for(int i=0;i<ComponentType::NUMINPUTS;i++){
             inputs[i].c=NULL;
         }
@@ -316,14 +326,7 @@ public:
             // call shutdown in the type
             type->shutdownComponent(this);
             // delete any parameters
-            if(paramct){
-                for(int i=0;i<paramct;i++){
-                    printf("deleting param %d\n",i);
-                    delete params[i];
-                }
-                printf("deleting param array\n");
-                delete[] params;
-            }
+            delete[] paramVals;
             type = NULL;
         }
     }
@@ -333,7 +336,13 @@ public:
     void init(){
         if(!type)
             throw Exception("cannot init component with no type");
+        
         type->initComponent(this);
+        // set up the parameter value array
+        paramVals = new ParameterValue [type->paramct];
+        for(int i=0;i<type->paramct;i++){
+            type->params[i]->setDefault(paramVals+i);
+        }
     }
     
     

@@ -25,5 +25,6 @@ const char *errorStrings[] = {
     "Parameter ID out of range",
     
     "Enum ID out of range",
+    "Too many parameters in type",
     "??","??","??","??",
 };

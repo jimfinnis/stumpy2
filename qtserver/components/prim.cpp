@@ -45,6 +45,8 @@ public:
 
     PrimComponent() : ComponentType("primitive","render") {
         setOutput(0,T_FLOW);
+        setParams(primType = new EnumParameter("mesh",meshNames,0),
+                  NULL);
     }
     
     virtual void run(ComponentInstance *ci,int out){
@@ -54,12 +56,6 @@ public:
         StateManager *sm = StateManager::getInstance();
         State *s = sm->get();
         meshes[n]->render(&(s->view),sm->getx()->top());
-    }
-    
-    virtual void initComponent(Component *c){
-        // deliberately set max large so we don't have to worry about it
-        c->setParams(primType = new EnumParameter("mesh",meshNames,0),
-                     NULL);
     }
 };
 

@@ -25,12 +25,12 @@ SOURCES += main.cpp \
     model/server.cpp\
     model/controller.cpp\
     components/output.cpp\
+    components/add.cpp\
     components/light.cpp\
     components/prim.cpp\
     components/transforms.cpp\
     components/test.cpp\
     components/mul.cpp\
-    components/add.cpp\
     components/ring.cpp\
     components/clock.cpp\
     components/osc.cpp\

@@ -16,12 +16,14 @@ public:
     ComponentType(name,"transforms") {
         setInput(0,T_FLOW);
         setInput(1,T_FLOAT);
-        
         setOutput(0,T_FLOW);
+        setP();
     }
     
-    virtual void initComponent(Component *c){
-        c->setParams(
+protected:
+    
+    virtual void setP(){
+        setParams(
                      pX = new FloatParameter("x",-100,100,0),
                      pY = new FloatParameter("y",-100,100,0),
                      pZ = new FloatParameter("z",-100,100,0),
@@ -30,8 +32,6 @@ public:
                      pModZ = new FloatParameter("mod z",-10,10,0),
                      NULL);
     }
-    
-protected:
     FloatParameter *pX,*pY,*pZ,*pModX,*pModY,*pModZ;
 };
 
@@ -39,7 +39,7 @@ class MoveComponent : public SimpleTransformComponentType {
 public:
     MoveComponent() : SimpleTransformComponentType("move") {}
     
-    virtual void run(ComponentInstance *ci,int out){
+    virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
         float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
         
@@ -63,18 +63,18 @@ class ScaleComponent : public SimpleTransformComponentType {
 public:
     ScaleComponent() : SimpleTransformComponentType("scale") {}
     
-    virtual void initComponent(Component *c){
-        c->setParams(
-                     pX = new FloatParameter("x",-100,100,1),
-                     pY = new FloatParameter("y",-100,100,1),
-                     pZ = new FloatParameter("z",-100,100,1),
-                     pModX = new FloatParameter("mod x",-10,10,0),
-                     pModY = new FloatParameter("mod y",-10,10,0),
-                     pModZ = new FloatParameter("mod z",-10,10,0),
-                     NULL);
+    virtual void setP(){
+        setParams(
+                  pX = new FloatParameter("x",-100,100,1),
+                  pY = new FloatParameter("y",-100,100,1),
+                  pZ = new FloatParameter("z",-100,100,1),
+                  pModX = new FloatParameter("mod x",-10,10,0),
+                  pModY = new FloatParameter("mod y",-10,10,0),
+                  pModZ = new FloatParameter("mod z",-10,10,0),
+                  NULL);
     }
     
-    virtual void run(ComponentInstance *ci,int out){
+    virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
         float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
         
@@ -99,7 +99,7 @@ class RotateComponent : public SimpleTransformComponentType {
 public:
     RotateComponent() : SimpleTransformComponentType("rotate") {}
     
-    virtual void run(ComponentInstance *ci,int out){
+    virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
         float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
         

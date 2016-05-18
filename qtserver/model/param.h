@@ -13,34 +13,25 @@
 class Component;
 
 /**
- * The way parameters work is ODD. Notice that in a component type, when a component
- * is initialised in initComponent() we do something like
- *   c->setParams(pParamFoo=new SomeParam()...)
- * so we set the parameter in the *component*, but also set members in the *type*.
- * The setParams() method actually puts the newly allocated parameters into an array
- * private for each component. BUT they are also set into the component type, so
- * that the last component's parameters act as the prototypes for the parameters of
- * the whole type. Note how this works in IntParameter::get():
- *     int IntParameter::get(Component *c){
- *       IntParameter *p = (IntParameter *)c->params[idx];
- *       return p->value;
- *     }
- * So we call this on whatever is in the *type* (as pParamFoo above), but the it
- * knows its index in the parameter array for the component, and looks up the REAL
- * parameter in the component itself.
  * 
- * This is either really clever or really stupid. I can't make up my mind.
  */
+
+/// parameter values, stored in an array in the Component,
+/// indexed by the idx in the Parameter in the ComponentType.
+union ParameterValue {
+    int i;
+    float f;
+    bool b;
+};
+
+/// this describes the parameter, and exists in the component type.
+/// Each parameter has an index, which indexes the ParameterValue
+/// array in the component itself. ParameterValue is a union - the
+/// element accessed depends on the param type.
 
 struct Parameter {
     char code; // type code
     const char *name; // name in UI
-    /// set the value given the encoded string
-    /// 
-    virtual void setValue(
-                  char code, //!< the 'ID code' for the parameter type
-                  const char *s //!< the actual encoded value
-                  ) = 0;
     
     /// check that the code matches the ID code
     void checkCode(char actualCode){
@@ -51,49 +42,54 @@ struct Parameter {
     /// return a static description string, for sending to the client
     virtual const char *getDesc()=0;
     
+    /// set the value of the parameter in a component from an
+    /// encoded string from the client
+    virtual void set(Component *comp,char c, const char *s)=0;
+    
+    /// set a parameter value to the default for this parameter
+    virtual void setDefault(ParameterValue *v)=0;
+    
     Parameter(const char *n){
         name = n;
     }
     
-    virtual ~Parameter(){}
+    // index of the parameter inside the Component AND ComponentType
+    // parameter arrays
     
-    int idx;
+    int idx; 
 };
 
 class IntParameter : public Parameter {
 private:
-    int value;
+    int initval;
     int minVal,maxVal;
 public:
     IntParameter(const char *n,int mn,int mx,int init) : Parameter(n){
         code = 'i';
         minVal = mn;
         maxVal = mx;
-        value = init;
+        initval=init;
     }
     
     virtual const char *getDesc(){
         static char buf[1024];
         sprintf(buf,"i:%s:%d:%d:%d",name,
-                minVal,maxVal,value);
+                minVal,maxVal,initval);
         return buf;
     }
     
     
-    virtual void setValue(char c, const char *s){
-        checkCode(c);
-        int v = atoi(s);
-        if(v<minVal || v>maxVal)
-            throw SE_PARAMOUTOFRANGE;
-        value = v;
+    virtual void setDefault(ParameterValue *v){
+        v->i = initval;
     }
+    virtual void set(Component *comp,char c, const char *s);
     
     int get(Component *c);
 };
 
 class EnumParameter : public Parameter {
 private:
-    int value;
+    int initval;
     int count; // number of values
     const char **strings; // string data
 public:
@@ -104,13 +100,13 @@ public:
         while(s[count])count++;
         printf("String count: %d\n",count);
         strings = s;
-        value = ini;
+        initval = ini;
     }
     
     
     virtual const char *getDesc(){
         static char buf[1024];
-        sprintf(buf,"e:%s:%d:%d",name,count,value);
+        sprintf(buf,"e:%s:%d:%d",name,count,initval);
         return buf;
     }
     
@@ -122,21 +118,17 @@ public:
         return strings[i];
     }
     
-    virtual void setValue(char c, const char *s){
-        checkCode(c);
-        int v = atoi(s);
-        if(v<0 || v>=count)
-            throw SE_PARAMOUTOFRANGE;
-        value = v;
+    virtual void setDefault(ParameterValue *v){
+        v->i = initval;
     }
-    
+    virtual void set(Component *comp,char c, const char *s);
     int get(Component *c);
 };
 
 
 class FloatParameter : public Parameter {
 private:
-    float value;
+    float initval;
     float minVal,maxVal;
 public:
     FloatParameter(const char *n,float mn,float mx,float init)
@@ -144,53 +136,46 @@ public:
         code = 'f';
         minVal = mn;
         maxVal = mx;
-        value = init;
+        initval = init;
     }
     
     virtual const char *getDesc(){
         static char buf[1024];
         sprintf(buf,"f:%s:%f:%f:%f",name,
-                minVal,maxVal,value);
+                minVal,maxVal,initval);
         return buf;
     }
     
-    virtual void setValue(char c,const char *s){
-        checkCode(c);
-        float v = atof(s);
-        if(v<minVal || v>maxVal)
-            throw SE_PARAMOUTOFRANGE;
-        value = v;
+    virtual void setDefault(ParameterValue *v){
+        v->f = initval;
     }
+    
+    virtual void set(Component *comp,char c, const char *s);
     
     float get(Component *c);
 };
 
 class BoolParameter : public Parameter {
 private:
-    bool value;
+    bool initval;
 public:
     
     BoolParameter(const char *n,bool init) : Parameter(n){
         code = 'b';
-        value = init;
+        initval = init;
     }
     
     virtual const char *getDesc(){
         static char buf[1024];
         sprintf(buf,"b:%s:%c",name,
-                value?'y':'n');
+                initval?'y':'n');
         return buf;
     }
     
-    virtual void setValue(char c,const char *s){
-        checkCode(c);
-        switch(*s){
-        case 'y':value=true;break;
-        case 'n':value=false;break;
-        default:
-            throw SE_PARAMOUTOFRANGE;
-            break;
-        }
+    virtual void set(Component *comp,char c, const char *s);
+    
+    virtual void setDefault(ParameterValue *v){
+        v->b = initval;
     }
     
     bool get(Component *c);

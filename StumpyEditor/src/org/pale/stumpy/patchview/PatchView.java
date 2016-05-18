@@ -226,6 +226,7 @@ public class PatchView extends ToolbarFrame implements PatchChangeListener, Wind
     public void cutToClipboard(Set<Component> set) throws MementoizationException {
         clipboard = patch.createMemento(set);
         patch.removeSet(set);
+        canvas.unselectAll();
     }
 
     /**

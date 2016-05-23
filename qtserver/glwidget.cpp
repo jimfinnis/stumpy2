@@ -34,8 +34,8 @@ void GLWidget::initializeGL(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
 
-    extern void loadPrims(),loadTextures();;
-    loadPrims();loadTextures();
+    extern void loadPrims(),loadTextures(),loadEnvMaps();
+    loadPrims();loadTextures();loadEnvMaps();
     
     test = new Mesh("media","bevcube.x");
     

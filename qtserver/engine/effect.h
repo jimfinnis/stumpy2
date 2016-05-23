@@ -16,13 +16,29 @@
 class Effect {
     friend class EffectManager;
 public:
-    virtual bool begin(Matrix *view);
+    bool begin();
     
     void end();
     
+    /// set general uniforms ready for running
+    void setUniforms();
+    /// set the transformation uniforms
+    void setWorldMatrix(Matrix *world);
+    /// set material uniforms
+    void setMaterial(float *diffuse,class Texture *texture);
+    
+    /// set up the GL array pointers for prelit data
+    /// NOT USED - might never be, and would be changed
+    /// to offsets anyway.
+    void setArrayPointersPrelit(PRELITVERTEX *v);
+    
+    /// set up the array offsets for unlit vertices
+    void setArrayOffsetsUnlit();
+    
 protected:
     /// 1st stage of initialisation
-    Effect(){
+    Effect(const char *name,unsigned int f){
+        dataflags=f;
         mpVShader = NULL;
         mpFShader = NULL;
         mpGShader = NULL;
@@ -30,33 +46,29 @@ protected:
         fshader=0;
         gshader=0;
         program=0xffffffff;
+        mName = name;
     }
     
     /// 2nd stage - separated to avoid calling overridable methods from constructor
     Effect *init(){
-        initFromFile(getFileName());
+        if(mName)
+            initFromFile();
         return this;
     }
         
     virtual ~Effect();
     
-    /// returns the filename for this constructor - generally a constant
-    /// set up by the class. A strange way to do it, I suppose. Should really be
-    /// pure, but there's a warning there.
-    virtual const char *getFileName(){
-        throw Exception("no filename for effect");
+    const char *getFileName(){
+        return mName;
     }
     
-    virtual void initFromFile(const char *name);
+    void initFromFile(); // name must be set up by ctor
     void initFromData(const char *vertSrc,const char *fragSrc);
+    
+    const char *mName;
     
     /// effect currently in use; checked in Begin()
     static Effect *mCurEffect;
-    /// use this to get attribute and uniform indices in subclasses
-    virtual void getAttributes()=0;
-    
-    /// shader filename
-    char mName[64];
     
     /// pointer to vertex shader text
     const char *mpVShader;
@@ -69,8 +81,6 @@ protected:
     
     GLuint vshader,gshader,fshader,program;
     
-    Matrix viewMatrix;
-    
     /// used to get shader indices
     int getAttribute(const char *name);
     /// used to get shader indices
@@ -79,150 +89,57 @@ protected:
     /// actually does the compile
     void compile();
     
-
-    void uploadLights(class State *s,
-                      int lc1,int ld1,
-                      int lc2,int ld2,
-                      int lc3,int ld3,int a,
-                      int fcol,int fdist);
-
-};
-
-
-
-
-
-
-
-class PrelitUntexEffect : public Effect {
-public:
-    virtual const char *getFileName(){
-        return "media/prelit_untex.shr";
+    /// get the attribute indices ready for loading, done at
+    /// compile
+    void getAttributes();
+    
+    
+    // these flags indicate which uniforms and attributes 
+    // and present and need to be loaded
+    
+    
+    unsigned int dataflags;
+    
+    bool inline has(int f){
+        return (dataflags & f)!=0;
     }
+    
+    // these are the flags, and the attrs/uniforms for each
+    // flag
 
-    
-    /// set up the GL array pointers
-    virtual void setArrays(PRELITVERTEX *v);
-    
-    /// set the material parameters
-    void setMaterial(float *diffuse);
-    
-    /// set up the constants used per-render (like matrices)
-    virtual void setWorldMatrix(Matrix *world);
-    
-protected:
-    virtual void getAttributes();
-    
-    // uniform indices
-    int mWorldViewProjIdx;
-    int mDiffuseIdx;
-    // attribute indices
+#define EDA_POS 1
     int mPosIdx;
-};
-        
-/// This is an effect which renders textured triangles made up of PRELITVERTEX data with a single flat colour - no lighting calculations are performed.
-/// The QuadBuffer and Font classes make use of this effect.
-
-class PrelitTexEffect : public PrelitUntexEffect
-{
-public:
-    virtual const char *getFileName(){
-        return "media/prelit_tex.shr";
-    }
-
-    /// set up the GL array pointers
-    virtual void setArrays(PRELITVERTEX *v);
+#define EDA_TEXCOORDS 2
+    int mTexCoordIdx;
+#define EDA_NORM 4
     
-    /// set the material parameters
-    void setMaterial(float *diffuse,class Texture *texture);
-
-protected:
-    virtual void getAttributes();
-    int mTexCoordIdx,mSamplerIdx;
     
-};
-
-class MeshTexEffect : public PrelitTexEffect
-{
-public:
-    virtual const char *getFileName(){
-        return "media/mesh.shr";
-    }
-
-    /// set up the GL array pointers (in this case, just offsets)
-    virtual void setArrays();
     
-    /// set up the constants used per-render (like matrices)
-    virtual void setWorldMatrix(Matrix *world);
-    
-    virtual bool begin(Matrix *view);
-    
-protected:
-    
-    virtual void getAttributes();
-    
-protected:
-    int LightCol1Idx;
-    int LightCol2Idx;
-    int LightCol3Idx;
-    int LightDir1Idx;
-    int LightDir2Idx;
-    int LightDir3Idx;
+    int mNormIdx;
+#define EDU_WORLDVIEWPROJ 8
+    int mWorldViewProjIdx;
+#define EDU_WORLDVIEW 16
+    int mWorldViewIdx;
+#define EDU_SAMPLER 32
+    int mSamplerIdx;
+#define EDU_DIFFUSECOL 64
+    int mDiffuseIdx;
+#define EDU_DIFFLIGHTS 128
+    int LightCol1Idx,LightCol2Idx,LightCol3Idx;
+    int LightDir1Idx,LightDir2Idx,LightDir3Idx;
+#define EDU_AMBLIGHT 256
     int AmbientColIdx;
-    int FogColIdx,FogDistIdx;
-    int mNormalMatIdx,mNormIdx;
-    
-};
-    
-class MeshUntexEffect : public PrelitUntexEffect
-{
-public:
-    virtual const char *getFileName(){
-        return "media/mesh_untex.shr";
-    }
-
-    /// set up the GL array pointers (in this case, just offsets)
-    virtual void setArrays();
-    
-    /// set up the constants used per-render (like matrices)
-    virtual void setWorldMatrix(Matrix *world);
-    
-    virtual bool begin(Matrix *view);
-    
-    
-protected:
-    
-    virtual void getAttributes();
-    
-protected:
-    int LightCol1Idx;
-    int LightCol2Idx;
-    int LightCol3Idx;
-    int LightDir1Idx;
-    int LightDir2Idx;
-    int LightDir3Idx;
-    int FogColIdx,FogDistIdx;
-    int AmbientColIdx;
-    int mNormalMatIdx,mNormIdx;
-    
+#define EDU_FOG 512
+    int FogColIdx;
+    int FogDistIdx;
+#define EDU_NORMMAT 1024
+    int mNormalMatIdx;
 };
 
 
-
-/// effect manager singleton - acts as a manager and "factory" (well, warehouse..)
 
 class EffectManager {
-    EffectManager(){
-        prelitUntex = new PrelitUntexEffect();
-        prelitTex = new PrelitTexEffect();
-        meshTex = new MeshTexEffect();
-        meshUntex = new MeshUntexEffect();
-        
-        prelitUntex->init();
-        prelitTex->init();
-        meshUntex->init();
-        meshTex->init();
-    }
+    EffectManager();
     
     static EffectManager *instance;
     
@@ -233,14 +150,12 @@ public:
         return instance;
     }
     
-    PrelitUntexEffect *prelitUntex;
-    PrelitTexEffect *prelitTex;
-    MeshUntexEffect *meshUntex;
-    MeshTexEffect *meshTex;
+    Effect *prelitUntex;
+    Effect *prelitTex;
+    Effect *meshUntex;
+    Effect *meshTex;
+    Effect *envMapTex;
 };
-    
-    
-        
 
 
 #endif /* __EFFECT_H */

@@ -12,7 +12,7 @@
  *  Author        : $Author$
  *  Created By    : Jim Finnis
  *  Created       : Tue May 4 14:27:17 2010
- *  Last Modified : <160518.2106>
+ *  Last Modified : <160523.2340>
  *
  *  Description	
  *
@@ -58,15 +58,15 @@ public:
     virtual ~Mesh();
     
     /// draw me 
-    virtual void render(Matrix *view,Matrix *world);
+    virtual void render(Matrix *world);
     
     /// set effect to render textured submeshes with
-    void setTexEffect(class MeshTexEffect *e)
+    void setTexEffect(class Effect *e)
     {
         mTexEffect = e;
     }
     /// set effect to render untextured submeshes with
-    void setUntexEffect(class MeshUntexEffect *e)
+    void setUntexEffect(class Effect *e)
     {
         mUntexEffect = e;
     }
@@ -102,16 +102,16 @@ protected:
     
     // render textured components - possibly replacing all textures
     // with another one
-    virtual void renderTex(Matrix *view,Matrix *world,Texture *overrideTex=NULL);
+    virtual void renderTex(Matrix *world);
     // render untextured components
-    virtual void renderUntex(Matrix *view,Matrix *world);
+    virtual void renderUntex(Matrix *world);
     
     /// these are the actual meshes (a Mesh can be made up of several submeshes within the xfile)
     
     struct SingleMesh *mSubMeshes[16];
     int mNumSubMeshes; 
-    MeshTexEffect *mTexEffect; // if null, use default effects!
-    MeshUntexEffect *mUntexEffect; // if null, use default effects!
+    Effect *mTexEffect; // if null, use default effects!
+    Effect *mUntexEffect; // if null, use default effects!
     
     bool hasuntex; // does it have textured materials?
     bool hastex; // does it have untextured materials?    

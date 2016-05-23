@@ -1,0 +1,39 @@
+%%vertex
+
+uniform mat4 matWorldViewProj;
+uniform mat4 matWorldView;
+uniform mat3 matNormal;
+
+attribute vec3 aNormal;
+attribute vec4 aPosition;
+
+varying vec4 vCol;
+varying vec2 vTexCoords;
+
+void main()
+{
+
+    vec3 e = normalize(vec3(matWorldView * aPosition));
+    
+    vec3 normal = normalize(matNormal*aNormal);
+    vec3 r = reflect(e,normal);
+    float m = 2.0 * sqrt(pow(r.x,2.0)+pow(r.y,2.0)+pow(r.z+1.0,2.0));   
+    
+    vTexCoords = r.xy/m+0.5;
+    gl_Position = matWorldViewProj * aPosition;
+}
+
+%%fragment
+
+uniform sampler2D sTex;
+uniform vec4 uFogCol;
+
+varying vec4 vCol;
+varying vec2 vTexCoords;
+varying float vFog;
+
+void main()
+{
+    gl_FragColor = texture2D(sTex,vTexCoords);
+}
+

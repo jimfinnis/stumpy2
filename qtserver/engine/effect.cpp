@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160515.1313>
+//  Last Modified : <160524.0031>
 //
 //  Description	
 //
@@ -39,6 +39,41 @@
 StateManager *StateManager::instance = NULL;
 EffectManager *EffectManager::instance = NULL;
 
+/**
+ * Effect manager initialisation - shader loading
+ */
+
+EffectManager::EffectManager(){
+//    prelitUntex = new Effect("media/prelit_untex.shr",0);
+    //    prelitTex = new Effect("media/prelit_tex.shr",0);
+    prelitUntex =  NULL;
+    prelitTex = NULL;
+    
+    meshTex = new Effect("media/mesh.shr",
+                         EDA_POS|EDA_NORM|
+                         EDU_WORLDVIEWPROJ|EDU_NORMMAT|EDU_DIFFUSECOL|
+                         EDU_DIFFLIGHTS|EDU_AMBLIGHT|EDU_FOG|
+                         EDA_TEXCOORDS|EDU_SAMPLER);
+    
+    meshUntex = new Effect("media/mesh_untex.shr",
+                           EDA_POS|EDA_NORM|
+                           EDU_WORLDVIEWPROJ|EDU_NORMMAT|EDU_DIFFUSECOL|
+                           EDU_DIFFLIGHTS|EDU_AMBLIGHT|EDU_FOG);
+                           
+    envMapTex = new Effect("media/envmap.shr",
+                           EDA_POS|EDA_NORM|
+                           EDU_WORLDVIEWPROJ|EDU_NORMMAT|
+                           EDU_SAMPLER|EDU_WORLDVIEW);
+    
+    // separate to avoid calling overridable stuff from ctor.
+///    prelitUntex->init();
+//    prelitTex->init();
+    meshUntex->init();
+    meshTex->init();
+    envMapTex->init();
+}
+
+
 /*****************************************************************************
  * 
  * 
@@ -51,7 +86,7 @@ EffectManager *EffectManager::instance = NULL;
 
 static int loadShader(GLenum type,const char *src)
 {
-//    printf("READY TO COMPILE\n%s",src);
+    //    printf("READY TO COMPILE\n%s",src);
     GLuint shader;
     GLint compiled;
     shader = glCreateShader(type);
@@ -103,8 +138,9 @@ void Effect::compile(){
     
     glLinkProgram(program);
     ERRCHK;
+    printf("Get attr for %s\n",mName);
     getAttributes(); // written for each effect
-    
+    printf("Get attr done\n");
     GLint linked;
     glGetProgramiv(program,GL_LINK_STATUS,&linked);
     ERRCHK;
@@ -205,19 +241,17 @@ static char *handleInclusion(char *in)
     return buf.endandreturn();
 }
 
-void Effect::initFromFile(const char *name){
+void Effect::initFromFile(){
     // there are two shaders, but we're going to put them into a single file
     // here. They are separated by a "##" line. We read the data into a single buffer,
     // then walk through it setting up pointers and adding nulls.    
     
-    strncpy(mName,name,64);
-    
     QFile file(mName);
     if(!file.open(QIODevice::ReadOnly))
-        throw Exception().set("cannot open file %s",name);
+        throw Exception().set("cannot open file %s",mName);
     QByteArray b = file.readAll();
     if(b.isEmpty() || b.isNull())
-        throw Exception().set("cannot read file %s",name);
+        throw Exception().set("cannot read file %s",mName);
     b.append((char)0);
     char *str = b.data();
     file.close();
@@ -292,14 +326,12 @@ Effect::~Effect(){
 
 Effect *Effect::mCurEffect=NULL;
 
-bool Effect::begin(Matrix *view){
-    viewMatrix = *view;
-    
+bool Effect::begin(){
     if(mCurEffect != this)
     {
         glUseProgram(program);
-        
         ERRCHK;
+        setUniforms();
         mCurEffect = this;
         return true;
     }
@@ -316,7 +348,7 @@ int Effect::getAttribute(const char *name){
     int i = glGetAttribLocation(program,name);
     if(i<0)
         throw Exception().set("attribute not found: %s",name);
-//    printf("attr %s: %d\n",name,i);
+    //    printf("attr %s: %d\n",name,i);
     return i;
 }
 
@@ -328,71 +360,122 @@ int Effect::getUniform(const char *name)
     return i;
 }
 
-// upload all lighting states into a shader
-// lc.. ld.. are the light colour and direction uniform indices. The ambient index is a.
-void Effect::uploadLights(State *s,int lc1,int ld1,
-                          int lc2,int ld2,
-                          int lc3,int ld3,int a,
-                          int fcol,int fdist){
-    
-    glUniform4fv(lc1,1,(float *)&s->light.col[0]);
-    glUniform4fv(lc2,1,(float *)&s->light.col[1]);
-    glUniform4fv(lc3,1,(float *)&s->light.col[2]);
-    
-    // transform light into eye space - not sure if this is right.
-    
-    Vector v;
-    Matrix m = viewMatrix;
-    m.setTranslation(0,0,0);
-    
-    v.transform(s->light.dir[0],m);
-    glUniform3fv(ld1,1,(float *)&v);
-    
-//    v.dump();
-    
-    v.transform(s->light.dir[1],m);
-    glUniform3fv(ld2,1,(float *)&v);
-    
-    v.transform(s->light.dir[2],m);
-    glUniform3fv(ld3,1,(float *)&v);
-    
-    glUniform4fv(a,1,(float *)&s->light.ambient);
-    
-    glUniform4fv(fcol,1,(float *)&s->fog.color);
-    glUniform2fv(fdist,1,(float *)&s->fog.neardist);
-}
-
 /*****************************************************************************
  * 
- * General purpose helpers
+ * 
  * 
  ****************************************************************************/
 
-// given the indices of the WorldViewProjection and WorldRot matrices in the shader,
-// set them from the matrices passed in.
-static void setMeshMatrices(Matrix *view,Matrix *world,int wvpidx,int nmidx)
-{
+void Effect::getAttributes(){
+    if(has(EDA_POS))
+        mPosIdx = getAttribute("aPosition");
+    if(has(EDU_WORLDVIEWPROJ))
+        mWorldViewProjIdx = getUniform("matWorldViewProj");
+    if(has(EDU_DIFFUSECOL))
+        mDiffuseIdx = getUniform("colDiffuse");
+    if(has(EDA_TEXCOORDS))
+        mTexCoordIdx = getAttribute("aTexCoords");
+    if(has(EDU_SAMPLER))
+        mSamplerIdx = getUniform("sTex");
+    if(has(EDU_NORMMAT))
+        mNormalMatIdx = getUniform("matNormal");
+    if(has(EDU_WORLDVIEW))
+        mWorldViewIdx = getUniform("matWorldView");
+    if(has(EDA_NORM))
+        mNormIdx = getAttribute("aNormal");
+    
+    if(has(EDU_DIFFLIGHTS)){
+        LightCol1Idx = getUniform("uLight1Col");
+        LightCol2Idx = getUniform("uLight2Col");
+        LightCol3Idx = getUniform("uLight3Col");
+        LightDir1Idx = getUniform("uLight1Dir");
+        LightDir2Idx = getUniform("uLight2Dir");
+        LightDir3Idx = getUniform("uLight3Dir");
+    }
+    if(has(EDU_AMBLIGHT))
+        AmbientColIdx = getUniform("uAmbient");
+    if(has(EDU_FOG)){
+        FogColIdx = getUniform("uFogCol");
+        FogDistIdx = getUniform("uFogDist");
+    }
+}
+
+void Effect::setWorldMatrix(Matrix *world){
     Matrix modelview,worldviewproj;
+    
+    State *s = StateManager::getInstance()->get();
     
     // these have to be FULL multiplies!
     
-    modelview.mulF(*world,*view);
+    modelview.mulF(*world,s->view);
     worldviewproj.mulF(modelview,Matrix::Projection);
     
-    glUniformMatrix4fv(wvpidx,1,GL_FALSE,(float *)&worldviewproj);
+    if(has(EDU_WORLDVIEWPROJ))
+        glUniformMatrix4fv(mWorldViewProjIdx,1,
+                       GL_FALSE,(float *)&worldviewproj);
+    
+    if(has(EDU_WORLDVIEW)){
+        glUniformMatrix4fv(mWorldViewIdx,1,
+                           GL_FALSE,(float *)&modelview);
+    
+    }
     
     // set up the normal matrix
     
-    Matrix m,m2;
-    m=modelview;
-    m.invert(modelview);
-    float arr[9];
-    m.copyRotToFloatArrayTrans(arr);
+    if(has(EDU_NORMMAT)){
+        Matrix m,m2;
+        m=modelview;
+        m.invert(modelview);
+        float arr[9];
+        m.copyRotToFloatArrayTrans(arr);
+        glUniformMatrix3fv(mNormalMatIdx,1,GL_FALSE,arr);
+    }
     
-//    modelview.dump();
+    if(has(EDU_DIFFLIGHTS)){
+        glUniform4fv(LightCol1Idx,1,(float *)&s->light.col[0]);
+        glUniform4fv(LightCol2Idx,1,(float *)&s->light.col[1]);
+        glUniform4fv(LightCol3Idx,1,(float *)&s->light.col[2]);
     
-    // upload. 
-    glUniformMatrix3fv(nmidx,1,GL_FALSE,arr);
+        // transform light into view space
+    
+        Vector v;
+        Matrix m = s->view;
+        m.setTranslation(0,0,0);
+    
+        v.transform(s->light.dir[0],m);
+        glUniform3fv(LightDir1Idx,1,(float *)&v);
+    
+        v.transform(s->light.dir[1],m);
+        glUniform3fv(LightDir2Idx,1,(float *)&v);
+    
+        v.transform(s->light.dir[2],m);
+        glUniform3fv(LightDir3Idx,1,(float *)&v);
+    }
+}
+
+void Effect::setUniforms(){
+    State *s = StateManager::getInstance()->get();
+    
+    if(has(EDU_AMBLIGHT))
+        glUniform4fv(AmbientColIdx,1,(float *)&s->light.ambient);
+    
+    if(has(EDU_FOG)){
+        glUniform4fv(FogColIdx,1,(float *)&s->fog.color);
+        glUniform2fv(FogDistIdx,1,(float *)&s->fog.neardist);
+    }
+}    
+
+void Effect::setMaterial(float *diffuse,class Texture *texture)
+{
+    if(has(EDU_DIFFUSECOL)){
+        glUniform4fv(mDiffuseIdx,1,diffuse);
+        ERRCHK;
+    }
+    
+    if(has(EDU_SAMPLER) && texture){
+        texture->use(mSamplerIdx,0); // tell sampler to use unit 0, with the given texture
+        ERRCHK;
+    }
 }
 
 
@@ -403,125 +486,21 @@ static void setMeshMatrices(Matrix *view,Matrix *world,int wvpidx,int nmidx)
  * 
  ****************************************************************************/
 
-void PrelitUntexEffect::getAttributes()
-{
-    mPosIdx = getAttribute("aPosition");
-    mWorldViewProjIdx = getUniform("matWorldViewProj");
-    mDiffuseIdx = getUniform("colDiffuse");
-}
-
-void PrelitUntexEffect::setArrays(PRELITVERTEX *v)
+void Effect::setArrayPointersPrelit(PRELITVERTEX *v)
 {
     float *p = (float *)v;
-    // positions
-    glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(PRELITVERTEX),p); // attr, size, type, norm, stride, ptr
-    ERRCHK;
-    // we ignore texture coords
-    
-    glEnableVertexAttribArray(mPosIdx);
-    ERRCHK;
-}
-
-void PrelitUntexEffect::setWorldMatrix(Matrix *world)
-{
-    Matrix worldviewproj= (*world) * viewMatrix * Matrix::Projection;
-    glUniformMatrix4fv(mWorldViewProjIdx,1,0,(float *)&worldviewproj);
-}
-
-void PrelitUntexEffect::setMaterial(float *diffuse)
-{
-    //glDisable(GL_BLEND);
-    glUniform4fv(mDiffuseIdx,1,diffuse);
-}
-
-/*****************************************************************************
- * 
- * 
- * 
- ****************************************************************************/
-
-void PrelitTexEffect::getAttributes()
-{
-    PrelitUntexEffect::getAttributes(); // inherited stuff
-    
-    mTexCoordIdx = getAttribute("aTexCoords");
-    mSamplerIdx = getUniform("sTex");
-}
-
-void PrelitTexEffect::setArrays(PRELITVERTEX *v)
-{
-    float *p = (float *)v;
-    // positions
-    glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(PRELITVERTEX),p); // attr, size, type, norm, stride, ptr
-    glVertexAttribPointer(mTexCoordIdx,2,GL_FLOAT,GL_FALSE,sizeof(PRELITVERTEX),p+3); // attr, size, type, norm, stride, ptr
-    
-    glEnableVertexAttribArray(mPosIdx);
-    glEnableVertexAttribArray(mTexCoordIdx);
-}
-
-void PrelitTexEffect::setMaterial(float *diffuse,class Texture *texture)
-{
-    glUniform4fv(mDiffuseIdx,1,diffuse);
-    ERRCHK;
-    
-    texture->use(mSamplerIdx,0); // tell sampler to use unit 0, with the given texture
-    ERRCHK;
-}
-
-
-/*****************************************************************************
- * 
- * 
- * 
- ****************************************************************************/
-
-void MeshTexEffect::getAttributes()
-{
-    PrelitTexEffect::getAttributes(); // inherited stuff
-    
-    mNormalMatIdx = getUniform("matNormal");
-    mNormIdx = getAttribute("aNormal");
-    
-    LightCol1Idx = getUniform("uLight1Col");
-    LightCol2Idx = getUniform("uLight2Col");
-    LightCol3Idx = getUniform("uLight3Col");
-    LightDir1Idx = getUniform("uLight1Dir");
-    LightDir2Idx = getUniform("uLight2Dir");
-    LightDir3Idx = getUniform("uLight3Dir");
-    AmbientColIdx = getUniform("uAmbient");
-    FogColIdx = getUniform("uFogCol");
-    FogDistIdx = getUniform("uFogDist");
-}
-
-void MeshTexEffect::setArrays()
-{
-    glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,x));
-    glVertexAttribPointer(mNormIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,nx));
-    glVertexAttribPointer(mTexCoordIdx,2,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,u));
-    
-    glEnableVertexAttribArray(mPosIdx);
-    glEnableVertexAttribArray(mNormIdx);
-    glEnableVertexAttribArray(mTexCoordIdx);
-}
-
-void MeshTexEffect::setWorldMatrix(Matrix *world)
-{
-    setMeshMatrices(&viewMatrix,world,mWorldViewProjIdx,mNormalMatIdx);
-}
-
-bool MeshTexEffect::begin(Matrix *v)
-{
-    bool b;
-    if((b=Effect::begin(v)))
-    {
-        uploadLights(StateManager::getInstance()->get(),
-                     LightCol1Idx,LightDir1Idx,
-                     LightCol2Idx,LightDir2Idx,
-                     LightCol3Idx,LightDir3Idx,
-                     AmbientColIdx,FogColIdx,FogDistIdx);
+    // sets array *values*
+    if(has(EDA_POS)){
+        glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(PRELITVERTEX),p); // attr, size, type, norm, stride, ptr
+        glEnableVertexAttribArray(mPosIdx);
     }
-    return b;
+    
+    if(has(EDA_TEXCOORDS)){
+        glVertexAttribPointer(mTexCoordIdx,2,GL_FLOAT,GL_FALSE,sizeof(PRELITVERTEX),p+3); // attr, size, type, norm, stride, ptr
+        glEnableVertexAttribArray(mTexCoordIdx);
+    }
 }
+
 
 /*****************************************************************************
  * 
@@ -529,48 +508,20 @@ bool MeshTexEffect::begin(Matrix *v)
  * 
  ****************************************************************************/
 
-void MeshUntexEffect::getAttributes()
+void Effect::setArrayOffsetsUnlit()
 {
-    PrelitUntexEffect::getAttributes(); // inherited stuff
-    
-    mNormalMatIdx = getUniform("matNormal");
-    mNormIdx = getAttribute("aNormal");
-    
-    LightCol1Idx = getUniform("uLight1Col");
-    LightCol2Idx = getUniform("uLight2Col");
-    LightCol3Idx = getUniform("uLight3Col");
-    LightDir1Idx = getUniform("uLight1Dir");
-    LightDir2Idx = getUniform("uLight2Dir");
-    LightDir3Idx = getUniform("uLight3Dir");
-    FogColIdx = getUniform("uFogCol");
-    FogDistIdx = getUniform("uFogDist");
-    AmbientColIdx = getUniform("uAmbient");
-}
-
-void MeshUntexEffect::setArrays()
-{
-    glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,x));
-    glVertexAttribPointer(mNormIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,nx));
-    
-    glEnableVertexAttribArray(mPosIdx);
-    glEnableVertexAttribArray(mNormIdx);
-}
-
-void MeshUntexEffect::setWorldMatrix(Matrix *world)
-{
-    setMeshMatrices(&viewMatrix,world,mWorldViewProjIdx,mNormalMatIdx);
-}
-
-bool MeshUntexEffect::begin(Matrix *v)
-{
-    bool b;
-    if((b=Effect::begin(v)))
-    {
-        uploadLights(StateManager::getInstance()->get(),
-                     LightCol1Idx,LightDir1Idx,
-                     LightCol2Idx,LightDir2Idx,
-                     LightCol3Idx,LightDir3Idx,
-                     AmbientColIdx,FogColIdx,FogDistIdx);
+    // sets array *offsets* 
+    if(has(EDA_POS)){
+        glVertexAttribPointer(mPosIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,x));
+        glEnableVertexAttribArray(mPosIdx);
     }
-    return b;
+    if(has(EDA_NORM)){
+        glVertexAttribPointer(mNormIdx,3,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,nx));
+        glEnableVertexAttribArray(mNormIdx);
+    }
+    if(has(EDA_TEXCOORDS)){
+        glVertexAttribPointer(mTexCoordIdx,2,GL_FLOAT,GL_FALSE,sizeof(UNLITVERTEX),(const void *)offsetof(UNLITVERTEX,u));
+        glEnableVertexAttribArray(mTexCoordIdx);
+    }
 }
+

@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     components/osc.cpp\
     components/mixer.cpp\
     components/diffusecomp.cpp\
-    components/textcomp.cpp
+    components/textcomp.cpp\
+    components/envmap.cpp
    
 
 HEADERS  += \

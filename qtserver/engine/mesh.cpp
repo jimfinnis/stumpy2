@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Tue May 4 14:28:42 2010
-//  Last Modified : <160518.2237>
+//  Last Modified : <160523.2358>
 //
 //  Description	
 //
@@ -135,9 +135,9 @@ struct SingleMesh
     
     // render textured components - possibly replacing all textures
     // with another one
-    void renderTex(MeshTexEffect *eff,Texture *overrideTex);
+    void renderTex(Effect *eff);
     // render untextured components
-    void renderUntex(MeshUntexEffect *eff);
+    void renderUntex(Effect *eff);
     
     bool hasuntex; // does it have textured materials?
     bool hastex; // does it have untextured materials?    
@@ -992,16 +992,16 @@ void SingleMesh::build()
  * 
  ****************************************************************************/
 
-void Mesh::render(Matrix *view,Matrix *world){
+void Mesh::render(Matrix *world){
     State *st = StateManager::getInstance()->get();
     // if there's a texture in the state, render everything
-    // with it.
+    // with it. Also happens when envmap set.
     if(st->texture)
-        renderTex(view,world,st->texture);
+        renderTex(world);
     else{
         // otherwise render twice: untextured, then textured.
-        if(hastex)renderTex(view,world);
-        if(hasuntex)renderUntex(view,world);
+        if(hastex)renderTex(world);
+        if(hasuntex)renderUntex(world);
     }
     
     // stop VBO rendering
@@ -1018,26 +1018,38 @@ void Mesh::render(Matrix *view,Matrix *world){
  ****************************************************************************/
 
 
-void Mesh::renderTex(Matrix *view,Matrix *world,Texture *overrideTex)
+void Mesh::renderTex(Matrix *world)
 {
+    State *st = StateManager::getInstance()->get();
+    
     // start the effect
-    MeshTexEffect *eff = mTexEffect?mTexEffect:
-    EffectManager::getInstance()->meshTex;
+    Effect *eff;
+    
+    // use the mesh's special tex effect if there is one.
+    if(mTexEffect)
+        eff = mTexEffect;
+    else if(st->effect)
+        eff = st->effect;
+    else
+        // otherwise use the standard.
+        eff = EffectManager::getInstance()->meshTex;
+    
     
 //    printf("Using eff %s\n",eff->getFileName());
-    eff->begin(view);
+    eff->begin();
     // upload the matrices
+    eff->setUniforms();
     eff->setWorldMatrix(world);
     
     // iterate over the submeshes, only those which have textures.
     
     for(int i=0;i<mNumSubMeshes;i++)
-        if(overrideTex || mSubMeshes[i]->hastex)
-            mSubMeshes[i]->renderTex(eff,overrideTex);
+        if(st->texture || mSubMeshes[i]->hastex)
+            mSubMeshes[i]->renderTex(eff);
     eff->end();
 }
 
-void SingleMesh::renderTex(MeshTexEffect *eff,Texture *overrideTex)
+void SingleMesh::renderTex(Effect *eff)
 {
     // bind the arrays
     glBindBuffer(GL_ARRAY_BUFFER,buffers[VERTEXBUFFER]);
@@ -1047,7 +1059,7 @@ void SingleMesh::renderTex(MeshTexEffect *eff,Texture *overrideTex)
     
 //    printf("Using eff %s\n",eff->getFileName());
     // and tell them bout the offsets
-    eff->setArrays();
+    eff->setArrayOffsetsUnlit();
     
     State *s = StateManager::getInstance()->get();
     
@@ -1056,7 +1068,7 @@ void SingleMesh::renderTex(MeshTexEffect *eff,Texture *overrideTex)
         // draw only textured mats
         MeshMaterialBlock *b = matblocks+i;
         MeshMaterial *m = mats+b->matidx;
-        Texture *t = overrideTex ? overrideTex : m->tex;
+        Texture *t = s->texture ? s->texture : m->tex;
         if(t)
         {
             float *col = (float *)((s->overrides & STO_DIFFUSE)?
@@ -1074,15 +1086,16 @@ void SingleMesh::renderTex(MeshTexEffect *eff,Texture *overrideTex)
  * 
  ****************************************************************************/
 
-void Mesh::renderUntex(Matrix *view,Matrix *world)
+void Mesh::renderUntex(Matrix *world)
 {
         // start the effect
-    MeshUntexEffect *eff = mUntexEffect?mUntexEffect:
+    Effect *eff = mUntexEffect?mUntexEffect:
     EffectManager::getInstance()->meshUntex;
     
 //    printf("Using eff %s\n",eff->getFileName());
-    eff->begin(view);
+    eff->begin();
     // upload the matrices
+    eff->setUniforms();
     eff->setWorldMatrix(world);
     
     // iterate over the submeshes, only those which have untex set.
@@ -1093,7 +1106,7 @@ void Mesh::renderUntex(Matrix *view,Matrix *world)
     eff->end();
 }
 
-void SingleMesh::renderUntex(MeshUntexEffect *eff)
+void SingleMesh::renderUntex(Effect *eff)
 {
     // bind the arrays
     glBindBuffer(GL_ARRAY_BUFFER,buffers[VERTEXBUFFER]);
@@ -1103,7 +1116,7 @@ void SingleMesh::renderUntex(MeshUntexEffect *eff)
     
 //    printf("Using eff %s\n",eff->getFileName());
     // and tell them bout the offsets
-    eff->setArrays();
+    eff->setArrayOffsetsUnlit();
     
     State *s = StateManager::getInstance()->get();
     
@@ -1116,7 +1129,7 @@ void SingleMesh::renderUntex(MeshUntexEffect *eff)
         {
             float *col = (float *)((s->overrides & STO_DIFFUSE)?
                   &s->diffuse:&m->diffuse);
-            eff->setMaterial(col);
+            eff->setMaterial(col,NULL);
             glDrawElements(GL_TRIANGLES,b->count,GL_UNSIGNED_SHORT,(void *)(b->start*sizeof(unsigned short)));
             ERRCHK;
         }

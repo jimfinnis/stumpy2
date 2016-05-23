@@ -21,7 +21,7 @@ void main()
     gl_Position = matWorldViewProj * aPosition;
     
 #include <media/lightcalc.inc>
-    
+
     vTexCoords = aTexCoords;
 }
 

@@ -15,7 +15,7 @@
 /// used for renderable objects
 class Renderable{
 public:
-    virtual void render(Matrix *view,Matrix *world) = 0;
+    virtual void render(Matrix *world) = 0;
 };
 
 

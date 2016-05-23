@@ -54,8 +54,7 @@ public:
         
         int n = primType->get(c) % ct;
         StateManager *sm = StateManager::getInstance();
-        State *s = sm->get();
-        meshes[n]->render(&(s->view),sm->getx()->top());
+        meshes[n]->render(sm->getx()->top());
     }
 };
 

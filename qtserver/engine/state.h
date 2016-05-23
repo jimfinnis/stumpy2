@@ -44,6 +44,7 @@ struct State {
         fog.fardist = 20000;
         texture = NULL;
         overrides = 0;
+        effect = NULL;
     }
     
     /// LIGHT states
@@ -66,10 +67,14 @@ struct State {
     
     /// view matrix
     Matrix view;
-    // texture if any
+    
+    // texture if any (overrides material)
     class Texture *texture;
+    class Effect *effect;
     
     // other overrides are determined by some flags
+    
+// diffuse colour overrides material colour    
 #define STO_DIFFUSE 1
     int overrides;
     Vector diffuse;

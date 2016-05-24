@@ -26,6 +26,8 @@ public:
     void setWorldMatrix(Matrix *world);
     /// set material uniforms
     void setMaterial(float *diffuse,class Texture *texture);
+    /// set envmap colour and alpha
+    void setMapCol(float *col);
     
     /// set up the GL array pointers for prelit data
     /// NOT USED - might never be, and would be changed
@@ -134,6 +136,10 @@ protected:
     int FogDistIdx;
 #define EDU_NORMMAT 1024
     int mNormalMatIdx;
+#define EDU_DIFFUSE2 2048
+    int mDiffuse2Idx;
+#define EDU_SAMPLER2 4096
+    int mSampler2Idx;
 };
 
 

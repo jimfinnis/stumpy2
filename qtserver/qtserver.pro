@@ -37,6 +37,7 @@ SOURCES += main.cpp \
     components/mixer.cpp\
     components/diffusecomp.cpp\
     components/textcomp.cpp\
+    components/state.cpp\
     components/envmap.cpp
    
 

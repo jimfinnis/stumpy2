@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Tue May 4 14:28:42 2010
-//  Last Modified : <160523.2358>
+//  Last Modified : <160524.1144>
 //
 //  Description	
 //
@@ -472,6 +472,8 @@ void SingleMesh::parseMaterial(MeshMaterial *mat)
     mat->diffuse.r = parsevalandsep();
     mat->diffuse.g = parsevalandsep();
     mat->diffuse.b = parsevalandsep();
+    // this value is effectively ignored, because the state alpha
+    // overwrites it or replaces it with 1.
     mat->diffuse.a = parsevalandsep();enforce(T_SEMI);
     
     parsevalandsep(); // power
@@ -1073,6 +1075,10 @@ void SingleMesh::renderTex(Effect *eff)
         {
             float *col = (float *)((s->overrides & STO_DIFFUSE)?
                   &s->diffuse:&m->diffuse);
+            if(s->overrides & STO_ALPHA)
+                col[3] = s->alpha;
+            else
+                col[3] = 1.0;
             eff->setMaterial(col,t);
             glDrawElements(GL_TRIANGLES,b->count,GL_UNSIGNED_SHORT,(void *)(b->start*sizeof(unsigned short)));
             ERRCHK;
@@ -1128,7 +1134,12 @@ void SingleMesh::renderUntex(Effect *eff)
         if(!m->tex)
         {
             float *col = (float *)((s->overrides & STO_DIFFUSE)?
-                  &s->diffuse:&m->diffuse);
+                                   &s->diffuse:&m->diffuse);
+            if(s->overrides & STO_ALPHA)
+                col[3] = s->alpha;
+            else
+                col[3] = 1.0;
+            
             eff->setMaterial(col,NULL);
             glDrawElements(GL_TRIANGLES,b->count,GL_UNSIGNED_SHORT,(void *)(b->start*sizeof(unsigned short)));
             ERRCHK;

@@ -1,39 +1,61 @@
 %%vertex
 
+#include <media/uniforms.inc>
+
 uniform mat4 matWorldViewProj;
 uniform mat4 matWorldView;
 uniform mat3 matNormal;
-
 attribute vec3 aNormal;
 attribute vec4 aPosition;
+attribute vec2 aTexCoords;
 
+uniform vec4 colDiffuse;
 varying vec4 vCol;
+varying vec2 vTexCoordsMap;
 varying vec2 vTexCoords;
+varying float vFog;
 
 void main()
 {
-
     vec3 e = normalize(vec3(matWorldView * aPosition));
     
-    vec3 normal = normalize(matNormal*aNormal);
-    vec3 r = reflect(e,normal);
-    float m = 2.0 * sqrt(pow(r.x,2.0)+pow(r.y,2.0)+pow(r.z+1.0,2.0));   
-    
-    vTexCoords = r.xy/m+0.5;
+#include <media/lightcalc.inc>
+
+    vec3 r = e-(2.0*dot(normal,e)*normal);  
+    vec3 r2 = normalize(r+vec3(0,0,1));
+    vTexCoordsMap = (r2.xy*0.5)+0.5;
+    vTexCoords = aTexCoords;
+
     gl_Position = matWorldViewProj * aPosition;
 }
 
 %%fragment
 
 uniform sampler2D sTex;
+uniform sampler2D sTex2;
+
 uniform vec4 uFogCol;
+uniform vec4 colDiffuse;
+uniform vec4 colDiffuse2;
 
 varying vec4 vCol;
+varying vec2 vTexCoordsMap;
 varying vec2 vTexCoords;
 varying float vFog;
 
 void main()
 {
-    gl_FragColor = texture2D(sTex,vTexCoords);
+    vec4 texCol = texture2D(sTex,vTexCoords);
+    vec4 mapCol = texture2D(sTex2,vTexCoordsMap);
+
+    vec4 colmap = colDiffuse2*mapCol;
+    vec4 baseCol = vec4(vCol.x,vCol.y,vCol.z,vCol.w);
+    vec4 col = baseCol*texCol;
+    
+    col = colmap+col;
+    col = min(col,1.0);
+    
+    gl_FragColor = mix(col,uFogCol,vFog);
+    
 }
 

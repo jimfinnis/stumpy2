@@ -29,7 +29,6 @@ void GLWidget::initializeGL(){
     
     printf("Starting GL\n%s\n",glGetString(GL_VERSION));
     
-    glClearColor(0,0,0,1);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
@@ -55,7 +54,7 @@ void GLWidget::quit(){
 void GLWidget::paintGL(){
     server->process();
     gTimerDevice.tick();
-    glClearColor(0,0,0,0);
+    glClearColor(0,0,0.4,0);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     lib.run();
     

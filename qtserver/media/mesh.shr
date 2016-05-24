@@ -6,7 +6,6 @@ uniform vec4 colDiffuse;
 
 #include <media/uniforms.inc>
 
-
 attribute vec3 aNormal;
 attribute vec4 aPosition;
 attribute vec2 aTexCoords;

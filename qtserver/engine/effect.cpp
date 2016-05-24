@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160524.0031>
+//  Last Modified : <160524.1300>
 //
 //  Description	
 //
@@ -61,9 +61,11 @@ EffectManager::EffectManager(){
                            EDU_DIFFLIGHTS|EDU_AMBLIGHT|EDU_FOG);
                            
     envMapTex = new Effect("media/envmap.shr",
-                           EDA_POS|EDA_NORM|
-                           EDU_WORLDVIEWPROJ|EDU_NORMMAT|
-                           EDU_SAMPLER|EDU_WORLDVIEW);
+                           EDA_POS|EDA_NORM|EDA_TEXCOORDS|
+                           EDU_WORLDVIEWPROJ|EDU_NORMMAT|EDU_DIFFUSECOL|
+                           EDU_DIFFLIGHTS|EDU_AMBLIGHT|
+                           EDU_SAMPLER|EDU_WORLDVIEW|EDU_FOG|
+                           EDU_SAMPLER2|EDU_DIFFUSE2);
     
     // separate to avoid calling overridable stuff from ctor.
 ///    prelitUntex->init();
@@ -354,6 +356,7 @@ int Effect::getAttribute(const char *name){
 
 int Effect::getUniform(const char *name)
 {
+    printf("%s\n",name);
     int i = glGetUniformLocation(program,name);
     if(i<0)
         throw Exception().set("uniform not found: %s",name);
@@ -379,8 +382,6 @@ void Effect::getAttributes(){
         mSamplerIdx = getUniform("sTex");
     if(has(EDU_NORMMAT))
         mNormalMatIdx = getUniform("matNormal");
-    if(has(EDU_WORLDVIEW))
-        mWorldViewIdx = getUniform("matWorldView");
     if(has(EDA_NORM))
         mNormIdx = getAttribute("aNormal");
     
@@ -398,6 +399,14 @@ void Effect::getAttributes(){
         FogColIdx = getUniform("uFogCol");
         FogDistIdx = getUniform("uFogDist");
     }
+    if(has(EDU_DIFFUSE2)){
+        mDiffuse2Idx = getUniform("colDiffuse2");
+    }
+    if(has(EDU_SAMPLER2)){
+        mSampler2Idx = getUniform("sTex2");
+    }
+    if(has(EDU_WORLDVIEW))
+        mWorldViewIdx = getUniform("matWorldView");
 }
 
 void Effect::setWorldMatrix(Matrix *world){
@@ -463,6 +472,15 @@ void Effect::setUniforms(){
         glUniform4fv(FogColIdx,1,(float *)&s->fog.color);
         glUniform2fv(FogDistIdx,1,(float *)&s->fog.neardist);
     }
+    if(has(EDU_DIFFUSE2)){
+        glUniform4fv(mDiffuse2Idx,1,(float*)&s->diffuse2);
+        ERRCHK;
+    }
+    if(has(EDU_SAMPLER2)){
+        // tell sampler to use unit 1 with this texture
+        s->texture2->use(mSampler2Idx,1);
+        ERRCHK;
+    }
 }    
 
 void Effect::setMaterial(float *diffuse,class Texture *texture)
@@ -477,7 +495,6 @@ void Effect::setMaterial(float *diffuse,class Texture *texture)
         ERRCHK;
     }
 }
-
 
 
 /*****************************************************************************

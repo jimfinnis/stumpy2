@@ -20,11 +20,11 @@ struct State {
         light.ambient = Vector(0.1f,0.1f,0.1f,1);
         
         light.dir[0] = Vector(1,0,0,1);
-        light.dir[1] = Vector(-1,0,0,1);
+        light.dir[1] = Vector(-1,0.4,0,1);
         light.dir[2] = Vector(0,0,0,1);
         
-        light.col[0] = Vector(1,0,0,0);
-        light.col[1] = Vector(0.0,0,0,1);
+        light.col[0] = Vector(1,1,1,1);
+        light.col[1] = Vector(1,1,1,1);
         light.col[2] = Vector(0.0,0,0,1);
     }
     
@@ -42,7 +42,9 @@ struct State {
         fog.color = Vector(0,0,0,1);
         fog.neardist = 10000;
         fog.fardist = 20000;
+        diffuse2 = Vector(1,1,1,1);
         texture = NULL;
+        texture2 = NULL;
         overrides = 0;
         effect = NULL;
     }
@@ -72,12 +74,18 @@ struct State {
     class Texture *texture;
     class Effect *effect;
     
+    // extra stuff
+    class Texture *texture2;
+    Vector diffuse2;
+    
     // other overrides are determined by some flags
     
 // diffuse colour overrides material colour    
 #define STO_DIFFUSE 1
+#define STO_ALPHA 2
     int overrides;
-    Vector diffuse;
+    Vector diffuse; // w is ignored; it gets overwritten by alpha
+    float alpha;
     
 };
 

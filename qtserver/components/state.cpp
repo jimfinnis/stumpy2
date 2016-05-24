@@ -46,9 +46,13 @@ public:
         setInput(0,T_FLOW,"flow");
         setOutput(0,T_FLOW,"flow");
         
+        
         setParams(
                   pCol = new BoolParameter("col",false),
                   pDepth = new BoolParameter("depth",false),
+                  pR = new FloatParameter("red",0,1,0),
+                  pG = new FloatParameter("green",0,1,0),
+                  pB = new FloatParameter("blue",0,1,0),
                   NULL);
     }
     BoolParameter *pCol,*pDepth;
@@ -58,8 +62,15 @@ public:
         int flags = 0;
         if(pCol->get(c))flags |= GL_COLOR_BUFFER_BIT;
         if(pDepth->get(c))flags |= GL_DEPTH_BUFFER_BIT;
+        glClearColor(
+                     pR->get(c),
+                     pG->get(c),
+                     pB->get(c),0);
         glClear(flags);
         ci->getInput(0);
     }
+private:
+    FloatParameter *pR,*pG,*pB;
+    
 };
 static ClearComponent regclear;

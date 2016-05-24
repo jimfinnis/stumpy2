@@ -13,6 +13,7 @@ public:
         setInput(0,T_FLOW,"flow");
         setInput(1,T_FLOAT,"mod");
         setOutput(0,T_FLOW,"flow");
+        setOutput(1,T_FLOAT,"angle");
         setParams(
                   pCount = new IntParameter("count",2,100,2),
                   pRad = new FloatParameter("radius",0,100,4),
@@ -40,6 +41,7 @@ public:
         scale.setScale(sc,sc,sc);
         for(int i=0;i<ct;i++,theta+=step){
             ms->push();
+            ci->setOutput(1,ConnectionValue::makeFloat(theta));
             rot.setRotY(theta);
             m = translate*rot;
             m = scale*m;

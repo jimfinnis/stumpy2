@@ -14,9 +14,9 @@ class SimpleTransformComponentType : public ComponentType {
 public:
     SimpleTransformComponentType(const char *name) :
     ComponentType(name,"transforms") {
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOAT);
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setInput(1,T_FLOAT,"mod");
+        setOutput(0,T_FLOW,"flow");
         setP();
     }
     

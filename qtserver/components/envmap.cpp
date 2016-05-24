@@ -50,12 +50,12 @@ public:
     }
 
     EnvMapComponent() : ComponentType("envmap","state") {
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOAT); //amountmod
-        setInput(2,T_FLOAT); //rmod
-        setInput(3,T_FLOAT); //gmod
-        setInput(4,T_FLOAT); //bmod
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setInput(1,T_FLOAT,"amount-mod"); //amountmod
+        setInput(2,T_FLOAT,"r-mod"); //rmod
+        setInput(3,T_FLOAT,"g-mod"); //gmod
+        setInput(4,T_FLOAT,"b-mod"); //bmod
+        setOutput(0,T_FLOW,"flow");
         setParams(pTex = new EnumParameter("texture",texFiles,0),
                   pA = new FloatParameter("amount",0,1,0.6),
                   pR = new FloatParameter("red",0,1,1),

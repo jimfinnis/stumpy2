@@ -12,9 +12,9 @@
 class MulComponent : public ComponentType {
 public:
     MulComponent() : ComponentType("mul","maths") {
-        setInput(0,T_FLOAT);
-        setInput(1,T_FLOAT);
-        setOutput(0,T_FLOAT);
+        setInput(0,T_FLOAT,"x");
+        setInput(1,T_FLOAT,"y");
+        setOutput(0,T_FLOAT,"x*y");
         setParams(
                      pAdd1 = new FloatParameter("add 1",-100,100,0),
                      pMul1 = new FloatParameter("mul 1",-100,100,1),

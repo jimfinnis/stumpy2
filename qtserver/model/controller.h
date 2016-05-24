@@ -69,6 +69,8 @@ class Controller : public ServerListener {
     
     DECMETHOD(StartComps);
     DECMETHOD(NextComp);
+    DECMETHOD(CompInName);
+    DECMETHOD(CompOutName);
     DECMETHOD(CompParam);
     DECMETHOD(CompEnum);
     

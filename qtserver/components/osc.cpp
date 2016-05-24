@@ -15,8 +15,8 @@ class OscComponent : public ComponentType {
     float t;
 public:
     OscComponent() : ComponentType("osc","time") {
-        setInput(0,T_FLOAT);
-        setOutput(0,T_FLOAT);
+        setInput(0,T_FLOAT,"mod");
+        setOutput(0,T_FLOAT,"out");
         setParams(
                   pFreq = new FloatParameter("freq",0,5,1),
                   pMod = new FloatParameter("phase mod",-5,5,0),

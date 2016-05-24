@@ -13,7 +13,7 @@ class ClockComponent : public ComponentType {
     float t;
 public:
     ClockComponent() : ComponentType("clock","time") {
-        setOutput(0,T_FLOAT);
+        setOutput(0,T_FLOAT,"time");
         setParams(
                   pMul = new FloatParameter("rate",-100,100,1),
                   NULL

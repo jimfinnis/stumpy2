@@ -77,6 +77,10 @@ public:
     static const int NUMOUTPUTS = 16;
     static const int MAXPARAMS = 32;
     
+    const char *inputNames[ComponentType::NUMINPUTS];
+    const char *outputNames[ComponentType::NUMOUTPUTS];
+    
+    
     /// editor data, not used here but uploaded to the client
     int width,height;
     
@@ -184,14 +188,16 @@ private:
     }
 protected:
     /// use this in the ctor to set up the connections
-    void setInput(int n, ConnectionType t){
+    void setInput(int n, ConnectionType t,const char *name){
         assertInputInRange(n);
         inputTypes[n]=t;
+        inputNames[n]=name;
     }
     /// use this in the ctor to set up the connections
-    void setOutput(int n, ConnectionType t){
+    void setOutput(int n, ConnectionType t,const char *name){
         assertOutputInRange(n);
         outputTypes[n]=t;
+        outputNames[n]=name;
     }
     
     /// add a parameter to this component type - you might also
@@ -235,6 +241,7 @@ private:
     Input inputs[ComponentType::NUMINPUTS];
     
 public:
+    
     
     /// pointer to an array of parameter value unions, set up
     /// by init() from the ComponentType data.

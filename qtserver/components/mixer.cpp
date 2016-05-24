@@ -12,9 +12,9 @@ public:
             mName[i]=strdup(buf);
             pClearDepth[i]=new BoolParameter(mName[i],false);
             addParameter(pClearDepth[i]);
-            setInput(i,T_FLOW);
+            setInput(i,T_FLOW,"flow");
         }
-        setOutput(0,T_FLOW);
+        setOutput(0,T_FLOW,"flow");
         width=200;
     }
     

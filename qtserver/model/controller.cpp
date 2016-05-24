@@ -27,6 +27,8 @@ Controller::Controller(PatchLibrary *l,Server *s){
     
     REG("startcomps",0,StartComps);
     REG("nextcomp",0,NextComp);
+    REG("compinnm",1,CompInName);
+    REG("compoutnm",1,CompOutName);
     
     REG("compparam",1,CompParam); // paramidx
     REG("compenum",2,CompEnum); // paramidx enumidx
@@ -198,6 +200,25 @@ void Controller::sendCurCT(){
     
     }
 }
+
+METHOD(CompInName){
+    char buf[1024];
+    int idx = atoi(argv[0]);
+    if(idx>=ComponentType::NUMINPUTS)
+        throw SE_INPUTRANGE;
+    sprintf(buf,"414 %s",curCT->inputNames[idx]);
+    output(buf);
+}
+
+METHOD(CompOutName){
+    char buf[1024];
+    int idx = atoi(argv[0]);
+    if(idx>=ComponentType::NUMINPUTS)
+        throw SE_INPUTRANGE;
+    sprintf(buf,"415 %s",curCT->outputNames[idx]);
+    output(buf);
+}
+
 
 METHOD(CompParam){
     char buf[1024];

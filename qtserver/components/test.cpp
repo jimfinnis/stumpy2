@@ -7,13 +7,13 @@ private:
     FloatParameter *param2;
 public:
     TestComponent() : ComponentType("test","control"){
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOW);
-        setInput(2,T_FLOAT);
+        setInput(0,T_FLOW,"??");
+        setInput(1,T_FLOW,"??");
+        setInput(2,T_FLOAT,"??");
         
-        setOutput(0,T_FLOW);
-        setOutput(1,T_FLOW);
-        setOutput(2,T_FLOAT);
+        setOutput(0,T_FLOW,"??");
+        setOutput(1,T_FLOW,"??");
+        setOutput(2,T_FLOAT,"??");
         setParams(param1=new IntParameter("foo",0,10,0),
                   param2=new FloatParameter("bar",0,10,0),NULL);
     }

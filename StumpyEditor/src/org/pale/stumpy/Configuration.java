@@ -57,15 +57,23 @@ public class Configuration {
 				for(int i=0;i<inputs.length();i++){
 					char cc = inputs.charAt(i);
 					if(cc=='i')break;
+					c.doSend("compinnm "+i);
+					CommsResult pr = c.syncRead();
+					if(pr.code!=414)
+						throw new ProtocolException("Unexpected message "+pr.code);
 					ConnectionType contype = ConnectionType.get(cc);
-					ct.addInput(contype, "anon");
+					ct.addInput(contype, pr.status);
 				}
 				// and the outputs
 				for(int i=0;i<outputs.length();i++){
 					char cc = outputs.charAt(i);
 					if(cc=='i')break;
+					c.doSend("compoutnm "+i);
+					CommsResult pr = c.syncRead();
+					if(pr.code!=415)
+						throw new ProtocolException("Unexpected message "+pr.code);
 					ConnectionType contype = ConnectionType.get(cc);
-					ct.addOutput(contype, "anon");
+					ct.addOutput(contype, pr.status);
 				}
 				// get the params
 				for(int i=0;i<paramct;i++){

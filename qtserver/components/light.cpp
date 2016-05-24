@@ -9,10 +9,9 @@
 class DiffuseLightComponent : public ComponentType {
 public:
     DiffuseLightComponent() : ComponentType("diffuse-light","light") {
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOAT);
-        
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setInput(1,T_FLOAT,"mod");
+        setOutput(0,T_FLOW,"flow");
     
         setParams(
                   pN = new IntParameter("index",0,3,0),

@@ -29,6 +29,18 @@ move to next component type, send description
                     411 comps done
                 OR  410 <name>:<inputtypes>:<outputtypes>:<nparams>:<category>:<width>:<height>
 
+compinnm <idx>
+send name of input N in current parameter
+                    414 <name>
+                OR  nnn error
+                
+
+compoutnm <idx>
+send name of output N in current parameter
+                    415 <name>
+                OR  nnn error
+
+
 compparam <pidx>
 send description of current component type param pidx
                     412 i:<name>:<initval>:<min>:<max>

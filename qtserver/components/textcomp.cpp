@@ -59,8 +59,8 @@ public:
     }
 
     TextureComponent() : ComponentType("texture","state") {
-        setInput(0,T_FLOW);
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setOutput(0,T_FLOW,"flow");
         setParams(pTex = new EnumParameter("texture",texFiles,0),
                   NULL);
     }

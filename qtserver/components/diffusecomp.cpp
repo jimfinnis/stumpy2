@@ -11,11 +11,11 @@
 class DiffuseComponent : public ComponentType {
 public:
     DiffuseComponent() : ComponentType("diffuse-col","state") {
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOAT);
-        setInput(2,T_FLOAT);
-        setInput(3,T_FLOAT);
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setInput(1,T_FLOAT,"r-mod");
+        setInput(2,T_FLOAT,"g-mod");
+        setInput(3,T_FLOAT,"b-mod");
+        setOutput(0,T_FLOW,"flow");
         
         setParams(
                   pR = new FloatParameter("red",0,1,0),

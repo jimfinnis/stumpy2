@@ -11,9 +11,9 @@
 class AlphaComponent : public ComponentType {
 public:
     AlphaComponent() : ComponentType("alpha","state") {
-        setInput(0,T_FLOW);
-        setInput(1,T_FLOAT);
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setInput(1,T_FLOAT,"mod");
+        setOutput(0,T_FLOW,"flow");
         
         setParams(
                   pAlpha = new FloatParameter("alpha",0,1,0.5),
@@ -43,8 +43,8 @@ static AlphaComponent regalpha;
 class ClearComponent : public ComponentType {
 public:
     ClearComponent() : ComponentType("clear","state") {
-        setInput(0,T_FLOW);
-        setOutput(0,T_FLOW);
+        setInput(0,T_FLOW,"flow");
+        setOutput(0,T_FLOW,"flow");
         
         setParams(
                   pCol = new BoolParameter("col",false),

@@ -38,6 +38,7 @@ SOURCES += main.cpp \
     components/diffusecomp.cpp\
     components/textcomp.cpp\
     components/state.cpp\
+    components/funcs.cpp\
     components/envmap.cpp
    
 

@@ -23,7 +23,7 @@ public:
                   pB = new FloatParameter("blue",0,1,0),
                   pModR = new FloatParameter("red mod",-1,1,0),
                   pModG = new FloatParameter("green mod",-1,1,0),
-                  pModB = new FloatParameter("bleue mod",-1,1,0),
+                  pModB = new FloatParameter("blue mod",-1,1,0),
                   NULL);
     }
 

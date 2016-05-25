@@ -8,19 +8,25 @@
 #include <math.h>
 static const char *funcNames[]=
 {
-    "sin","cos","gauss",
+    "sin(x+y)","cos(x+y)","gauss(x+y)",
+    "x % y" , "abs(x+y)",
     NULL
 };
 
-inline float dofunc(float x,int i){
+inline float dofunc(float x,float y,int i){
     switch(i){
     case 0:
-        return sinf(x);
+        return sinf(x+y);
     case 1:
-        return cosf(x);
+        return cosf(x+y);
     case 2:
+        x=x+y;
         return (1.0f/(2.0f*3.1415927f))*
               powf(2.71828f,-0.5f*x*x);
+    case 3:
+        return fmodf(x,y);
+    case 4:
+        return fabsf(x+y);
     }
     return 0;
 }
@@ -32,10 +38,10 @@ public:
         setInput(1,T_FLOAT,"y");
         setOutput(0,T_FLOAT,"f(x)");
         setParams(
-                  pMulIn1 = new FloatParameter("mul-in1",-100,100,1),
-                  pAddIn1 = new FloatParameter("add-in1",-100,100,0),
-                  pMulIn2 = new FloatParameter("mul-in2",-100,100,1),
-                  pAddIn2 = new FloatParameter("add-in2",-100,100,0),
+                  pMulIn1 = new FloatParameter("mul-in-x",-100,100,1),
+                  pAddIn1 = new FloatParameter("add-in-x",-100,100,0),
+                  pMulIn2 = new FloatParameter("mul-in-y",-100,100,1),
+                  pAddIn2 = new FloatParameter("add-in-y",-100,100,0),
                   pFunc = new EnumParameter("func",funcNames,0),
                   pMulOut = new FloatParameter("mul-out",-100,100,1),
                   pAddOut = new FloatParameter("add-out",-100,100,0),
@@ -48,7 +54,7 @@ public:
         
         float in1 = ci->getInput(0).f*pMulIn1->get(c)+pAddIn1->get(c);
         float in2 = ci->getInput(1).f*pMulIn2->get(c)+pAddIn2->get(c);
-        float out = dofunc(in1+in2,pFunc->get(c));
+        float out = dofunc(in1,in2,pFunc->get(c));
         out *= pMulOut->get(c);
         out += pAddOut->get(c);
         

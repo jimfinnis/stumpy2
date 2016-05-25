@@ -22,6 +22,7 @@ inline float dofunc(float x,int i){
         return (1.0f/(2.0f*3.1415927f))*
               powf(2.71828f,-0.5f*x*x);
     }
+    return 0;
 }
 
 class FuncComponent : public ComponentType {
@@ -29,26 +30,35 @@ public:
     FuncComponent() : ComponentType("func","maths") {
         setInput(0,T_FLOAT,"x");
         setInput(1,T_FLOAT,"y");
-        setOutput(0,T_FLOAT,"f(x+y)");
+        setOutput(0,T_FLOAT,"f(x)");
         setParams(
-                  pAdd = new FloatParameter("add",-100,100,0),
-                  pMul = new FloatParameter("mul",-100,100,1),
+                  pMulIn1 = new FloatParameter("mul-in1",-100,100,1),
+                  pAddIn1 = new FloatParameter("add-in1",-100,100,0),
+                  pMulIn2 = new FloatParameter("mul-in2",-100,100,1),
+                  pAddIn2 = new FloatParameter("add-in2",-100,100,0),
                   pFunc = new EnumParameter("func",funcNames,0),
+                  pMulOut = new FloatParameter("mul-out",-100,100,1),
+                  pAddOut = new FloatParameter("add-out",-100,100,0),
                      NULL
                      );
     }
     
-    virtual void run(ComponentInstance *ci,int out){
+    virtual void run(ComponentInstance *ci,int outnum){
         Component *c = ci->component;
         
-        float a = (ci->getInput(0).f+pAdd->get(c))*pMul->get(c);
-        float b = (ci->getInput(1).f+pAdd->get(c))*pMul->get(c);
-        float v = dofunc(a+b,pFunc->get(c));
-        ci->setOutput(0,ConnectionValue::makeFloat(v));
+        float in1 = ci->getInput(0).f*pMulIn1->get(c)+pAddIn1->get(c);
+        float in2 = ci->getInput(1).f*pMulIn2->get(c)+pAddIn2->get(c);
+        float out = dofunc(in1+in2,pFunc->get(c));
+        out *= pMulOut->get(c);
+        out += pAddOut->get(c);
+        
+        ci->setOutput(0,ConnectionValue::makeFloat(out));
     }
     
 private:
-    FloatParameter *pAdd,*pMul;
+    FloatParameter *pAddIn1,*pMulIn1;
+    FloatParameter *pAddIn2,*pMulIn2;
+    FloatParameter *pAddOut,*pMulOut;
     EnumParameter *pFunc;
 };
 

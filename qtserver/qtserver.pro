@@ -39,6 +39,7 @@ SOURCES += main.cpp \
     components/textcomp.cpp\
     components/state.cpp\
     components/funcs.cpp\
+    components/debug.cpp\
     components/envmap.cpp
    
 

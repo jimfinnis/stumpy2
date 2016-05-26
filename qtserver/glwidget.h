@@ -40,7 +40,7 @@ public:
     }
     
     QSize sizeHint() const{
-        return QSize(1000, 800);
+        return QSize(800,600);
     }
 signals:
     

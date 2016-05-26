@@ -2,6 +2,7 @@ package org.pale.stumpy.main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -12,6 +13,7 @@ import org.pale.stumpy.libraryview.PatchLibraryView;
 import org.pale.stumpy.model.ConnectionOutOfRangeException;
 import org.pale.stumpy.model.ConnectionTypeMismatchException;
 import org.pale.stumpy.model.PatchLibrary;
+import org.pale.stumpy.model.ProtocolException;
 import org.pale.stumpy.model.UnknownComponentTypeException;
 import org.pale.stumpy.ui.Controller;
 import org.pale.stumpy.ui.Controller.Command;
@@ -125,7 +127,14 @@ public class TopController extends Controller {
                         if (Client.isConnected()) {
                             // sync the current library
                             if(curLibrary!=null){
-                                curLibrary.sync();
+                                try {
+									curLibrary.sync();
+								} catch (ProtocolException e) {
+									showError("Protocol problem: "+e.toString());
+
+								} catch (IOException e) {
+									showError("IO exception: "+e.toString());
+								}
                             }
                         }
                     }

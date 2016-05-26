@@ -5,6 +5,7 @@
  */
 
 #include "server.h"
+#include <ctype.h>
 
 /// flag tells us to exit
 static volatile int exit_request=0;
@@ -66,9 +67,9 @@ Server::Server(int port){
     listen(listenfd,1);  // backlog of 1
     printf("Server is now listening.\n\n\n");
 }
-    
-    
-    
+
+
+
 bool Server::process() {
     if(exit_request || exitreq){
         return false;
@@ -80,53 +81,72 @@ bool Server::process() {
     FD_SET(listenfd,&fds);
     int maxfd=listenfd;
     
-    if(connected){
-        FD_SET(clientfd,&fds);
-        if(clientfd>maxfd)maxfd=clientfd;
-    }
+    // go round this loop until we're not locked. Quite
+    // often we're not anyway. Locking is a mechanism
+    // where the client can tell the server just to spin waiting
+    // for messages, rather than picking up each new message
+    // in each frame. We go into it with a special LOCK message
+    // and leave with an UNLOCK message.
     
-    // set up the timeout for polling
-    timeout.tv_sec=0;
-    timeout.tv_nsec=0;
-    int rv = pselect(maxfd+1,&fds,NULL,NULL,&timeout,&orig_mask);
-    if(rv<0 && errno!=EINTR) // interrupted system calls are OK.
-        throw Exception("read error");
-    else if(exit_request || exitreq){
-        printf("exit request set\n");
-        return false;
-    }
-    else if(rv>0){
-        // only process the sets if there are things waiting
-        // and the select call was not interrupted (which leaves
-        // the sets undefined)
-        if(FD_ISSET(listenfd,&fds)){
-            clientfd = accept(listenfd,NULL,0);
-            printf("new connection, checking\n");
-            if(clientfd<0){
-                printf("accept failed!\n");
-            } else {
-                if(connected){
-                    printf("cannot accept, we're already connected.");
-                }  else {
-                    listener->connect();
-                    connected=true;
+    bool locked=false;
+    do{
+        if(connected){
+            FD_SET(clientfd,&fds);
+            if(clientfd>maxfd)maxfd=clientfd;
+        }
+        
+        // set up the timeout for polling
+        timeout.tv_sec=0;
+        timeout.tv_nsec=0;
+        int rv = pselect(maxfd+1,&fds,NULL,NULL,&timeout,&orig_mask);
+        if(rv<0 && errno!=EINTR) // interrupted system calls are OK.
+            throw Exception("read error");
+        else if(exit_request || exitreq){
+            printf("exit request set\n");
+            return false;
+        }
+        else if(rv>0){
+            // only process the sets if there are things waiting
+            // and the select call was not interrupted (which leaves
+            // the sets undefined)
+            if(FD_ISSET(listenfd,&fds)){
+                clientfd = accept(listenfd,NULL,0);
+                printf("new connection, checking\n");
+                if(clientfd<0){
+                    printf("accept failed!\n");
+                } else {
+                    if(connected){
+                        printf("cannot accept, we're already connected.");
+                    }  else {
+                        listener->connect();
+                        connected=true;
+                    }
+                }
+            }
+            if(connected && FD_ISSET(clientfd,&fds)){
+                int sizeread = read(clientfd,buffer,BUFFERSIZE);
+                printf("Read %d bytes\n",sizeread);
+                if(!sizeread){
+                    printf("Client disconnected\n");
+                    listener->disconnect();
+                    connected=false;
+                    clientfd=-1;
+                    break;
+                } else {
+                    if(sizeread>=4 && !strncmp(buffer,"LOCK",4)){
+                        printf("LOCKING PROTOCOL\n");
+                        output("999 LOCKED");
+                        locked=true;
+                    } else if(sizeread>=4 && !strncmp(buffer,"UNLO",4)){
+                        printf("UNLOCKING PROTOCOL\n");
+                        output("998 UNLOCKED");
+                        locked=false;
+                    } else
+                        listener->message(buffer,sizeread);
                 }
             }
         }
-        
-        if(connected && FD_ISSET(clientfd,&fds)){
-            int sizeread = read(clientfd,buffer,BUFFERSIZE);
-            printf("Read %d bytes\n",sizeread);
-            if(!sizeread){
-                printf("Client disconnected\n");
-                listener->disconnect();
-                connected=false;
-                clientfd=-1;
-            } else {
-                listener->message(buffer,sizeread);
-            }
-        }
-    }
+    }while(locked);
     return true;
 }
 
@@ -135,4 +155,4 @@ void Server::output(const char *s){
     printf("Sending reply: %s\n",s);
     write(clientfd,s,strlen(s));
 }
-    
+

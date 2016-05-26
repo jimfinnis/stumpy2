@@ -4,7 +4,14 @@ Description
                 Server responses
               
 
+LOCK
+lock the server so that it spins until unlock, waiting for messages
+instead of doing a message poll every frame
+                    999 LOCKED
 
+UNLOCK
+Unlock the server (see LOCK)
+                    998 UNLOCKED
 
 ====== Config setup commands =======
 

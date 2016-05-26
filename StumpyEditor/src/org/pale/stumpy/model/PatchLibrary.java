@@ -7,6 +7,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -365,11 +366,14 @@ public class PatchLibrary implements PatchChangeListener {
 		this.activePatch = activePatch;
 	}
 
-    public void sync() {
+    public void sync() throws ProtocolException, IOException {
+    	Client c = Client.getInstance();
         if(Client.isConnected()){
             List<String> cmds = new LinkedList<String>();
             writeSyncCommands(cmds);
-            Client.getInstance().sendAndProcessResponse(cmds);
+            c.lock();
+            c.sendAndProcessResponse(cmds);
+            c.unlock();
         }
     }
 }

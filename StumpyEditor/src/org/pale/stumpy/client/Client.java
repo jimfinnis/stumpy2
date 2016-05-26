@@ -209,7 +209,7 @@ public class Client {
 	 */
 	public CommsResult syncRead() {
 		try {
-			selector.select(1000);
+			selector.select(0);
 		} catch (IOException e) {
 			return new CommsResult(501,"IO exception in select");
 		}
@@ -389,5 +389,29 @@ public class Client {
 		sendAndProcessResponse(commands);
 
 	}
+
+	/**
+	 * Send a LOCK message to the server, so that it will no longer poll
+	 * every frame but continuously poll until unlocked.
+	 * @throws ProtocolException
+	 * @throws IOException
+	 */
+	public void lock() throws ProtocolException, IOException {
+		doSend("LOCK");
+		if(syncRead().getCode()!=999)
+			throw new ProtocolException("lock failed, unexpected message");
+	}
+	
+	/**
+	 * Send an UNLOCK message, undoing the action of lock().
+	 * @throws ProtocolException
+	 * @throws IOException
+	 */
+	public void unlock() throws ProtocolException, IOException {
+		doSend("UNLOCK");
+		if(syncRead().getCode()!=998)
+			throw new ProtocolException("lock failed, unexpected message");
+	}
+	
 
 }

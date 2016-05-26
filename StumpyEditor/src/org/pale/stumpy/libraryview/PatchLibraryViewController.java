@@ -2,6 +2,7 @@ package org.pale.stumpy.libraryview;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.pale.stumpy.model.MementoizationException;
 import org.pale.stumpy.model.Patch;
 import org.pale.stumpy.model.Patch.Memento;
 import org.pale.stumpy.model.PatchLibrary;
+import org.pale.stumpy.model.ProtocolException;
 import org.pale.stumpy.model.UnknownComponentTypeException;
 import org.pale.stumpy.ui.Controller;
 import org.pale.stumpy.ui.Controller.Command;
@@ -213,7 +215,14 @@ public class PatchLibraryViewController extends Controller {
                         if (!Client.isConnected()) {
                             showError("client is not connected");
                         } else {
-                            library.sync();
+                            try {
+								library.sync();
+							} catch (ProtocolException e) {
+								showError("Protocol problem: "+e.toString());
+
+							} catch (IOException e) {
+								showError("IO exception: "+e.toString());
+							}
                         }
                     }
                 };

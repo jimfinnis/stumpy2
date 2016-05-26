@@ -35,6 +35,7 @@ public class Configuration {
 	/// this is a synchronous chat with the server to load the initial
 	/// configuration data
 	public static void readConfiguration(Client c) throws UnknownComponentTypeException, IOException, ProtocolException{
+		c.lock();
 		c.doSend("startcomps");
 		boolean compsDone = false;
 
@@ -92,13 +93,15 @@ public class Configuration {
 				c.doSend("nextcomp");		
 				break;
 			case 411:
+				System.out.println("No more components");
 				compsDone=true;
 				break;
 			default:
 				throw new ProtocolException("Unexpected message "+r.code);
 			}
-			System.out.println("configuration read done");
+			System.out.println("component read done");
 		}
+		c.unlock();
 	}
 	
 	private static String[] readEnumStrings(Client c,int pidx,int ct) throws IOException, ProtocolException{

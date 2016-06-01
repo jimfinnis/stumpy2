@@ -36,7 +36,7 @@ void init(){
 double now(){
     timespec t;
     clock_gettime(CLOCK_MONOTONIC,&t);
-    double diff=time_diff(progstart,t);
+    return time_diff(progstart,t);
 }
     
 

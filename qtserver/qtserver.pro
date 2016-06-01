@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
-CONFIG  += debug
+# CONFIG  += debug
 TARGET = qtserver
 TEMPLATE = app
 LIBS += -lGLU
@@ -35,10 +35,12 @@ SOURCES += main.cpp \
     components/clock.cpp\
     components/osc.cpp\
     components/mixer.cpp\
-    components/diffusecomp.cpp\
+    components/colour.cpp\
+    components/hsv.cpp\
     components/textcomp.cpp\
     components/state.cpp\
     components/funcs.cpp\
+    components/linear.cpp\
     components/debug.cpp\
     components/envmap.cpp
    

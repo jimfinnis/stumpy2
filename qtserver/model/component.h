@@ -59,6 +59,13 @@ union ConnectionValue {
         t.i = i;
         return t;
     }
+    
+    static ConnectionValue makeFlow(){
+        ConnectionValue t;
+        return t;
+    }
+              
+              
 };
 
 

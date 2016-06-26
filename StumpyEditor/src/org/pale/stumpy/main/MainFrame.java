@@ -1,15 +1,14 @@
 package org.pale.stumpy.main;
 
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 
 import org.pale.stumpy.client.Client;
 import org.pale.stumpy.ui.ToolbarFrame;
+
 
 /** The main frame, which probably won't have much in it apart from a menu bar to open views with.
  * 

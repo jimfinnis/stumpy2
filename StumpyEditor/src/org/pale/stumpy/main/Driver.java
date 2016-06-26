@@ -1,14 +1,12 @@
 package org.pale.stumpy.main;
 
-import java.awt.Color;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.pale.stumpy.Configuration;
-import org.pale.stumpy.model.ComponentTypeRegistry;
-import org.pale.stumpy.model.ConnectionType;
+
+
 
 /**
  * This class runs the whole program, just by creating the MainFrame class.
@@ -56,9 +54,10 @@ public class Driver {
             @Override
             public void run() {
                 // uncomment the following line if you want to use the OS look and feel
-                // In Ubuntu 12.04, this is not advised because there's a bug in Swing - it's picking up the wrong colour for menu bar text.
+                // In Ubuntu 12.04, this is not advised because there's a bug in Swing - 
+            	// it's picking up the wrong colour for menu bar text.
                 //setLookAndFeel();
-                new MainFrame();
+            	new MainFrame();
             }            
         });
     }

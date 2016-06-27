@@ -139,7 +139,7 @@ public class Patch {
 
 		ComponentType t = ComponentTypeRegistry.getInstance().getComponentType(
 				name);
-		Component c = t.create(pos);
+		Component c = t.create(this,pos);
 		components.addLast(c);
 
 		update(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));
@@ -414,7 +414,7 @@ public class Patch {
 		// first pass - create the components
 		int i = 0;
 		for (Component.Memento cm : m.getComponentList()) {
-			Component c = new Component(cm);
+			Component c = new Component(cm,this);
 			components.addLast(c); // append to end
 			notification.add(c);
 			pairing[i] = new Pairing(cm, c);

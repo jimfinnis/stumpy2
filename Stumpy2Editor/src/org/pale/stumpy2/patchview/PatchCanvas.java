@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import org.pale.stumpy2.componentview.ComponentBoxView;
 import org.pale.stumpy2.model.Component;
 import org.pale.stumpy2.model.ComponentAndConnection;
 import org.pale.stumpy2.model.ComponentAndConnection.ComponentClickType;
@@ -269,6 +270,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	 */
 	public void select(Component c) {
 		selected.add(c);
+		ComponentBoxView.getInstance().setSelected(c,true);
 	}
 
 	/**
@@ -278,6 +280,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	 */
 	public void unselect(Component c) {
 		selected.remove(c);
+		ComponentBoxView.getInstance().setSelected(c,false);
 	}
 
 	/**
@@ -712,6 +715,8 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	 * @param c
 	 */
 	public void openComponentView(final Component c) {
+		ComponentBoxView bv = ComponentBoxView.getInstance();
+		bv.add(c);
 /*		ComponentView v = openComponentViews.get(c);
 		if (v != null) {
 			v.toFront();

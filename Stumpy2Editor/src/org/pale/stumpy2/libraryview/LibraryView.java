@@ -139,7 +139,7 @@ public class LibraryView extends ControlledDockable {
 		model = new MyListModel();
 		library.addChangeListener(model);
 		setTitleText(library.getFileName());
-		setTitleIcon(Images.createImageIcon("icons/package"));
+		setTitleIcon(Images.getImageIcon("icons/package"));
 		setResizeRequest(new RequestDimension(200,true),true); // request width 200, not working
 
 		list = new JList(model);

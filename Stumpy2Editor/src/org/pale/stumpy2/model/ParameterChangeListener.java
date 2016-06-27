@@ -6,15 +6,13 @@ package org.pale.stumpy2.model;
  *
  */
 public abstract class ParameterChangeListener {
-    private Patch patch;
     private Component component;
     
-    public ParameterChangeListener(Component c, Patch patch){
-        this.patch = patch;
+    public ParameterChangeListener(Component c){
         this.component = c;
     }
     public Patch getPatch() {
-        return patch;
+        return component.getPatch();
     }
     public Component getComponent() {
         return component;

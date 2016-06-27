@@ -32,8 +32,6 @@ public:
         float freq = pFreq->get(c);
         float v = Time::now()*freq;
         
-        printf("%f\n",Time::now());
-        
         // phase mod
         v += mod;
         

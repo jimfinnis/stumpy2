@@ -37,7 +37,7 @@ public class ToolbarButton extends CToolbarItem implements UIElement {
 	public ToolbarButton(String id, String text, String iconname) {
 		super(id);
 
-		Icon icon = Images.createImageIcon(iconname);
+		Icon icon = Images.getImageIcon(iconname);
 		intern().setTitleText(text);
 		
 		cbut = new CButtonElement(null,icon);

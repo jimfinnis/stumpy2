@@ -55,6 +55,9 @@ public class Main {
 		LibraryViewController.createInstance();
 		PatchViewController.createInstance();
 
+		// there's only one component pane
+		ComponentBoxView.createInstance();
+
 		// and the menus
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -94,10 +97,10 @@ public class Main {
 		CToolbarItem statitem = new CToolbarItem("status");
 		statitem.setItem(status);
 		
-		ComponentBoxView bv = new ComponentBoxView();
+		ComponentBoxView bv = ComponentBoxView.getInstance();
 		control.addDockable(bv);
 		bv.setLocation(CLocation.base().normalEast(0.4));
-		
+		bv.setVisible(true);
 		
 		control.addDockable(statitem);
 		statitem.setLocation(loc.group(0).toolbar(0, 0).item(0));

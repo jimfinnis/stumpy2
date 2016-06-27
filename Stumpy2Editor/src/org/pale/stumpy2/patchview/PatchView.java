@@ -12,6 +12,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import org.pale.stumpy2.Main;
+import org.pale.stumpy2.componentview.ComponentBoxView;
 import org.pale.stumpy2.model.Component;
 import org.pale.stumpy2.model.ConnectionOutOfRangeException;
 import org.pale.stumpy2.model.ConnectionTypeMismatchException;
@@ -63,8 +64,8 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 		Main.getControl().addDockable(this);
 		
 		Container pane = getContentPane();
-		setTitleIcon(Images.createImageIcon("icons/page"));
-
+		setTitleIcon(Images.getImageIcon("icons/page"));
+		
 		canvas = new PatchCanvas(p,this);
 		scroller = new JScrollPane(canvas);
 		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -83,11 +84,14 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 
 		patch = p;
 		p.addPatchChangeListener(this);
+		p.addPatchChangeListener(ComponentBoxView.getInstance());
 		p.addToViews(this);
 		setTitleText(p.toString());
 
 		setCloseable(true);
 		addCDockableStateListener(this);
+		
+		setFocusComponent(canvas);
 
 		setVisible(true);
 	}
@@ -204,6 +208,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 	public void visibilityChanged(CDockable v) {
 		if(!v.isVisible()){
 			patch.removePatchChangeListener(this);
+			patch.removePatchChangeListener(ComponentBoxView.getInstance());
 			patch.removeFromViews(this);
 			removeCDockableStateListener(this);
 		}

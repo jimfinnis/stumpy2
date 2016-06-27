@@ -69,6 +69,7 @@ public class Component implements Visitable {
     /// runs the component, or whether the cached version is used if it
     /// has been run before in this frame
     boolean[] runOutputAlways;
+	private Patch patch;
 	public void setRunOutputAlways(int index, boolean state) {
 		runOutputAlways[index]=state;
 	}
@@ -98,7 +99,8 @@ public class Component implements Visitable {
      * @param pos
      *            position in canvas
      */
-    Component(ComponentType type, Point pos) {
+    Component(Patch patch,ComponentType type, Point pos) {
+    	this.patch=patch;
         this.id = idcounter++;
         this.type = type;
         this.inputs = new Input[type.getInputCount()];
@@ -208,8 +210,7 @@ public class Component implements Visitable {
      * @param parameterChangeListener
      * @return a list of new JComponent
      */
-    public List<JComponent> createEditors(Patch patch,
-            ParameterChangeListener parameterChangeListener) {
+    public List<JComponent> createEditors(ParameterChangeListener parameterChangeListener) {
         List<JComponent> list = new LinkedList<JComponent>();
         if (params != null) {
             for (Parameter p : params) {
@@ -342,10 +343,13 @@ public class Component implements Visitable {
      * 
      * @param cm
      *            the memento
+     * @param patch 
+     *            the patch to which I belong
      * @throws UnknownComponentTypeException
      */
-    public Component(Memento cm) throws UnknownComponentTypeException {
+    public Component(Memento cm, Patch patch) throws UnknownComponentTypeException {
         this.id = idcounter++;
+        this.patch = patch;
         this.type = ComponentTypeRegistry.getInstance().getComponentType(
                 cm.getType());
         Point pos = cm.getLocation();
@@ -422,6 +426,15 @@ public class Component implements Visitable {
     public int getID() {
         return id;
     }
+
+
+    /**
+     * return the patch I'm in
+     * @return
+     */
+	public Patch getPatch() {
+		return patch;
+	}
 
     
 }

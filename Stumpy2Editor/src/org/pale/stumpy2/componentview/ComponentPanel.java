@@ -1,18 +1,21 @@
 package org.pale.stumpy2.componentview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -22,8 +25,9 @@ import org.pale.stumpy2.model.ParameterChangeListener;
 import org.pale.stumpy2.model.Patch;
 import org.pale.stumpy2.model.PatchChangeListener.PatchChange;
 import org.pale.stumpy2.model.PatchChangeListener.PatchChangeType;
+import org.pale.stumpy2.ui.support.Images;
 
-public class ComponentPanel extends JPanel {
+public class ComponentPanel extends JPanel  {
     /**
      * the patch this component is in
      */
@@ -32,14 +36,21 @@ public class ComponentPanel extends JPanel {
      * The component we're viewing
      */
     private Component component;
+	private boolean selected=true;
+	private JPanel titleBox;
+	private JPanel contents;
+	private JButton hideButton;
+
+
 
     /**
      * Constructor 
      * @param patch the patch the component is in
      * @param component the component to edit
      */
-    public ComponentPanel(final Patch patch, final Component component) {
+    public ComponentPanel(final Patch patch,final Component component) {
         this.component = component;
+        this.patch = patch;
 
 
         setLayout(new GridBagLayout());
@@ -47,15 +58,47 @@ public class ComponentPanel extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.gridx=0;
         c.gridy=0;
+        c.weightx=1;
+        c.fill = GridBagConstraints.HORIZONTAL;
         
-        JLabel titleBox = new JLabel(component.getType().getName());
+        titleBox = new JPanel(new BorderLayout());
+        JLabel lab = new JLabel(component.getType().getName());
+        lab.setForeground(Color.WHITE);
+        titleBox.add(lab,BorderLayout.WEST);
+        JPanel butpanel = new JPanel(new FlowLayout());
+        hideButton = new JButton(null,Images.getImageIcon("icons/arrow_in"));
+        final JButton closeButton = new JButton(null,Images.getImageIcon("icons/cancel"));
+        butpanel.add(hideButton);
+        butpanel.add(closeButton);
+        titleBox.add(butpanel,BorderLayout.EAST);
         titleBox.setOpaque(true);
-        titleBox.setBackground(Color.DARK_GRAY);
-        add(titleBox,c);c.gridy++;
+        titleBox.setBackground(selected?Color.RED: Color.GRAY);
+        add(titleBox,c);
+        
+        hideButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(contents.isVisible()){
+					hide();
+				} else {
+					reveal();
+				}
+			}
+        });
+        
+        closeButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HashSet<Component> s = new HashSet<Component>();
+				s.add(component);
+				ComponentBoxView.getInstance().removeSet(s);
+			}
+        });
 
-//        setTitle(component.getType().getName());
-
-        // add the inputs/outputs
+        // title bar done, everything else goes into the hideable subpanel
+        
+        contents = new JPanel(new GridBagLayout());
+        c.gridy=0; // we're inside a new layout, so start again
 
         JPanel ptmp = new JPanel(new FlowLayout());
         // inputs is just a list of names
@@ -88,14 +131,12 @@ public class ComponentPanel extends JPanel {
         }
         
         ptmp.add(outputPanel);
-        add(ptmp,c);
+        contents.add(ptmp,c);
         c.gridy++;
-        
-        
 
         // now add the parameters! Also create an object to handle when we get a parameter change, and 
         // tell the patch
-        List<JComponent> list = component.createEditors(patch,new ParameterChangeListener(component,patch) {
+        List<JComponent> list = component.createEditors(new ParameterChangeListener(component) {
             @Override
             public void onChange(Parameter p) {
                 getPatch().update(new PatchChange(PatchChangeType.PARAMETER,getComponent(),p));
@@ -103,10 +144,12 @@ public class ComponentPanel extends JPanel {
         });
         
         for (JComponent comp : list) {
-            add(comp,c);
+            contents.add(comp,c);
             c.gridy++;
         }
 
+        c.gridy=1; // back in the outer layout, this is the second item
+        add(contents,c);
         //setMinimumSize(new Dimension(40, 40));
         setVisible(true);
     }
@@ -128,4 +171,32 @@ public class ComponentPanel extends JPanel {
         JLabel label = new JLabel(s, JLabel.LEFT);
         return label;
     }
+
+	public void setSelected(boolean b) {
+		selected = b;
+        titleBox.setBackground(selected?Color.RED: Color.GRAY);
+		titleBox.revalidate();
+		titleBox.repaint();
+	}
+	
+	public void hide(){
+		if(contents.isVisible()){
+			contents.setVisible(false);
+			hideButton.setIcon(Images.getImageIcon("icons/arrow_out"));
+			hideButton.repaint();
+			revalidate();
+			repaint();
+		}
+	}
+	
+	public void reveal(){
+		if(!contents.isVisible()){
+			contents.setVisible(true);
+			hideButton.setIcon(Images.getImageIcon("icons/arrow_in"));
+			hideButton.repaint();
+			revalidate();
+			repaint();
+		}
+	}
+
 }

@@ -7,7 +7,7 @@
  * \date $Date$
  */
 
-#include "model/model.h"
+#include "serverbase/model.h"
 #include "util/time.h"
 #include <math.h>
 

@@ -19,11 +19,11 @@ SOURCES += main.cpp \
     engine/effect.cpp \
     engine/tga.cpp\
     engine/mesh.cpp\
-    model/timer.cpp\
-    model/model.cpp\
-    model/errors.cpp\
-    model/server.cpp\
-    model/controller.cpp\
+    serverbase/timer.cpp\
+    serverbase/model.cpp\
+    serverbase/errors.cpp\
+    serverbase/server.cpp\
+    serverbase/controller.cpp\
     components/output.cpp\
     components/add.cpp\
     components/light.cpp\
@@ -55,7 +55,17 @@ HEADERS  += \
     engine/vertexdata.h \
     engine/state.h \
     engine/effect.h \
-    engine/tga.h\
-    model/server.h\
-    model/controller.h\
+    engine/tga.h \
+    serverbase/component.h \
+    serverbase/controller.h \
+    serverbase/errors.h \
+    serverbase/instances.h \
+    serverbase/intkeyedhash.h \
+    serverbase/iterator.h \
+    serverbase/list.h \
+    serverbase/model.h \
+    serverbase/param.h \
+    serverbase/patch.h \
+    serverbase/server.h \
+    serverbase/timer.h \
     engine/tokeniser.h

@@ -4,8 +4,8 @@
 #include <QGLWidget>
 #include <QKeyEvent>
 
-#include "model/model.h"
-#include "model/server.h"
+#include "serverbase/model.h"
+#include "serverbase/server.h"
 
 class GLWidget : public QGLWidget
 {

@@ -4,7 +4,7 @@
  *
  */
 
-#include "model/model.h"
+#include "serverbase/model.h"
 
 class PrintNumComponent : public ComponentType {
 public:

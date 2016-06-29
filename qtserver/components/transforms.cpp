@@ -6,7 +6,7 @@
  */
 
 #include "engine/engine.h"
-#include "model/model.h"
+#include "serverbase/model.h"
 
 /// base class for all transforms which sets up common parameters
 

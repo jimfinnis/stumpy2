@@ -22,9 +22,6 @@ Controller::Controller(PatchLibrary *l,Server *s){
     
     
     REG("test",0,Test);
-//    REG("startprims",0,StartPrims);
-//    REG("nextprim",0,NextPrim);
-    
     REG("startcomps",0,StartComps);
     REG("nextcomp",0,NextComp);
     REG("compinnm",1,CompInName);
@@ -75,26 +72,6 @@ METHOD(Die) {
     server->die();
 }
 
-/*
-extern void firstPrim();
-extern const char *nextPrim();
-
-METHOD(StartPrims) {
-    printf("Sending prims\n");
-    firstPrim();
-    const char *s = nextPrim();
-    printf("Prim: %s\n",s);
-    server->sendPrim(s);
-}
-
-METHOD(NextPrim) {
-    if(const char *s = nextPrim()){
-        printf("Prim: %s\n",s);
-        server->sendPrim(s);
-    } else
-        server->sendPrimsDone();
-}
-*/
 
 // arguments : patchid
 METHOD(NewPatch){

@@ -5,7 +5,7 @@
  */
 
 #include "engine/engine.h"
-#include "model/model.h"
+#include "serverbase/model.h"
 #include "engine/mesh.h"
 
 static const char *meshNames[]=
@@ -66,18 +66,6 @@ void loadPrims(){
 }
 
 
-static int iteratorct=0;
-
-void firstPrim(){
-    iteratorct=0; 
-}
-    
-const char *nextPrim(){
-    if(iteratorct==PrimComponent::ct)return NULL;
-    return meshNames[iteratorct++];
-}
-    
-    
 
 static PrimComponent reg;
 

@@ -12,7 +12,7 @@
  * \date $Date$
  */
 
-#include "model/model.h"
+#include "serverbase/model.h"
 
 class AddComponent : public ComponentType {
 public:

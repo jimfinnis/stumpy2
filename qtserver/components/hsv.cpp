@@ -5,7 +5,7 @@
  */
 
 #include "engine/engine.h"
-#include "model/model.h"
+#include "serverbase/model.h"
 #include <unistd.h>
 
 class HSVComponent : public ComponentType {

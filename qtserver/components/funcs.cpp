@@ -4,7 +4,7 @@
  *
  */
 
-#include "model/model.h"
+#include "serverbase/model.h"
 #include <math.h>
 static const char *funcNames[]=
 {

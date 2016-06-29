@@ -52,8 +52,6 @@ class Controller : public ServerListener {
 #define DECMETHOD(xx) void method##xx (int argc,char *argv[])
     
     DECMETHOD(Test);
-//    DECMETHOD(StartPrims);
-//    DECMETHOD(NextPrim);
     DECMETHOD(Die);
     DECMETHOD(Clear);
     DECMETHOD(NewPatch);

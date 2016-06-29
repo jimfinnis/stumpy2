@@ -7,7 +7,7 @@
  * \date $Date$
  */
 
-#include "model/model.h"
+#include "serverbase/model.h"
 
 class MulComponent : public ComponentType {
 public:

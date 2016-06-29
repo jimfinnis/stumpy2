@@ -1,5 +1,5 @@
 #include "glwidget.h"
-#include "model/controller.h"
+#include "serverbase/controller.h"
 #include "util/exception.h"
 #include "engine/effect.h"
 #include "engine/mesh.h"

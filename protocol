@@ -15,17 +15,6 @@ Unlock the server (see LOCK)
 
 ====== Config setup commands =======
 
-startprims
-start iterating prims, and send the first one
-                    401 <name>
-                OR  402 prims done
-                
-nextprim
-get next primitive
-                    401 <name>
-                OR  402 prims done
-                
-
 startcomps
 start iterating component types, sending description of first one
                     411 comps done

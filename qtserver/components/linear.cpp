@@ -5,7 +5,7 @@
  */
 
 #include "engine/engine.h"
-#include "model/model.h"
+#include "serverbase/model.h"
 
 struct lincop {
     lincop(){

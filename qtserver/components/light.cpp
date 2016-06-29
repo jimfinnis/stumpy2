@@ -1,5 +1,5 @@
 #include "engine/engine.h"
-#include "model/model.h"
+#include "serverbase/model.h"
 
 // Currently the diffuse light works by just setting the light
 // up for the rest of the frame. Later it should probably use 

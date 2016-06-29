@@ -9,6 +9,7 @@
 #define __PATCH_H
 
 #include "component.h"
+#include "stdConns.h"
 #include "instances.h"
 
 class PatchInstance;

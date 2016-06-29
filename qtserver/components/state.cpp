@@ -10,10 +10,11 @@
 
 class AlphaComponent : public ComponentType {
 public:
-    AlphaComponent() : ComponentType("alpha","state") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"mod");
-        setOutput(0,T_FLOW,"flow");
+    AlphaComponent() : ComponentType("alpha","state") {}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"mod");
+        setOutput(0,tFlow,"flow");
         
         setParams(
                   pAlpha = new FloatParameter("alpha",0,1,0.5),
@@ -24,16 +25,15 @@ public:
     
     virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         StateManager *sm = StateManager::getInstance();
         State *s = sm->push();
         
-        float modr =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
         s->overrides |= STO_ALPHA;
         s->alpha = pAlpha->get(c) + mod*pMod->get(c);
         
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
         sm->pop();
     }
 };
@@ -42,10 +42,10 @@ static AlphaComponent regalpha;
 
 class ClearComponent : public ComponentType {
 public:
-    ClearComponent() : ComponentType("clear","state") {
-        setInput(0,T_FLOW,"flow");
-        setOutput(0,T_FLOW,"flow");
-        
+    ClearComponent() : ComponentType("clear","state") {}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setOutput(0,tFlow,"flow");
         
         setParams(
                   pCol = new BoolParameter("col",false),
@@ -67,7 +67,7 @@ public:
                      pG->get(c),
                      pB->get(c),0);
         glClear(flags);
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
     }
 private:
     FloatParameter *pR,*pG,*pB;

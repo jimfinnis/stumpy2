@@ -12,24 +12,23 @@ LIBS += -lGLU
 
 SOURCES += main.cpp \
     glwidget.cpp \
-    util/time.cpp \
+    serverbase/util/time.cpp \
     engine/maths.cpp \
     engine/texture.cpp \
     engine/tokeniser.cpp \
     engine/effect.cpp \
     engine/tga.cpp\
     engine/mesh.cpp\
-    serverbase/timer.cpp\
     serverbase/model.cpp\
     serverbase/errors.cpp\
     serverbase/server.cpp\
     serverbase/controller.cpp\
+    serverbase/stdConns.cpp\
     components/output.cpp\
     components/add.cpp\
     components/light.cpp\
     components/prim.cpp\
     components/transforms.cpp\
-    components/test.cpp\
     components/mul.cpp\
     components/ring.cpp\
     components/clock.cpp\
@@ -47,8 +46,9 @@ SOURCES += main.cpp \
 
 HEADERS  += \
     glwidget.h \
-    util/exception.h \
-    util/types.h \
+    serverbase/util/exception.h \
+    serverbase/util/types.h \
+    serverbase/util/time.h \
     engine/maths.h \
     engine/texture.h \
     engine/mesh.h \
@@ -65,7 +65,7 @@ HEADERS  += \
     serverbase/list.h \
     serverbase/model.h \
     serverbase/param.h \
+    serverbase/stdConns.h \
     serverbase/patch.h \
     serverbase/server.h \
-    serverbase/timer.h \
     engine/tokeniser.h

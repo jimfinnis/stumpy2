@@ -43,8 +43,9 @@ public:
         }
     }
 
-    PrimComponent() : ComponentType("primitive","render") {
-        setOutput(0,T_FLOW,"flow");
+    PrimComponent() : ComponentType("primitive","render"){}
+    virtual void init() {
+        setOutput(0,tFlow,"flow");
         setParams(primType = new EnumParameter("mesh",meshNames,0),
                   NULL);
     }

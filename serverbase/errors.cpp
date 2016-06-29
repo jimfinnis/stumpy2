@@ -13,11 +13,13 @@ const char *errorStrings[] = {
     "Bad number of arguments",
     "Entity already exists",
     "No such entity",
+    
     "No such component type",
     "Input index out of range",
     "No such patch",
     "No such component",
     "Link of uninitialised component",
+    
     "Output index out of range",
     "Type mismatch in link",
     "Bad parameter type",
@@ -26,5 +28,6 @@ const char *errorStrings[] = {
     
     "Enum ID out of range",
     "Too many parameters in type",
-    "??","??","??","??",
+    "unknown connection type",
+    "??",
 };

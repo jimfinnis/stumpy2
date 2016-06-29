@@ -12,11 +12,11 @@
 
 class SimpleTransformComponentType : public ComponentType {
 public:
-    SimpleTransformComponentType(const char *name) :
-    ComponentType(name,"transforms") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"mod");
-        setOutput(0,T_FLOW,"flow");
+    SimpleTransformComponentType(const char *name) : ComponentType(name,"transforms") {}
+    virtual void init() {
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"mod");
+        setOutput(0,tFlow,"flow");
         setP();
     }
     
@@ -41,7 +41,7 @@ public:
     
     virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         MatrixStack *ms = StateManager::getInstance()->getx();
         ms->push();
@@ -53,7 +53,7 @@ public:
                          pZ->get(c) + mod*pModZ->get(c));
         ms->mul(&m);
         
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
         
         ms->pop();
     }
@@ -76,7 +76,7 @@ public:
     
     virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         MatrixStack *ms = StateManager::getInstance()->getx();
         ms->push();
@@ -88,7 +88,7 @@ public:
                          pZ->get(c) + mod*pModZ->get(c));
         ms->mul(&m);
         
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
         
         ms->pop();
     }
@@ -101,7 +101,7 @@ public:
     
     virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         float rotx  = pX->get(c) + mod*pModX->get(c);
         float roty  = pY->get(c) + mod*pModY->get(c);
@@ -114,7 +114,7 @@ public:
         m.setTranslation(0,0,0);
         m.makeRotate(rotx,roty,rotz,Matrix::ROT_YXZ);
         ms->mul(&m);
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
         
         ms->pop();
     }

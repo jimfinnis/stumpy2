@@ -5,6 +5,7 @@
  */
 
 #include "server.h"
+#include "stdConns.h"
 #include <ctype.h>
 
 /// flag tells us to exit
@@ -21,6 +22,13 @@ Server::Server(int port){
     printf("starting server on port %d\n",port);
     connected=false;
     exitreq=false;
+    
+    // register standard connection types, non-standards
+    // should have been done by now.
+    regStdCons();
+    // now we have connection types, we can register the
+    // component types
+    ComponentType::initAll();
     
     // signals we handle
     memset(&act,0,sizeof(act));

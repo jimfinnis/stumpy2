@@ -25,17 +25,33 @@ import org.pale.stumpy2.model.paramtypes.IntParam;
  */
 public class Configuration {
 
-	static {
-
-		// create the value types
-		ConnectionType.create("flow",'f', Color.BLACK);
-		ConnectionType.create("float", 'n', Color.BLUE);
-	}
-
 	/// this is a synchronous chat with the server to load the initial
 	/// configuration data
 	public static void readConfiguration(Client c) throws UnknownComponentTypeException, IOException, ProtocolException{
 		c.lock();
+		
+		// get connection types
+		ConnectionType.clear();
+		for(int i=0;;i++){
+			c.doSend("contype "+i);
+			CommsResult r = c.syncRead();
+			if(r.code == 417)break;
+			switch(r.code){
+			case 416:
+				String bits[] = r.status.split(":",5);
+				int id = Integer.parseInt(bits[0]);
+				String name = bits[1];
+				int red = Integer.parseInt(bits[2]);
+				int green = Integer.parseInt(bits[3]);
+				int blue = Integer.parseInt(bits[4]);
+				// we generate the ascii ID char here, as 'a'+id
+				ConnectionType.create(name, (char)(id+97), new Color(red,green,blue));
+				break;
+			default:
+				throw new ProtocolException("Unexpected message "+r.code);
+			}
+		}
+		
 		c.doSend("startcomps");
 		boolean compsDone = false;
 
@@ -57,7 +73,7 @@ public class Configuration {
 				// create the inputs
 				for(int i=0;i<inputs.length();i++){
 					char cc = inputs.charAt(i);
-					if(cc=='i')break;
+					if(cc=='-')break; // - marks end of list
 					c.doSend("compinnm "+i);
 					CommsResult pr = c.syncRead();
 					if(pr.code!=414)
@@ -68,7 +84,7 @@ public class Configuration {
 				// and the outputs
 				for(int i=0;i<outputs.length();i++){
 					char cc = outputs.charAt(i);
-					if(cc=='i')break;
+					if(cc=='-')break; // - marks end of list
 					c.doSend("compoutnm "+i);
 					CommsResult pr = c.syncRead();
 					if(pr.code!=415)

@@ -9,7 +9,7 @@
 #ifndef __INSTANCES_H
 #define __INSTANCES_H
 
-#include "timer.h"
+#include "util/time.h"
 
 class ComponentInstance;
 
@@ -61,12 +61,12 @@ struct ComponentInstance {
         component = NULL;
     }
     
-    /// the last tick this instance updated the given output
-    uint32_t updatedOutputTime[ComponentType::NUMOUTPUTS]; 
-          
     /// a null data for unconnected inputs
     static ConnectionValue noData;
     
+    /// the last tick this instance updated the given output
+    uint32_t updatedOutputTime[ComponentType::NUMOUTPUTS]; 
+          
     /// the value of my outputs, which run() will write
     ConnectionValue outputs[ComponentType::NUMOUTPUTS];
     
@@ -99,7 +99,7 @@ struct ComponentInstance {
         // initialise inputs and outputs
         
         for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
-            updatedOutputTime[i]=gTimerDevice.getTicks();
+            updatedOutputTime[i]=-1;
             outputs[i] = noData;
         }
     }
@@ -142,17 +142,18 @@ struct ComponentInstance {
     /// true if this is the first time that the component has been run on this frame, for
     /// this output
     inline bool isFirstCallThisFrameForOutput(int n){
-        if(updatedOutputTime[n]!=gTimerDevice.getTicks()){
+        if(updatedOutputTime[n]!=Time::ticks()){
             return true;
         } else
             return false;
     }
     
-    /// set the value of an output. No range checking, for speed! If this isn't called
+    /// get the output FOR SETTING. No range checking, for speed! If this isn't called
     /// for a component, the isFirstCallThisFrameForOutput() call will always return true.
-    inline void setOutput(int n,const ConnectionValue v){
-        updatedOutputTime[n]=gTimerDevice.getTicks();
-        outputs[n]=v;
+    /// Returns a reference to a value which can be set.
+    inline ConnectionValue& output(int n){
+        updatedOutputTime[n]=Time::ticks();
+        return outputs[n];
     }
     
     void shutdown(){

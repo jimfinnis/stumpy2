@@ -8,15 +8,16 @@
  */
 
 #include "serverbase/model.h"
-#include "util/time.h"
+#include "serverbase/util/time.h"
 #include <math.h>
 
 class OscComponent : public ComponentType {
     float t;
 public:
-    OscComponent() : ComponentType("osc","time") {
-        setInput(0,T_FLOAT,"mod");
-        setOutput(0,T_FLOAT,"out");
+    OscComponent() : ComponentType("osc","time"){}
+    virtual void init() {
+        setInput(0,tFloat,"mod");
+        setOutput(0,tFloat,"out");
         setParams(
                   pFreq = new FloatParameter("freq",0,5,1),
                   pMod = new FloatParameter("phase mod",-5,5,0),
@@ -26,16 +27,14 @@ public:
     
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(0) ? ci->getInput(0).f*
-                    pMod->get(c): 0;
-        
+        float mod =  tFloat->getInput(ci,0) * pMod->get(c);
         float freq = pFreq->get(c);
         float v = Time::now()*freq;
         
         // phase mod
         v += mod;
         
-        ci->setOutput(0,ConnectionValue::makeFloat(sinf(v)));
+        tFloat->setOutput(ci,0,sinf(v));
     }
     
 private:

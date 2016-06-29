@@ -219,7 +219,7 @@ private:
 };
 
 /// used for parsing errors (sometimes!)
-#include "util/exception.h"
+#include "serverbase/util/exception.h"
 
 class ParseException : public Exception {
 protected:

@@ -15,6 +15,11 @@ Unlock the server (see LOCK)
 
 ====== Config setup commands =======
 
+contype <idx>
+get connection type N or an error if out of bounds.
+                    416 <id (0-25)>:<name>:<red>:<green>:<blue>
+               OR   417 contypes done
+
 startcomps
 start iterating component types, sending description of first one
                     411 comps done

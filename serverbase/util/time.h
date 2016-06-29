@@ -10,6 +10,8 @@
 namespace Time {
 void init();
 double now();
+uint32_t ticks();
+void tick();
 };
 
 #endif /* __UTIME_H */

@@ -8,15 +8,15 @@
 
 class PrintNumComponent : public ComponentType {
 public:
-    PrintNumComponent() : ComponentType("PrintNum","maths") {
-        setInput(0,T_FLOAT,"x");
-        setOutput(0,T_FLOW,"flow");
+    PrintNumComponent() : ComponentType("PrintNum","maths"){}
+    virtual void init() {
+        setInput(0,tFloat,"x");
+        setOutput(0,tFlow,"flow");
     }
     
    virtual void run(ComponentInstance *ci,int out){
        Component *c = ci->component;
-       printf("%f\n",ci->getInput(0).f);
-        
+       printf("%f\n",tFloat->getInput(ci,0));
     }
 };
 

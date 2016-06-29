@@ -58,9 +58,10 @@ public:
         chdir(wd);
     }
 
-    TextureComponent() : ComponentType("texture","state") {
-        setInput(0,T_FLOW,"flow");
-        setOutput(0,T_FLOW,"flow");
+    TextureComponent() : ComponentType("texture","state"){}
+    virtual void init() {
+        setInput(0,tFlow,"flow");
+        setOutput(0,tFlow,"flow");
         setParams(pTex = new EnumParameter("texture",texFiles,0),
                   NULL);
     }
@@ -72,7 +73,7 @@ public:
         StateManager *sm = StateManager::getInstance();
         State *s = sm->push();
         s->texture = textures[n];
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
         sm->pop();
     }
 };

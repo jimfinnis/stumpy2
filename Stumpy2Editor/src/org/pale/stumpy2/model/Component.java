@@ -149,7 +149,7 @@ public class Component implements Visitable {
         if (output >= c.type.getOutputCount())
             throw new ConnectionOutOfRangeException();
 
-        if (c.getType().getOutputType(output) != getType().getInputType(input))
+        if (c.getType().getOutputType(output).getID() != getType().getInputType(input).getID())
             throw new ConnectionTypeMismatchException();
 
         inputs[input] = new Input(c, output);

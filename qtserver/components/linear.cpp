@@ -17,13 +17,14 @@ struct lincop {
 
 class LinearComponent : public ComponentType {
 public:
-    LinearComponent() : ComponentType("linear","transforms"){
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"mod1");
-        setInput(2,T_FLOAT,"mod2");
-        setOutput(0,T_FLOW,"flow");
-        setOutput(1,T_FLOAT,"pos");
-        setOutput(2,T_FLOAT,"crawlscale");
+    LinearComponent() : ComponentType("linear","transforms"){}
+    virtual void init() {
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"mod1");
+        setInput(2,tFloat,"mod2");
+        setOutput(0,tFlow,"flow");
+        setOutput(1,tFloat,"pos");
+        setOutput(2,tFloat,"crawlscale");
         
         setParams(
                   pCopies = new IntParameter("copies",2,100,4),
@@ -58,18 +59,18 @@ public:
         Component *c = ci->component;
         lincop *lcs = (lincop *)ci->privateData;
         if(out==1){
-            ci->setOutput(1,ConnectionValue::makeFloat(lcs->pos));
+            tFloat->setOutput(ci,1,lcs->pos);
         } else {
             int num;
-            if(ci->isInputConnected(2) && pMod2Copies->get(c))
-                num = (int)(ci->getInput(2).f);
+            if(pMod2Copies->get(c))
+                num = tFloat->getInput(ci,2);
             else
                 num = pCopies->get(c);
             
             if(num){
                 float spiralelementrot = pSpiralRot->get(c);
-                float mod1 = ci->isInputConnected(1) ?ci->getInput(1).f:0.0f;
-                float mod2 = ci->isInputConnected(2) ?ci->getInput(2).f:0.0f;
+                float mod1 = tFloat->getInput(ci,1);
+                float mod2 = tFloat->getInput(ci,2);
                 
                 float spacing = pSpacing->get(c) +
                       mod1*pMod1Spacing->get(c) +
@@ -139,9 +140,9 @@ public:
                         fade = (1.0f-o);
                     else
                         fade = 1;
-                    ci->setOutput(2,ConnectionValue::makeFloat(fade));
+                    tFloat->setOutput(ci,2,fade);
                     ci->getInput(0);
-                    ci->setOutput(0,ConnectionValue::makeFlow());
+                    tFlow->setOutput(ci,0);
                     
                     ms->pop();
                 }

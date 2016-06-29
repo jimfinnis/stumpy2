@@ -11,10 +11,11 @@
 
 class MulComponent : public ComponentType {
 public:
-    MulComponent() : ComponentType("mul","maths") {
-        setInput(0,T_FLOAT,"x");
-        setInput(1,T_FLOAT,"y");
-        setOutput(0,T_FLOAT,"x*y");
+    MulComponent() : ComponentType("mul","maths"){}
+    virtual void init() {
+        setInput(0,tFloat,"x");
+        setInput(1,tFloat,"y");
+        setOutput(0,tFloat,"x*y");
         setParams(
                      pAdd1 = new FloatParameter("add 1",-100,100,0),
                      pMul1 = new FloatParameter("mul 1",-100,100,1),
@@ -27,11 +28,9 @@ public:
    virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         
-        float a = (ci->getInput(0).f+pAdd1->get(c))*pMul1->get(c);
-        float b = (ci->getInput(1).f+pAdd2->get(c))*pMul2->get(c);
-        
-        ci->setOutput(0,ConnectionValue::makeFloat(a*b));
-        
+        float a = (tFloat->getInput(ci,0)+pAdd1->get(c))*pMul1->get(c);
+        float b = (tFloat->getInput(ci,1)+pAdd2->get(c))*pMul2->get(c);
+        tFloat->setOutput(ci,0,a*b);
     }
     
 private:

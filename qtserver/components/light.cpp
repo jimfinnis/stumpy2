@@ -8,10 +8,11 @@
 
 class DiffuseLightComponent : public ComponentType {
 public:
-    DiffuseLightComponent() : ComponentType("diffuse-light","light") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"mod");
-        setOutput(0,T_FLOW,"flow");
+    DiffuseLightComponent() : ComponentType("diffuse-light","light") {}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"mod");
+        setOutput(0,tFlow,"flow");
     
         setParams(
                   pN = new IntParameter("index",0,3,0),
@@ -40,7 +41,7 @@ public:
         int n = pN->get(c);
         
         // work out the colour
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         s->light.col[n].x = pR->get(c) + mod*pModR->get(c);
         s->light.col[n].y = pG->get(c) + mod*pModG->get(c);
@@ -52,7 +53,7 @@ public:
         s->light.dir[n].transform(Vector::Z,*m);
         
         // and run the somewhat irrelevant input
-        ci->getInput(0);
+        tFlow->getInput(ci,0);
     }
     
 private:

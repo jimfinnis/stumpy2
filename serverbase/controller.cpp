@@ -30,6 +30,8 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("compparam",1,CompParam); // paramidx
     REG("compenum",2,CompEnum); // paramidx enumidx
     
+    REG("contype",1,ConType); // typeidx
+    
     REG("die",0,Die);
     
     REG("clear",0,Clear);
@@ -110,7 +112,7 @@ METHOD(SetRunAlways){
     if(!c)throw SE_NOSUCHCOMP;
     uint32_t oid = atoi(argv[2]);
     if(oid>=ComponentType::NUMOUTPUTS)throw SE_OUTPUTRANGE;
-    if(c->type->outputTypes[oid]==T_INVALID)
+    if(c->type->outputTypes[oid]==NULL)
         throw SE_OUTPUTRANGE;
     c->setOutputRunAlways(oid,*argv[3]=='y');
     server->success();
@@ -143,13 +145,12 @@ METHOD(DeleteComponent){
 }
 
 static ComponentType *curCT = NULL;
-inline char getconntypestr(ConnectionType t){
-    switch(t){
-    case T_FLOW:return 'f';
-    case T_FLOAT:return 'n';
-    default:
-    case T_INVALID:return 'i';
-    }
+// really, more than 26 types is just daft.
+inline char getconntypestr(ConnectionType *t){
+    if(t==NULL)
+        return '-'; // no connection
+    else
+        return 'a'+t->id;
 }
     
 void Controller::sendCurCT(){
@@ -206,6 +207,22 @@ METHOD(CompParam){
     sprintf(buf,"412 %s",curCT->params[pidx]->getDesc());
     output(buf);
 }
+
+METHOD(ConType){
+    char buf[1024];
+    int idx = atoi(argv[0]);
+    ConnectionType *c = connectionTypeList.getItemByIndex(idx);
+    if(c){
+        uint32_t r = (c->col >> 24) & 0xff;
+        uint32_t g = (c->col >> 16) & 0xff;
+        uint32_t b = (c->col >> 8) & 0xff;
+        sprintf(buf,"416 %d:%s:%d:%d:%d",c->id,c->name,r,g,b);
+    } else
+        sprintf(buf,"417 contypes done");
+    output(buf);
+        
+}
+
 
 METHOD(CompEnum){
     char buf[1024];

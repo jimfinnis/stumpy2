@@ -56,6 +56,13 @@ public class ConnectionType {
     }
     
     /**
+     * return the ID, used for checking matching connections
+     */
+    public int getID(){
+    	return id;
+    }
+    
+    /**
      * Get the colour for connections of this type
      * @return colour
      */
@@ -84,7 +91,7 @@ public class ConnectionType {
     }
     
     /**
-     * Use this to create value type objects.
+     * Use this to create connection type objects.
      * @param name the name 
      * @param c the colour for rendering connector/connections of this type
      * @return the new object (which you probably won't use here)
@@ -93,6 +100,11 @@ public class ConnectionType {
         if(mapStrToType.get(name)!=null)
             throw new RuntimeException("double create of value type : "+name);
         return new ConnectionType(name,id,c);
+    }
+    
+    public static void clear(){
+    	mapStrToType.clear();
+    	mapCharToType.clear();
     }
     
 }

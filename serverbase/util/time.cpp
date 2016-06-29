@@ -5,10 +5,13 @@
  */
 
 #include <unistd.h>
+#include <stdint.h>
 #include <time.h>
-#include "util/time.h"
+#include "time.h"
 
+namespace Time {
 
+uint32_t ticksctr=0;
 static timespec progstart;
 inline double time_diff(timespec start, timespec end)
 {
@@ -27,8 +30,6 @@ inline double time_diff(timespec start, timespec end)
     return t;
 }
 
-namespace Time {
-
 void init(){
     clock_gettime(CLOCK_MONOTONIC,&progstart);
 }
@@ -38,6 +39,13 @@ double now(){
     clock_gettime(CLOCK_MONOTONIC,&t);
     return time_diff(progstart,t);
 }
-    
+
+uint32_t ticks(){
+    return ticksctr;
+}
+
+void tick(){
+    ticksctr++;
+}
 
 }

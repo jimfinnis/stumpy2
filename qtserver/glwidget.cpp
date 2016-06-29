@@ -1,6 +1,6 @@
 #include "glwidget.h"
 #include "serverbase/controller.h"
-#include "util/exception.h"
+#include "serverbase/util/exception.h"
 #include "engine/effect.h"
 #include "engine/mesh.h"
 #include <stdio.h>
@@ -53,7 +53,7 @@ void GLWidget::quit(){
 
 void GLWidget::paintGL(){
     server->process();
-    gTimerDevice.tick();
+    Time::tick();
     glClearColor(0,0,0.4,0);
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     lib.run();

@@ -9,11 +9,12 @@
 
 class RingComponent : public ComponentType {
 public:
-    RingComponent() : ComponentType("ring","transforms") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"mod");
-        setOutput(0,T_FLOW,"flow");
-        setOutput(1,T_FLOAT,"angle");
+    RingComponent() : ComponentType("ring","transforms"){}
+    virtual void init () {
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"mod");
+        setOutput(0,tFlow,"flow");
+        setOutput(1,tFloat,"angle");
         setParams(
                   pCount = new IntParameter("count",2,100,4),
                   pRad = new FloatParameter("radius",0,100,4),
@@ -26,7 +27,7 @@ public:
     
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
-        float mod =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
+        float mod =  tFloat->getInput(ci,1);
         
         MatrixStack *ms = StateManager::getInstance()->getx();
         
@@ -41,16 +42,16 @@ public:
         scale.setScale(sc,sc,sc);
         for(int i=0;i<ct;i++,theta+=step){
             ms->push();
-            ci->setOutput(1,ConnectionValue::makeFloat(theta));
+            tFloat->setOutput(ci,1,theta);
             rot.setRotZ(theta);
             m = translate*rot;
             m = scale*m;
         
             ms->mul(&m);
-            ci->getInput(0);
-            ci->setOutput(0,ConnectionValue::makeFlow());
+            tFlow->getInput(ci,0);
             ms->pop();
         }
+        tFlow->setOutput(ci,0);
     }
     
     

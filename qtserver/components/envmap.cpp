@@ -49,13 +49,14 @@ public:
         chdir(wd);
     }
 
-    EnvMapComponent() : ComponentType("envmap","state") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"amount-mod"); //amountmod
-        setInput(2,T_FLOAT,"r-mod"); //rmod
-        setInput(3,T_FLOAT,"g-mod"); //gmod
-        setInput(4,T_FLOAT,"b-mod"); //bmod
-        setOutput(0,T_FLOW,"flow");
+    EnvMapComponent() : ComponentType("envmap","state"){}
+    virtual void init() {
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"amount-mod"); //amountmod
+        setInput(2,tFloat,"r-mod"); //rmod
+        setInput(3,tFloat,"g-mod"); //gmod
+        setInput(4,tFloat,"b-mod"); //bmod
+        setOutput(0,tFlow,"flow");
         setParams(pTex = new EnumParameter("texture",texFiles,0),
                   pA = new FloatParameter("amount",0,1,0.6),
                   pR = new FloatParameter("red",0,1,1),
@@ -74,13 +75,12 @@ public:
         
         // work out the colour
         
-        float moda =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
-        float modr =  ci->isInputConnected(2) ? ci->getInput(2).f : 0;
-        float modg =  ci->isInputConnected(3) ? ci->getInput(3).f : 0;
-        float modb =  ci->isInputConnected(4) ? ci->getInput(4).f : 0;
+        float moda = tFloat->getInput(ci,1);
+        float modr = tFloat->getInput(ci,2);
+        float modg = tFloat->getInput(ci,3);
+        float modb = tFloat->getInput(ci,4);
         
         float a = pA->get(c) + moda*pModA->get(c);
-        
         
         int n = pTex->get(c) % ct;
         StateManager *sm = StateManager::getInstance();

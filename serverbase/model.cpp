@@ -263,3 +263,39 @@ int EnumParameter::get(Component *c){
     return c->paramVals[idx].i;
 }
 
+
+/// connection type registry
+IntKeyedHash<ConnectionType*> connectionTypes;
+
+/// will create and register the type
+ConnectionType::ConnectionType(int i,const char *n,uint32_t c,ConnectionBaseType b){
+    id=i;
+    name=n;
+    col=c;
+    base=b;
+    
+    if(connectionTypes.find(i))
+        throw SE_ALREADY;
+    if(id>25) // because we use alpha chars to encode type
+        throw SE_ENUMOUTOFRANGE;
+    
+    ConnectionType **ptr = connectionTypes.set(i);
+    *ptr = this;
+    
+    connectionTypeList.addToHead(this);
+}
+
+/// lookup a type by id
+ConnectionType *ConnectionType::get(int id){
+    if(connectionTypes.find(id)){
+        return *connectionTypes.getval();
+    }
+    throw SE_UNKNOWNCONTYPE;
+}
+
+
+LinkedList<ConnectionType,0> connectionTypeList;
+
+
+
+

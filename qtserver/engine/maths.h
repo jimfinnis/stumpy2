@@ -2,8 +2,8 @@
 #define __MATHS_h
 
 #include <assert.h>
-#include "util/types.h"
-#include "util/exception.h"
+#include "serverbase/util/types.h"
+#include "serverbase/util/exception.h"
 
 #include <math.h>
 #include <string.h>

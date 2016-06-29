@@ -10,12 +10,13 @@
 
 class HSVComponent : public ComponentType {
 public:
-    HSVComponent() : ComponentType("hsv","state") {
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOAT,"h-mod");
-        setInput(2,T_FLOAT,"s-mod");
-        setInput(3,T_FLOAT,"v-mod");
-        setOutput(0,T_FLOW,"flow");
+    HSVComponent() : ComponentType("hsv","state"){}
+    virtual void init() {
+        setInput(0,tFlow,"flow");
+        setInput(1,tFloat,"h-mod");
+        setInput(2,tFloat,"s-mod");
+        setInput(3,tFloat,"v-mod");
+        setOutput(0,tFlow,"flow");
         
         setParams(
                   pH = new FloatParameter("hue",0,1,0),
@@ -33,9 +34,9 @@ public:
         State *s = sm->push();
         
         // work out the colour
-        float modh =  ci->isInputConnected(1) ? ci->getInput(1).f : 0;
-        float mods =  ci->isInputConnected(2) ? ci->getInput(2).f : 0;
-        float modv =  ci->isInputConnected(3) ? ci->getInput(3).f : 0;
+        float modh =  tFloat->getInput(ci,1);
+        float mods =  tFloat->getInput(ci,2);
+        float modv =  tFloat->getInput(ci,3);
         
         float hue = pH->get(c) + modh*pModH->get(c);
         float sat = pS->get(c) + mods*pModS->get(c);

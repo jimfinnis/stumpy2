@@ -64,4 +64,7 @@ extern const char *errorStrings[];
 /// too many params
 #define SE_TOOMANYPARAMS 16
 
+/// unknown connection type in search by ID
+#define SE_UNKNOWNCONTYPE 17
+
 #endif /* __ERRORS_H */

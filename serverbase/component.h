@@ -28,44 +28,75 @@
 class Component;
 class ComponentInstance;
 
+extern LinkedList<class ConnectionType,0> connectionTypeList;
 
-/// the various connection types
 
-enum ConnectionType {
-    T_FLOW, //!< a flow
-          T_FLOAT, //!< a numeric value
-          T_INVALID, //!< not yet defined
+/// Connection types, which need to be registered by the application.
+/// Each connection type indicates the name, ID, rendering colour
+/// and underlying C++ type.
+/// Connection values are a structure of the type pointer and a
+/// union of those underlying types.
+
+enum ConnectionBaseType {
+    FLOAT, //!< 32-bit float
+    INT, //!< 32-bit signed int          
+    BITFIELD, //!< 128-bit field
+          
+    NONE //!< no value (such as the "flow" type)
 };
 
-/// a union incorporating the different values for connections;
-/// one entry for each ConnectionType
+struct ConnectionType {
+    const char *name; //!< type name
+    uint32_t col; //!< rendering colour (rgba)
+    ConnectionBaseType base; //!< the underlying C++ type
+    
+    /// make me able to be in one list
+    ListNode<ConnectionType> listnodes[1];
+    
+    int id; //!< unique type ID (passed to client)
+    /// will create and register the type
+    ConnectionType(int id,const char *n,uint32_t c,ConnectionBaseType b);
+    
+    /// get type by ID
+    static ConnectionType *get(int id);
+};
 
-union ConnectionValue {
-    float f;
-    int i;
-    
-    // for flow values
+/// a simple 128-bitfield
+class BitField {
+private:
+    uint32_t bits[4];
+public:
+    /// can't have a ctor because it won't go in the union
+    /// without complicating matters.
+    void clear(){
+        for(int i=0;i<4;i++)bits[i]=0;
+    }
+    bool get(int b){
+        uint32_t i = bits[b>>5];
+        return (i & (1<<(b&0x1f)))!=0;
+    }
+    void set(int b,bool v){
+        uint32_t *i = bits+(b>>5);
+        if(v){
+            *i |= 1<<(b&0x1f);
+        } else {
+            *i &= ~(1<<(b&0x1f));
+        }
+    }
+};
+
+/// a struct + union incorporating the different values for connections.
+
+struct ConnectionValue {
+    ConnectionType *t;
     ConnectionValue(){
-        i=0;
+        t=NULL; // indicates no data
     }
-    
-    static ConnectionValue makeFloat(float f){
-        ConnectionValue t;
-        t.f = f;
-        return t;
-    }
-    static ConnectionValue makeInt(float i){
-        ConnectionValue t;
-        t.i = i;
-        return t;
-    }
-    
-    static ConnectionValue makeFlow(){
-        ConnectionValue t;
-        return t;
-    }
-              
-              
+    union {
+        float f;
+        int i;
+        BitField b;
+    } d;
 };
 
 
@@ -113,7 +144,8 @@ public:
     /// The constructor adds the newly created object to this list.
     static LinkedList<ComponentType,0> *types;
     
-    /// create new type. Naturally you'll override this. This will add the
+    /// create new type. ONLY OVERRIDE THIS WITH AN EMPTY BODY -
+    /// use init() instead for other stuff. This will add the
     /// type to the internal static type list (initialising it if
     /// necessary)
     
@@ -126,8 +158,8 @@ public:
         width=DEFAULTWIDTH;
         height=DEFAULTHEIGHT;
               
-        for(int i=0;i<NUMINPUTS;i++)inputTypes[i]=T_INVALID;
-        for(int i=0;i<NUMOUTPUTS;i++)outputTypes[i]=T_INVALID;
+        for(int i=0;i<NUMINPUTS;i++)inputTypes[i]=NULL;
+        for(int i=0;i<NUMOUTPUTS;i++)outputTypes[i]=NULL;
         
         if(!types)
             types = new LinkedList<ComponentType,0>();
@@ -137,6 +169,11 @@ public:
         printf("Component registered: %s\n",n);
     }
     
+    /// this is what you need to override to set up the new type.
+    /// It's this way to allow autoregistration by declaring a static,
+    /// without the static initialisation order fiasco.
+    virtual void init()=0;
+    
     /// get a pointer to a given type.
     static ComponentType *getType(const char *n){
         for(ComponentType *t = types->head();t;t=types->next(t)){
@@ -144,6 +181,16 @@ public:
         }
         throw(SE_NOSUCHCOMPT);
     }
+    
+    /// run through all the components, calling their init()s. Done
+    /// after connection types have all been registered, in the server
+    /// startup.
+    static void initAll(){
+        for(ComponentType *t = types->head();t;t=types->next(t)){
+            t->init();
+        }
+    }
+        
     
     /// run the component, in order to get the numbered output.
     /// For a root component, running this once will run the entire
@@ -164,21 +211,21 @@ public:
     /// shutdown the private runtime data
     virtual void shutdownComponentInstance(UNUSED ComponentInstance *c){};
     
-    /// an array of the types (T_FLOAT, T_FLOW etc.) of each output
+    /// an array of the types of each output
     
-    ConnectionType inputTypes[NUMINPUTS];
-    ConnectionType outputTypes[NUMOUTPUTS];
+    ConnectionType *inputTypes[NUMINPUTS];
+    ConnectionType *outputTypes[NUMOUTPUTS];
     
     /// get the type of a given input, checking for validity
     
-    inline ConnectionType getInputType(int n){
+    inline ConnectionType *getInputType(int n){
         assertInputInRange(n);
         return inputTypes[n];
     }
     
     /// get the type of a given output, checking for validity
     
-    inline ConnectionType getOutputType(int n){
+    inline ConnectionType *getOutputType(int n){
         assertOutputInRange(n);
         return outputTypes[n];
     }
@@ -195,13 +242,13 @@ private:
     }
 protected:
     /// use this in the ctor to set up the connections
-    void setInput(int n, ConnectionType t,const char *name){
+    void setInput(int n, ConnectionType *t,const char *name){
         assertInputInRange(n);
         inputTypes[n]=t;
         inputNames[n]=name;
     }
     /// use this in the ctor to set up the connections
-    void setOutput(int n, ConnectionType t,const char *name){
+    void setOutput(int n, ConnectionType *t,const char *name){
         assertOutputInRange(n);
         outputTypes[n]=t;
         outputNames[n]=name;

@@ -55,6 +55,7 @@ class Controller : public ServerListener {
     DECMETHOD(Die);
     DECMETHOD(Clear);
     DECMETHOD(NewPatch);
+    DECMETHOD(ConType);
     DECMETHOD(DelPatch);
     DECMETHOD(NewComponent);
     DECMETHOD(DeleteComponent);

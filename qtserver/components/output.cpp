@@ -3,11 +3,12 @@
 
 class OutputComponent : public ComponentType {
 public:
-    OutputComponent() : ComponentType("output","control"){
-        setInput(0,T_FLOW,"flow");
-        setInput(1,T_FLOW,"flow");
-        setInput(2,T_FLOW,"flow");
-        setInput(3,T_FLOW,"flow");
+    OutputComponent() : ComponentType("output","control"){}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setInput(1,tFlow,"flow");
+        setInput(2,tFlow,"flow");
+        setInput(3,tFlow,"flow");
         
         // no parameters
         setParams(NULL);
@@ -22,10 +23,10 @@ public:
         
         StateManager *sm = StateManager::getInstance();
         sm->reset();
-        ci->getInput(0);
-        ci->getInput(1);
-        ci->getInput(2);
-        ci->getInput(3);
+        tFlow->getInput(ci,0);
+        tFlow->getInput(ci,1);
+        tFlow->getInput(ci,2);
+        tFlow->getInput(ci,3);
     }
 };
 

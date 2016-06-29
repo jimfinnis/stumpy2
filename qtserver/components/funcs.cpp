@@ -33,10 +33,11 @@ inline float dofunc(float x,float y,int i){
 
 class FuncComponent : public ComponentType {
 public:
-    FuncComponent() : ComponentType("func","maths") {
-        setInput(0,T_FLOAT,"x");
-        setInput(1,T_FLOAT,"y");
-        setOutput(0,T_FLOAT,"f(x)");
+    FuncComponent() : ComponentType("func","maths"){}
+    virtual void init() {
+        setInput(0,tFloat,"x");
+        setInput(1,tFloat,"y");
+        setOutput(0,tFloat,"f(x)");
         setParams(
                   pMulIn1 = new FloatParameter("mul-in-x",-100,100,1),
                   pAddIn1 = new FloatParameter("add-in-x",-100,100,0),
@@ -52,13 +53,13 @@ public:
     virtual void run(ComponentInstance *ci,int outnum){
         Component *c = ci->component;
         
-        float in1 = ci->getInput(0).f*pMulIn1->get(c)+pAddIn1->get(c);
-        float in2 = ci->getInput(1).f*pMulIn2->get(c)+pAddIn2->get(c);
+        float in1 = tFloat->getInput(ci,0)*pMulIn1->get(c)+pAddIn1->get(c);
+        float in2 = tFloat->getInput(ci,1)*pMulIn2->get(c)+pAddIn2->get(c);
         float out = dofunc(in1,in2,pFunc->get(c));
         out *= pMulOut->get(c);
         out += pAddOut->get(c);
         
-        ci->setOutput(0,ConnectionValue::makeFloat(out));
+        tFloat->setOutput(ci,0,out);
     }
     
 private:

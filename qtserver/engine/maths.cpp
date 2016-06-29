@@ -276,6 +276,8 @@ void Matrix::setFromPosAndTarget(const Vector &pos, const Vector &target,const V
 /// convert a (0-1) HSV triplet into a (0-1) RGB triplet
 void Colour::HSVtoRGB(float *r,float *g,float *b,float h,float s,float v)
 {
+    h = fmodf(h,1);
+    if(h<0)h=1+h;
     if(h<0.0001f)h=0.0001f;
     if(h>0.9999f)h=0.9999f;
     if(s>1)s=1;

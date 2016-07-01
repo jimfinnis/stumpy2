@@ -16,7 +16,6 @@ import org.pale.stumpy.model.ParameterChangeListener;
 
 public class BoolEditor extends JPanel implements ChangeListener {
     private Parameter param;
-    private JLabel valueLabel;
     private ParameterChangeListener paramChangeListener;
 
     BoolEditor(BoolParam p, ParameterChangeListener listener){

@@ -15,6 +15,10 @@ Unlock the server (see LOCK)
 
 ====== Config setup commands =======
 
+:n....
+store remainder of line into stored string n (0-9)
+                    000 OK
+
 contype <idx>
 get connection type N or an error if out of bounds.
                     416 <id (0-25)>:<name>:<red>:<green>:<blue>
@@ -74,30 +78,45 @@ delete a patch in this library
                 OR  nnn error
 
 nc <pid> <cid> <type>
+create new component, given the patch ID, ID for new component, and type
                     000 OK 
                 OR  nnn error
 
 dc <pid> <cid>
+delete component
                     000 OK 
                 OR  nnn error
 
 lc <pid> <incid> <inputidx> <outcid> <outputidx>
+link two components
                     000 OK 
                 OR  nnn error
 
 ui <pid> <cid> <inputidx>
+unlink an input connection
                     000 OK 
                 OR  nnn error
 
 uo <pid> <cid> <outputidx>
+unlink an output connection
                     000 OK 
                 OR  nnn error
 
 p <pid> <cid> <paramidx> <typecode> <encodedval>
+change a parameter value - the encoding depends on the parameter type
+and ranges set in the component
+                    000 OK 
+                OR  nnn error
+
+pss <pid> <cid> <paramidx> <typecode> <stringid 0-9>
+change a parameter value - the encoding depends on the parameter type
+and ranges set in the component, value fetched from previously
+set stored string
                     000 OK 
                 OR  nnn error
 
 run <pid>
+start a patch running
                     000 OK 
                 OR  nnn error
 

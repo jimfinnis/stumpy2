@@ -29,5 +29,5 @@ const char *errorStrings[] = {
     "Enum ID out of range",
     "Too many parameters in type",
     "unknown connection type",
-    "??",
+    "bad string store/fetch command",
 };

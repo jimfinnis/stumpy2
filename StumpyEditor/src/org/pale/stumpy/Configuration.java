@@ -16,6 +16,7 @@ import org.pale.stumpy.model.paramtypes.BoolParam;
 import org.pale.stumpy.model.paramtypes.EnumParam;
 import org.pale.stumpy.model.paramtypes.FloatParam;
 import org.pale.stumpy.model.paramtypes.IntParam;
+import org.pale.stumpy.model.paramtypes.StringParam;
 
 /**
  * This class contains static methods setting up the configuration, typically
@@ -134,10 +135,13 @@ public class Configuration {
 		case 'b':
 			p = new BoolParam(s[1], s[2].charAt(0)=='y');
 			break;
+		case 's':
+			p = new StringParam(s[1],s[2]);
+			break;
 		case 'e':
 			String[] enumStrings = readEnumStrings(c,pidx,Integer.parseInt(s[2]));
 			p = new EnumParam(s[1],enumStrings,Integer.parseInt(s[3]));
-			break; // Hm.
+			break; // Hm. (I have no idea why I wrote "Hm.")
 		default:
 			throw new ProtocolException("bad parameter type: "+s[0]);
 		}

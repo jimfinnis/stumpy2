@@ -16,6 +16,7 @@ import org.pale.stumpy2.model.paramtypes.BoolParam;
 import org.pale.stumpy2.model.paramtypes.EnumParam;
 import org.pale.stumpy2.model.paramtypes.FloatParam;
 import org.pale.stumpy2.model.paramtypes.IntParam;
+import org.pale.stumpy2.model.paramtypes.StringParam;
 
 /**
  * This class contains static methods setting up the configuration, typically
@@ -146,6 +147,9 @@ public class Configuration {
 		case 'i':
 			p = new IntParam(s[1], Integer.parseInt(s[2]), 
 					Integer.parseInt(s[3]), Integer.parseInt(s[4]));
+			break;
+		case 's':
+			p = new StringParam(s[1], s[2]);
 			break;
 		case 'b':
 			p = new BoolParam(s[1], s[2].charAt(0)=='y');

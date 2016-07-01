@@ -18,10 +18,31 @@ class Component;
 
 /// parameter values, stored in an array in the Component,
 /// indexed by the idx in the Parameter in the ComponentType.
-union ParameterValue {
-    int i;
-    float f;
-    bool b;
+/// A bit hacky because of the string - imagine deleting it
+/// if it's of the wrong type!
+struct ParameterValue {
+    ParameterValue(){
+        s = NULL;
+    }
+    ~ParameterValue(){
+        if(s)free((void *)s);
+    }
+    const char *getstr(){
+        return s;
+    }
+    void setstr(const char *str){
+        if(s)free((void *)s);
+        s=strdup(str);
+    }
+    
+    union {
+        // trivial elements
+        int i;
+        float f;
+        bool b;
+    } d;
+private:
+    const char *s; // reallocated every time set
 };
 
 /// this describes the parameter, and exists in the component type.
@@ -80,7 +101,7 @@ public:
     
     
     virtual void setDefault(ParameterValue *v){
-        v->i = initval;
+        v->d.i = initval;
     }
     virtual void set(Component *comp,char c, const char *s);
     
@@ -119,7 +140,7 @@ public:
     }
     
     virtual void setDefault(ParameterValue *v){
-        v->i = initval;
+        v->d.i = initval;
     }
     virtual void set(Component *comp,char c, const char *s);
     int get(Component *c);
@@ -147,7 +168,7 @@ public:
     }
     
     virtual void setDefault(ParameterValue *v){
-        v->f = initval;
+        v->d.f = initval;
     }
     
     virtual void set(Component *comp,char c, const char *s);
@@ -175,10 +196,35 @@ public:
     virtual void set(Component *comp,char c, const char *s);
     
     virtual void setDefault(ParameterValue *v){
-        v->b = initval;
+        v->d.b = initval;
     }
     
     bool get(Component *c);
+};
+
+class StringParameter : public Parameter {
+private:
+    const char *initval;
+public:
+    
+    StringParameter(const char *n,const char* init) : Parameter(n){
+        code = 's';
+        initval = init;
+    }
+    
+    virtual const char *getDesc(){
+        static char buf[1024];
+        sprintf(buf,"s:%s:%s",name,initval);
+        return buf;
+    }
+    
+    virtual void set(Component *comp,char c, const char *s);
+    
+    virtual void setDefault(ParameterValue *v){
+        v->setstr(initval);
+    }
+    
+    const char *get(Component *c);
 };
 
 

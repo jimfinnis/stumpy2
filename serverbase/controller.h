@@ -64,6 +64,7 @@ class Controller : public ServerListener {
     DECMETHOD(UnlinkComponentOutput);
     DECMETHOD(SetRunAlways);
     DECMETHOD(ParamSet);
+    DECMETHOD(ParamSetStoredString);
     DECMETHOD(RunPatch);
     
     DECMETHOD(StartComps);
@@ -72,6 +73,9 @@ class Controller : public ServerListener {
     DECMETHOD(CompOutName);
     DECMETHOD(CompParam);
     DECMETHOD(CompEnum);
+    
+    /// stored strings for commands which need them
+    char storedStrings[10][1024];
     
     
     /// output to server if there is one
@@ -100,36 +104,49 @@ class Controller : public ServerListener {
     void process(char *q){
         char *argv[16];
         int argc=0;
-        char *command = strtok(q," \t");
-        if(!command)
-            printf("empty command\n");
-        else {
-            while(char *s = strtok(NULL," \t")){
-                if(argc==16)
-                    throw new Exception("too many args in command",command);
-                argv[argc++]=s;
-            }
-            
-            // look up the command
-            int i;
-            for(i=0;i<commandct;i++){
-                if(!strcmp(commands[i].name,command)){
-                    if(argc!=commands[i].argc){
-                        server->fail(SE_BADARGC);
-                    } else {
-                        try{
-                            (this->*(commands[i].method))(argc,argv);
-                        } catch(int n) {
-                            // catch numeric exceptions
-                            server->fail(n);
-                        }
-                    }
-                    break;
+        
+        if(*q == ':'){
+            q++;
+            if(*q>='9' || *q<'0')
+                server->fail(SE_BADSTRING);
+            // a string parameter for a subsequent command. Stash it.
+            // This breaks statelessness, but as the server is all about
+            // state (i.e. updating a model) it's not a problem
+            int stringNumber = (*q++)-'0';
+            strncpy(storedStrings[stringNumber],q,1024);
+            server->success();
+        } else {
+            char *command = strtok(q," \t");
+            if(!command)
+                printf("empty command\n");
+            else {
+                while(char *s = strtok(NULL," \t")){
+                    if(argc==16)
+                        throw new Exception("too many args in command",command);
+                    argv[argc++]=s;
                 }
-            }
-            if(i==commandct){
-                printf("UNKNOWN COMMAND %s\n",command);
-                server->fail(SE_UNKNOWNCOMMAND);
+                
+                // look up the command
+                int i;
+                for(i=0;i<commandct;i++){
+                    if(!strcmp(commands[i].name,command)){
+                        if(argc!=commands[i].argc){
+                            server->fail(SE_BADARGC);
+                        } else {
+                            try{
+                                (this->*(commands[i].method))(argc,argv);
+                            } catch(int n) {
+                                // catch numeric exceptions
+                                server->fail(n);
+                            }
+                        }
+                        break;
+                    }
+                }
+                if(i==commandct){
+                    printf("UNKNOWN COMMAND %s\n",command);
+                    server->fail(SE_UNKNOWNCOMMAND);
+                }
             }
         }
     }

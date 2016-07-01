@@ -44,6 +44,7 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("ui",3,UnlinkComponentInput); // patchid componentid input
     REG("uo",3,UnlinkComponentOutput); // patchid componentid output
     REG("p",5,ParamSet); // patchid componentid paramid code encval
+    REG("pss",5,ParamSetStoredString); // patchid componentid paramid code stringno
     REG("run",1,RunPatch); // patchid
 }
 
@@ -325,6 +326,31 @@ METHOD(ParamSet){
     server->success();
 }
     
+METHOD(ParamSetStoredString){
+    uint32_t pid = atoi(argv[0]);
+    uint32_t cid = atoi(argv[1]);
+    int paramid = atoi(argv[2]);
+    char code = argv[3][0];
+    char *val = argv[4];
+    
+    int ss = atoi(val);
+    if(ss<0 || ss>9)
+        throw SE_BADSTRING;
+    val = storedStrings[ss];
+    printf("VAL %d (%s)\n",ss,val);
+    
+    Patch *p = library->get(pid);
+    if(!p)throw SE_NOSUCHPATCH;
+    
+    Component *c = p->getComponent(cid);
+    if(!c)throw SE_NOSUCHCOMP;
+    
+    printf("Setting parameter %d in component %s to %s\n",
+           paramid,c->type->name,val);
+    
+    c->setParamValue(paramid,code,val);
+    server->success();
+}
 
 METHOD(RunPatch){
     uint32_t pid = atoi(argv[0]);

@@ -67,4 +67,7 @@ extern const char *errorStrings[];
 /// unknown connection type in search by ID
 #define SE_UNKNOWNCONTYPE 17
 
+/// error in :n... command, or bad param in psss.
+#define SE_BADSTRING 18
+
 #endif /* __ERRORS_H */

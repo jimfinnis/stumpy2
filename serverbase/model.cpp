@@ -219,10 +219,10 @@ void IntParameter::set(Component *comp,char c, const char *s){
     int v = atoi(s);
     if(v<minVal || v>maxVal)
         throw SE_PARAMOUTOFRANGE;
-    comp->paramVals[idx].i = v;
+    comp->paramVals[idx].d.i = v;
 }
 int IntParameter::get(Component *c){
-    return c->paramVals[idx].i;
+    return c->paramVals[idx].d.i;
 }
 
 void FloatParameter::set(Component *comp,char c, const char *s){
@@ -230,10 +230,10 @@ void FloatParameter::set(Component *comp,char c, const char *s){
     float v = atof(s);
     if(v<minVal || v>maxVal)
         throw SE_PARAMOUTOFRANGE;
-    comp->paramVals[idx].f = v;
+    comp->paramVals[idx].d.f = v;
 }
 float FloatParameter::get(Component *c){
-    return c->paramVals[idx].f;
+    return c->paramVals[idx].d.f;
 }
 
 void BoolParameter::set(Component *comp,char c, const char *s){
@@ -246,10 +246,10 @@ void BoolParameter::set(Component *comp,char c, const char *s){
             throw SE_PARAMOUTOFRANGE;
         break;
     }
-    comp->paramVals[idx].b = v;
+    comp->paramVals[idx].d.b = v;
 }    
 bool BoolParameter::get(Component *c){
-    return c->paramVals[idx].b;
+    return c->paramVals[idx].d.b;
 }
 
 void EnumParameter::set(Component *comp,char c, const char *s){
@@ -257,11 +257,21 @@ void EnumParameter::set(Component *comp,char c, const char *s){
     int v = atoi(s);
     if(v<0 || v>=count)
         throw SE_PARAMOUTOFRANGE;
-    comp->paramVals[idx].i = v;
+    comp->paramVals[idx].d.i = v;
 }
 int EnumParameter::get(Component *c){
-    return c->paramVals[idx].i;
+    return c->paramVals[idx].d.i;
 }
+
+void StringParameter::set(Component *comp,char c, const char *s){
+    checkCode(c);
+    comp->paramVals[idx].setstr(s);
+}
+const char *StringParameter::get(Component *c){
+    return c->paramVals[idx].getstr();
+}
+
+
 
 
 /// connection type registry

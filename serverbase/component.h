@@ -71,7 +71,7 @@ public:
     void clear(){
         for(int i=0;i<4;i++)bits[i]=0;
     }
-    bool get(int b){
+    bool get(int b) const{
         uint32_t i = bits[b>>5];
         return (i & (1<<(b&0x1f)))!=0;
     }

@@ -68,7 +68,7 @@ public:
                 if(b.get(i))
                     notes[ct++]=i;
             }
-            play(pChan->get(c),notes[d->curNote],vel,dur);
+            simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
             d->curNote++;
             if(d->curNote==ct){
                 d->curNote=-1;

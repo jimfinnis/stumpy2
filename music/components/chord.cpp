@@ -92,10 +92,8 @@ public:
         
         int base = (int)tFloat->getInput(ci,0);
         float select = tFloat->getInput(ci,1);
-        if(select<0)select=0;
-        if(select>1)select=1;
               
-        int octave = pOctave->get(c);
+        int octave = pOctave->get(c)+2;
         
         // get the active chords
         int activeCt=0; int active[NUMCHORDS];
@@ -106,7 +104,9 @@ public:
         }
         
         // select the active chord
-        select *= activeCt;
+        int isel = select * activeCt;
+        if(isel<0)isel=0;
+        if(isel>=activeCt)isel=activeCt-1;
         const char *str = pChords[active[(int)select]]->get(c);
         
         // construct the chord
@@ -119,13 +119,13 @@ public:
             float cent = getCentre(d->lastChord);
             if(cent<0.01){
                 // no last cord
-                b = construct(base,str,sc,0,octave);
+                b = construct(base,str,sc,0);
             } else {
                 int found=0;
                 int mindist=10000;
                 BitField bs[11];
                 for(int i=0;i<11;i++){
-                    bs[i] = construct(base,str,sc,i-5,octave);
+                    bs[i] = construct(base,str,sc,i-5);
                     float dist = fabsf(getCentre(bs[i])-cent);
                     if(dist<mindist){
                         mindist=dist;
@@ -136,12 +136,22 @@ public:
             }
         } else {
             // the easy way!
-            b = construct(base,str,sc,0,octave);
+            b = construct(base,str,sc,0);
         }
         
         
         d->lastChord = b;
-        tChord->setOutput(ci,0,b);
+        
+        BitField b2;
+        b2.clear();
+        for(int i=0;i<128;i++){
+            if(b.get(i))
+                b2.set(i+12*octave,true);
+        }
+        
+        tChord->setOutput(ci,0,b2);
+        
+        
         
         if(pPrint->get(c)){
             static const char *notes[]={"C","C#","D","D#",
@@ -172,7 +182,7 @@ private:
     // the chromatic notes 0,4,7 (i.e. a major triad)
     
     BitField construct(int base, const char *str, 
-                       const int *scale,int inv,int baseOct){
+                       const int *scale,int inv){
         BitField b;
         b.clear();
         int len = strlen(str);
@@ -189,7 +199,7 @@ private:
             else
                 note = c-'0';
             note = scale[note];
-            note += base+(baseOct+(octave-99))*12;
+            note += base+(octave-99)*12;
 
             if(note>=0 && note<128)
                 b.set(note,true);

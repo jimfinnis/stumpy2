@@ -95,19 +95,13 @@ public:
               
         int octave = pOctave->get(c)+2;
         
-        // get the active chords
-        int activeCt=0; int active[NUMCHORDS];
-        for(int i=0;i<NUMCHORDS;i++){
-            if(*pChords[i]->get(c)){
-                active[activeCt++]=i;
-            }
-        }
-        
-        // select the active chord
-        int isel = select * activeCt;
-        if(isel<0)isel=0;
-        if(isel>=activeCt)isel=activeCt-1;
-        const char *str = pChords[active[(int)select]]->get(c);
+        // select the active chord (input mod numchords)
+        int isel = select;
+        while(isel<0)
+            isel += NUMCHORDS*100;
+        isel %= NUMCHORDS;
+        const char *str = pChords[isel]->get(c);
+        if(!*str)return; // empty
         
         // construct the chord
         

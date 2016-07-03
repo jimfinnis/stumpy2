@@ -162,21 +162,25 @@ public:
     }
 };
 static TickPrint regtickprint;
-    
+
+
+static const char *waveNames[]=
+{"sin","saw(ascending)","saw(descending)","triangle","square"};
     
 class OscComponent : public ComponentType {
-    float t;
 public:
     OscComponent() : ComponentType("osc","time"){}
     virtual void init() {
         setInput(0,tFloat,"mod");
         setOutput(0,tFloat,"out");
         setParams(
+                  pWave = new EnumParameter("wave",waveNames,0),
                   pFreq = new FloatParameter("freq",0,5,1),
                   pPhase = new FloatParameter("phase",-5,5,0),
                   pMod = new FloatParameter("phase mod",-5,5,0),
                   pAmp = new FloatParameter("amp",0,10,1),
                   pOffset = new FloatParameter("offset",-5,5,0),
+                  pWidth = new FloatParameter("width (square)",0,1,0.5),
                   NULL
                   );
     }
@@ -190,7 +194,24 @@ public:
         // phase mod
         v += mod + pPhase->get(c);
         
-        v = sinf(v);
+        switch(pWave->get(c)){
+        default:
+        case 0: //sin
+            v = sinf(v);break;
+        case 1: //ascending saw
+            v = (v-floorf(v))*2.0f-1.0f;break;
+        case 2: //descending saw
+            v = -((v-floorf(v))*2.0f-1.0f);break;
+        case 3: //triangle
+            v = 2.0f*fabsf(2.0*(v-floorf(v+0.5)))-1.0; //fr. wikipedia "triangle wave"
+        case 4: //square
+            // form triangle
+            v = fabsf(2.0*(v-floorf(v+0.5)));
+            // threshold it with the width
+            v = (v>pWidth->get(c))?1:0;
+            break;
+        }
+            
         v *= pAmp->get(c);
         v += pOffset->get(c);
         
@@ -198,7 +219,8 @@ public:
     }
     
 private:
-    FloatParameter *pMod,*pFreq,*pPhase,*pAmp,*pOffset;
+    FloatParameter *pMod,*pFreq,*pPhase,*pAmp,*pOffset,*pWidth;
+    EnumParameter *pWave;
 };
 
 static OscComponent Oscreg;

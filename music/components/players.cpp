@@ -16,21 +16,22 @@ struct CPData {
 };
 
 class ChordPlay : public ComponentType {
-    FloatParameter *pVelMod,*pGapBeats,*pDur,*pVel;
-    IntParameter *pChan;
+    FloatParameter *pVelMod,*pGapSecs,*pDur,*pVel;
+    IntParameter *pChan,*pDurPow2,*pTranspose;
 public:
     ChordPlay() : ComponentType("chordplay","music"){}
     virtual void init(){
         setInput(0,tChord,"chord");
         setInput(1,tInt,"tick");
         setInput(2,tFloat,"velmod");
-        setOutput(0,tFlow,"flow");
         
         setParams(pChan=new IntParameter("channel",0,15,0),
                   pVel=new FloatParameter("vel",0,64,50),
                   pVelMod=new FloatParameter("velmod",-64,64,0),
-                  pGapBeats = new FloatParameter("gapbeats",0,1,0),
+                  pGapSecs = new FloatParameter("gapsecs",0,1,0),
                   pDur = new FloatParameter("duration",0.1,1,0.2),
+                  pDurPow2 = new IntParameter("duration-pow2",1,5,1),
+                  pTranspose = new IntParameter("transpose",-24,24,0),
                   NULL);
     }
     
@@ -47,7 +48,7 @@ public:
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         CPData *d = (CPData *)ci->privateData;
-        float gap = (60.0*pGapBeats->get(c))/gTempo;
+        float gap = pGapSecs->get(c);
         
         if(tInt->getInput(ci,1)){
             // tick! start playing the chord
@@ -58,15 +59,19 @@ public:
         float nextTime = d->startTime + ((float)d->curNote)*gap;
         if(Time::now() > nextTime && d->curNote>=0){
             BitField b = tChord->getInput(ci,0);
-            float dur = pDur->get(c);
+            float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
             float vel = pVel->get(c) + 
                   pVelMod->get(c)*tFloat->getInput(ci,2);
             // get the notes. Ugly.
             int notes[128];
             int ct=0;
+            int trans = pTranspose->get(c);
             for(int i=0;i<128;i++){
-                if(b.get(i))
-                    notes[ct++]=i;
+                if(b.get(i)){
+                    int n = notes[ct++] + trans;
+                    if(n>=0 && n<128)
+                        notes[ct++]=i;
+                }
             }
             simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
             d->curNote++;

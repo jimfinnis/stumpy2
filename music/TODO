@@ -1,0 +1,21 @@
+* lengthen duration (pow2 mult)
+make the gap in chordplay relate to the chord length (no, make it seconds).
+make the select input in chordplay an integer (so can be fed from denseq)
+add a transpose to chordplay (for octaves down, etc)
+chord note select player :
+    - fed by denseq typically
+    - two trigger inputs.
+        - start: in non-freerun mode, starts the sequence
+        - note: triggers each note
+    - in free-run mode the start input isn't used, it just loops.
+    - chord input
+    
+crossfader, and global vel multiplier for it. Works with a float
+input, so 0 gives all 0, 0.5 gives 0.5 of 0 and 0.5 of 1. Flow
+inputs.
+
+ramps/envelopes (have to be quite long in duration)
+perlin noise
+
+switcher for other types?
+    

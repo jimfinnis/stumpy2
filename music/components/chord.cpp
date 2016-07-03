@@ -63,7 +63,6 @@ public:
         setInput(0,tFloat,"base");
         setInput(1,tFloat,"select");
         setOutput(0,tChord,"chord");
-        setOutput(1,tFlow,"flow");
         setParams(
                   pChords[0]=new StringParameter("default chord",DEFCHORD),
                   pChords[1]=new StringParameter("chord 2",DEFCHORD),

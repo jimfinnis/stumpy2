@@ -157,7 +157,7 @@ public:
             printf("TickPrint: %s ",pStr->get(c));
             if(c->isInputConnected(1))
                 printf("%f ",tFloat->getInput(ci,1));
-            putchar('\n');
+            printf("\n");
         }
     }
 };
@@ -175,7 +175,7 @@ public:
         setOutput(0,tFloat,"out");
         setParams(
                   pWave = new EnumParameter("wave",waveNames,0),
-                  pFreq = new FloatParameter("freq",0,5,1),
+                  pFreq = new FloatParameter("freq (beats)",0,5,1),
                   pPhase = new FloatParameter("phase",-5,5,0),
                   pMod = new FloatParameter("phase mod",-5,5,0),
                   pAmp = new FloatParameter("amp",0,10,1),
@@ -188,12 +188,11 @@ public:
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         float mod =  tFloat->getInput(ci,0) * pMod->get(c);
-        float freq = pFreq->get(c);
+        float freq = pFreq->get(c)*(gTempo/60.0f);
         float v = Time::now()*freq;
         
         // phase mod
         v += mod + pPhase->get(c);
-        
         switch(pWave->get(c)){
         default:
         case 0: //sin
@@ -211,9 +210,13 @@ public:
             v = (v>pWidth->get(c))?1:0;
             break;
         }
-            
-        v *= pAmp->get(c);
+        
+        float amp = pAmp->get(c);
+        v *= amp;
         v += pOffset->get(c);
+        
+        if(pMinZero->get(c))
+            v += amp;
         
         tFloat->setOutput(ci,0,v);
     }
@@ -221,6 +224,7 @@ public:
 private:
     FloatParameter *pMod,*pFreq,*pPhase,*pAmp,*pOffset,*pWidth;
     EnumParameter *pWave;
+    BoolParameter *pMinZero;
 };
 
 static OscComponent Oscreg;

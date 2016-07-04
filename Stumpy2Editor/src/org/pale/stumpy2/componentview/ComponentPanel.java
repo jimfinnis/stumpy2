@@ -60,6 +60,7 @@ public class ComponentPanel extends JPanel  {
         c.gridy=0;
         c.weightx=1;
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
         
         titleBox = new JPanel(new BorderLayout());
         JLabel lab = new JLabel(component.getType().getName());
@@ -100,15 +101,20 @@ public class ComponentPanel extends JPanel  {
         contents = new JPanel(new GridBagLayout());
         c.gridy=0; // we're inside a new layout, so start again
 
-        JPanel ptmp = new JPanel(new FlowLayout());
+        JPanel ptmp = new JPanel();
+        ptmp.setLayout(new BoxLayout(ptmp,BoxLayout.LINE_AXIS));
         // inputs is just a list of names
-        ptmp.add(buildLegend("inputs", component.getType().getAllInputNames()));
+        JComponent inpp = buildLegend("inputs", component.getType().getAllInputNames());
+        inpp.setAlignmentY(TOP_ALIGNMENT);
+        ptmp.add(inpp);
+        
         // outputs have buttons, indicating whether the system should run
         // the component always when that output is invoked, or whether it should
         // only run it the first time in a frame (doesn't always apply - e.g.
         // rendering prims always run always).
         
         JPanel outputPanel = new JPanel();
+        outputPanel.setAlignmentY(TOP_ALIGNMENT);
         outputPanel.setLayout(new BoxLayout(outputPanel,BoxLayout.PAGE_AXIS));
         outputPanel.add(new JLabel("<html><u>outputs/runalways</u></html>"));
         List<String> opnames = component.getType().getAllOutputNames();
@@ -132,6 +138,8 @@ public class ComponentPanel extends JPanel  {
         
         ptmp.add(outputPanel);
         contents.add(ptmp,c);
+        // turn off filling, so the param editors align left.
+        c.fill = GridBagConstraints.NONE;
         c.gridy++;
 
         // now add the parameters! Also create an object to handle when we get a parameter change, and 
@@ -160,7 +168,7 @@ public class ComponentPanel extends JPanel  {
      * @param nameList
      * @return a text component of some kind.
      */
-    private java.awt.Component buildLegend(String header, List<String> nameList) {
+    private JComponent buildLegend(String header, List<String> nameList) {
         int ct = 0;
         String s = "<html><u>" + header + "</u><br/>";
         for (String n : nameList) {

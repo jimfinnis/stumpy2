@@ -97,6 +97,17 @@ struct ConnectionValue {
         int i;
         BitField b;
     } d;
+    
+    void setNoData(){
+        if(t){
+            switch(t->base){
+            case FLOAT:d.f=0;break;
+            case INT:d.f=0;break;
+            case BITFIELD:d.b.clear();break;
+            default:break;
+            }
+        }
+    }
 };
 
 

@@ -110,7 +110,7 @@ public class FloatEditor extends JPanel implements ChangeListener, KeyListener {
      */
     @Override
     public void stateChanged(ChangeEvent arg0) {
-        if(!slider.getValueIsAdjusting()){
+        if(!slider.getValueIsAdjusting() && !insideKeyPress){ // avoid calling this when the text changes the slider!
             double val = getValueFromInt(slider.getValue());
             param.setEncodedValue(Double.toString(val));
             valueEdit.setText(formatter.format(val));
@@ -120,20 +120,28 @@ public class FloatEditor extends JPanel implements ChangeListener, KeyListener {
         }
     }
 
+    private boolean insideKeyPress=false;
+    
+
+    // this will set insideKeyPress, so that the slider code doesn't update the parameter
+    // again with a loss of resolution from the slider tick settings.
     @Override
     public void keyPressed(KeyEvent arg0) {
         if(arg0.getKeyCode()==KeyEvent.VK_ENTER){
             try {
+            	insideKeyPress=true;
                 double val = Double.parseDouble(valueEdit.getText());
                 if(val >= param.getMinVal() && val <= param.getMaxVal()){
                     param.setEncodedValue(Double.toString(val));
                     slider.setValue(getIntFromValue(val));
                     lastGoodString = formatter.format(val);
+                    paramChangeListener.onChange(param);
                 }
             } catch(NumberFormatException e){
                 // does nothing but skip a few things
             }
             valueEdit.setText(lastGoodString);
+            insideKeyPress=false;
         }
         
     }

@@ -61,9 +61,6 @@ struct ComponentInstance {
         component = NULL;
     }
     
-    /// a null data for unconnected inputs
-    static ConnectionValue noData;
-    
     /// the last tick this instance updated the given output
     uint32_t updatedOutputTime[ComponentType::NUMOUTPUTS]; 
           
@@ -109,6 +106,7 @@ struct ComponentInstance {
         return component->isInputConnected(n);
     }
     
+    static ConnectionValue noData;
     /// get the value of an input. No range checking, for speed!
     /// This will cause getOutput to run on the connected component.
     inline ConnectionValue &getInput(int n){
@@ -126,6 +124,7 @@ struct ComponentInstance {
 #if TRACE
             printf("  %p : input %d -> not connected\n",this,n);
 #endif
+            noData.setNoData();
             return noData;
         }
     }

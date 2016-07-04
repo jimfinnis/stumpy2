@@ -1,7 +1,9 @@
 * lengthen duration (pow2 mult)
-make the gap in chordplay relate to the chord length (no, make it seconds).
-make the select input in chordplay an integer (so can be fed from denseq)
-add a transpose to chordplay (for octaves down, etc)
+* make the gap in chordplay relate to the chord length (no, make it seconds).
+* make the select input in chordplay an integer (so can be fed from denseq)
+* other osc waveforms 
+
+* add a transpose to chordplay (for octaves down, etc)
 chord note select player :
     - fed by denseq typically
     - two trigger inputs.
@@ -13,6 +15,16 @@ chord note select player :
 crossfader, and global vel multiplier for it. Works with a float
 input, so 0 gives all 0, 0.5 gives 0.5 of 0 and 0.5 of 1. Flow
 inputs.
+
+Trigger. If no input, triggers at patch sync, otherwise triggers when
+input goes above or below threshold (rising/leading edge is boolean).
+Has an N second delay. Idiom: multiple triggers firing from a long ramp.
+
+threshgate:
+    float i/o pairs + gate + threshmodulator.
+    If input not connected, is assumed to be 1. (to act as thresh).
+    If gate>thresh, outputs=inputs, else outputs=0
+    
 
 ramps/envelopes (have to be quite long in duration)
 perlin noise

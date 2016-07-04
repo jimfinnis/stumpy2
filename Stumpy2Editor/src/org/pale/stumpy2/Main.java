@@ -81,6 +81,7 @@ public class Main {
 		tb.add("disconnect", "toolbarButtonGraphics/general/Stop16", "disconnect");
 		tb.add("open","toolbarButtonGraphics/general/Open16","open");
 		tb.add("new","toolbarButtonGraphics/general/New16","new");
+		tb.add("clear","icons/cross","clear");
 		
 		// libview toolbar
 		tb = new Toolbar(control,loc.group(0).toolbar(0, 1),LibraryViewController.getInstance());

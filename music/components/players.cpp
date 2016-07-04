@@ -55,9 +55,11 @@ public:
             d->startTime = Time::now();
         }
         
+        // have to always call this.
+        BitField b = tChord->getInput(ci,0);
+        
         float nextTime = d->startTime + gap*(float)d->curNote;
         if(Time::now() > nextTime && d->curNote>=0){
-            BitField b = tChord->getInput(ci,0);
             float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
             float vel = pVel->get(c) + 
                   pVelMod->get(c)*tFloat->getInput(ci,2);
@@ -72,10 +74,12 @@ public:
                         notes[ct++]=n;
                 }
             }
-            simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
-            d->curNote++;
-            if(d->curNote==ct){
-                d->curNote=-1;
+            if(ct){
+                simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
+                d->curNote++;
+                if(d->curNote==ct){
+                    d->curNote=-1;
+                }
             }
         }
     }        

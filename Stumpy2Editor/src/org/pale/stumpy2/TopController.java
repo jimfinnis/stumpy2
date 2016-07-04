@@ -138,5 +138,20 @@ public class TopController extends Controller {
                 return Client.isConnected();
             }
         });    
+        
+        add("clear", new CommandFactory(){
+        	public Command create(){
+        		return new Command(false){
+        			public void execute(){
+        		    	Client c = Client.getInstance();
+        		    	c.sendCmdAndProcessResponse("clear");
+        			}
+        		};
+        	}
+        	public boolean enabled()
+        	{
+        		return Client.isConnected();
+        	}
+        });
     }
 }

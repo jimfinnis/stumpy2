@@ -91,19 +91,25 @@ public:
               * pMul->get(c) + pAdd->get(c);
         float interval = 60.0/tempo; // convert to BPS
         
+//        if(d->next[out]>0)
+//            printf("Waiting for %d:%f\n",out,d->next[out]);
+        
         if(out==0) { // primary, gapless output
             float gap = (60.0*pGapBeats->get(c))/tempo;
             if(Time::now() > d->next[0]){
                 d->next[0] = Time::now()+interval;
                 // set the next timers for the other outs
-                for(int i=1;i<NUMOUTS;i++)
+                for(int i=1;i<NUMOUTS;i++){
                     d->next[i] = Time::now()+((float)i)*gap;
+//                    printf("Setting %d to %f\n",i,d->next[i]);
+                }
                 tick = 1;
             } else
                 tick = 0;
         } else { 
             // other, gapped outputs
             if(d->next[out]>0 && Time::now() > d->next[out]){
+//                printf("Output %d triggered\n",out);
                 d->next[out]=-1; // will be reset by output 0
                 tick = 1;
             } else
@@ -180,6 +186,7 @@ public:
                   pMod = new FloatParameter("phase mod",-5,5,0),
                   pAmp = new FloatParameter("amp",0,10,1),
                   pOffset = new FloatParameter("offset",-5,5,0),
+                  pMinZero = new BoolParameter("min = zero",false),
                   pWidth = new FloatParameter("width (square)",0,1,0.5),
                   NULL
                   );

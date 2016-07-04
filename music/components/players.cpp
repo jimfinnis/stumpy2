@@ -25,10 +25,11 @@ public:
         setInput(1,tInt,"tick");
         setInput(2,tFloat,"velmod");
         setOutput(0,tFlow,"flow");
-        setParams(pChan=new IntParameter("channel",0,15,0),
+        setParams(
+                  pChan=new IntParameter("channel",0,15,0),
+                  pGapSecs = new FloatParameter("gapsecs",0,1,0),
                   pVel=new FloatParameter("vel",0,64,50),
                   pVelMod=new FloatParameter("velmod",-64,64,0),
-                  pGapSecs = new FloatParameter("gapsecs",0,1,0),
                   pDur = new FloatParameter("duration",0.1,1,0.2),
                   pDurPow2 = new IntParameter("duration-pow2",0,4,0),
                   pTranspose = new IntParameter("transpose",-24,24,0),
@@ -57,12 +58,12 @@ public:
         
         // have to always call this.
         BitField b = tChord->getInput(ci,0);
-        
+        float velmod = tFloat->getInput(ci,2);
+    
         float nextTime = d->startTime + gap*(float)d->curNote;
         if(Time::now() > nextTime && d->curNote>=0){
             float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
-            float vel = pVel->get(c) + 
-                  pVelMod->get(c)*tFloat->getInput(ci,2);
+            float vel = pVel->get(c) + pVelMod->get(c)*velmod;
             // get the notes. Ugly.
             int notes[128];
             int ct=0;
@@ -84,6 +85,88 @@ public:
         }
     }        
 };
-
 static ChordPlay cpreg;
+
+
+
+struct NPData {
+    bool playing;
+};
+
+class NotePlay : public ComponentType {
+    FloatParameter *pVelMod,*pDur,*pVel;
+    BoolParameter *pLoop;
+    IntParameter *pChan,*pDurPow2,*pTranspose;
+public:
+    NotePlay() : ComponentType("noteplay","music"){}
+    virtual void init(){
+        setInput(0,tInt,"gate");
+        setInput(1,tInt,"notetrig");
+        setInput(2,tFloat,"note");
+        setInput(3,tFloat,"velmod");
+        setInput(4,tChord,"chord");
+        
+        setOutput(0,tFlow,"flow");
+        
+        setParams(
+                  pChan=new IntParameter("channel",0,15,0),
+                  pLoop=new BoolParameter("loop",true),
+                  pVel=new FloatParameter("vel",0,64,50),
+                  pVelMod=new FloatParameter("velmod",-64,64,0),
+                  pDur = new FloatParameter("duration",0.1,1,0.2),
+                  pDurPow2 = new IntParameter("duration-pow2",0,4,0),
+                  pTranspose = new IntParameter("transpose",-24,24,0),
+                  NULL);
+              
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        NPData *d = new NPData();
+        c->privateData = (void *)d;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((NPData *)c->privateData);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        NPData *d = (NPData *)ci->privateData;
+        
+        int gate;
+        if(!c->isInputConnected(0))
+            gate = 1;
+        else
+            gate = tInt->getInput(ci,0);            
+        int notetrig = tInt->getInput(ci,1);
+        int noteidx = (int)(tFloat->getInput(ci,2)+0.5f);
+        float velmod = tFloat->getInput(ci,3);
+        BitField b = tChord->getInput(ci,4);
+        
+        if(gate && notetrig){
+            float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
+            float vel = pVel->get(c) + pVelMod->get(c)*velmod;
+            int trans = pTranspose->get(c);
+            // as I said above, Ugly.
+            int notes[128];
+            int ct=0;
+            for(int i=0;i<128;i++){
+                if(b.get(i)){
+                    printf("Note set: %d\n",i);
+                    int n = i + trans;
+                    if(n>=0 && n<128)
+                        notes[ct++]=n;
+                }
+            }
+            if(ct){
+                int oct = noteidx/ct;
+                noteidx %= ct;
+                simpleMidiPlay(pChan->get(c),notes[noteidx]+oct*12,
+                               vel,dur);
+            }
+        }
+    }
+};
+static NotePlay npreg;
+
     

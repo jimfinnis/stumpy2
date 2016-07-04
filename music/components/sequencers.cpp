@@ -38,13 +38,15 @@ public:
         Component *c = ci->component;
         SeqData *d = (SeqData *)ci->privateData;
         int output;
-        
+        int step = tInt->getInput(ci,0);
         const char *s = pSeq->get(c);
         int len = strlen(s);
         if(len==0){
             output = 0;
         } else {
-            if(tInt->getInput(ci,0))d->n = (d->n+1)%len;
+            if(step) {
+                d->n = (d->n+1)%len;
+            }
             output = s[d->n] - '0';
         }
         tFloat->setOutput(ci,0,output);

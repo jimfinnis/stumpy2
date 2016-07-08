@@ -204,7 +204,7 @@ public class LibraryView extends ControlledDockable {
 
 
 		JScrollPane scpane = new JScrollPane(list);
-		scpane.addFocusListener(new FocusListener(){
+		list.addFocusListener(new FocusListener(){
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				LibraryViewController.getInstance().setView(LibraryView.this);

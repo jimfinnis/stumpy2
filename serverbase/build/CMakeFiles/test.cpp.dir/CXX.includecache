@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/white/stumpy2/serverbase/errors.h
+
+/home/white/stumpy2/serverbase/timer.cpp
+timer.h
+/home/white/stumpy2/serverbase/timer.h
+
+/home/white/stumpy2/serverbase/timer.h
+stdint.h
+-
+errors.h
+/home/white/stumpy2/serverbase/errors.h
+util/exception.h
+/home/white/stumpy2/serverbase/util/exception.h
+
+/home/white/stumpy2/serverbase/util/exception.h
+string.h
+-
+stdio.h
+-
+stdlib.h
+-
+stdarg.h
+-
+exception
+-
+

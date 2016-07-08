@@ -14,6 +14,7 @@ import org.pale.stumpy2.model.ProtocolException;
 import org.pale.stumpy2.model.UnknownComponentTypeException;
 import org.pale.stumpy2.model.paramtypes.BoolParam;
 import org.pale.stumpy2.model.paramtypes.EnumParam;
+import org.pale.stumpy2.model.paramtypes.EnvelopeParam;
 import org.pale.stumpy2.model.paramtypes.FloatParam;
 import org.pale.stumpy2.model.paramtypes.IntParam;
 import org.pale.stumpy2.model.paramtypes.StringParam;
@@ -140,6 +141,9 @@ public class Configuration {
 		String s[] = status.split(":");
 		Parameter p = null;
 		switch(s[0].charAt(0)){
+		case 'E':
+			p = new EnvelopeParam(s[1], "0,0,1,1,2,0;");
+			break;
 		case 'f':
 			p = new FloatParam(s[1], Float.parseFloat(s[2]), 
 					Float.parseFloat(s[3]), Float.parseFloat(s[4]));

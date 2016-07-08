@@ -271,6 +271,41 @@ const char *StringParameter::get(Component *c){
     return c->paramVals[idx].getstr();
 }
 
+void EnvelopeParameter::set(Component *comp,char c, const char *s){
+    // the data is in the form l,t,l,t,...,l,t;
+    // where l and t are level and time
+    checkCode(c);
+    Envelope e;
+    
+    const char *p = s;
+    char buf[1024];
+    float arr[ENVSIZE*2];
+    int n=0;
+    while(*s){
+        if(n==ENVSIZE*2)break;
+        if(*s==',' || *s==';'){
+            bool ex=*s==';';
+            s++;
+            strncpy(buf,p,s-p);
+            buf[s-p]=0;
+            arr[n++]=atof(buf);
+            p=s;
+            if(ex)break;
+        }
+        s++;
+    }
+    for(int i=n;i<ENVSIZE*2;i++)arr[i]=0;
+    n=0;
+    for(int i=0;i<ENVSIZE;i++){
+        e.levels[i]=arr[n++];
+        e.times[i]=arr[n++];
+        printf("Env %d: %f at time %f\n",i,e.levels[i],e.times[i]);
+    }
+}
+
+Envelope& EnvelopeParameter::get(Component *c){
+    return c->paramVals[idx].d.env;
+}
 
 
 

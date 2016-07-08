@@ -76,6 +76,7 @@ public:
                 }
             }
             if(ct){
+                vel *= gVel;
                 simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
                 d->curNote++;
                 if(d->curNote==ct){
@@ -161,6 +162,7 @@ public:
             if(ct){
                 int oct = noteidx/ct;
                 noteidx %= ct;
+                vel *= gVel;
                 simpleMidiPlay(pChan->get(c),notes[noteidx]+oct*12,
                                vel,dur);
             }

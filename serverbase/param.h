@@ -12,6 +12,13 @@
 
 class Component;
 
+#define ENVSIZE 4
+struct Envelope {
+    float times[ENVSIZE];
+    float levels[ENVSIZE];
+};
+
+
 /**
  * 
  */
@@ -40,6 +47,7 @@ struct ParameterValue {
         int i;
         float f;
         bool b;
+        Envelope env;
     } d;
 private:
     const char *s; // reallocated every time set
@@ -228,6 +236,34 @@ public:
 };
 
 
+class EnvelopeParameter : public Parameter {
+public:
+    EnvelopeParameter(const char *n) : Parameter(n) {
+        code = 'E';
+    }
+    
+    virtual const char *getDesc(){
+        static char buf[1024];
+        sprintf(buf,"E:%s",name);
+        return buf;
+    }
+    
+    virtual void setDefault(ParameterValue *v){
+        for(int i=0;i<ENVSIZE;i++){
+            v->d.env.levels[i]=0;
+            v->d.env.times[i]=0;
+        }
+        v->d.env.levels[0]=1;
+        v->d.env.levels[1]=1;
+        v->d.env.levels[2]=0;
+        v->d.env.times[0]=0;
+        v->d.env.times[1]=1;
+        v->d.env.times[2]=2;
+    }
+    
+    virtual void set(Component *comp,char c,const char *s);
+    Envelope& get(Component *c);
+};
 
 
 

@@ -1,8 +1,6 @@
 package org.pale.stumpy2.model.paramtypes;
 
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
@@ -13,7 +11,6 @@ import javax.swing.event.ChangeListener;
 
 import org.pale.stumpy2.model.Parameter;
 import org.pale.stumpy2.model.ParameterChangeListener;
-import org.pale.stumpy2.model.Patch;
 
 public class IntegerEditor extends JPanel implements ChangeListener {
     private Parameter param;

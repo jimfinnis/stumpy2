@@ -12,7 +12,7 @@
     - in free-run mode the start input isn't used, it just loops.
     - chord input
   
-Clocks go out of sync!
+* Clocks go out of sync!
   
 crossfader, and global vel multiplier for it. Works with a float
 input, so 0 gives all 0, 0.5 gives 0.5 of 0 and 0.5 of 1. Flow

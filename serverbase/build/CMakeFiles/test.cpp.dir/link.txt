@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/test.cpp.dir/controller.cpp.o CMakeFiles/test.cpp.dir/errors.cpp.o CMakeFiles/test.cpp.dir/model.cpp.o CMakeFiles/test.cpp.dir/server.cpp.o CMakeFiles/test.cpp.dir/timer.cpp.o  -o test.cpp -rdynamic 

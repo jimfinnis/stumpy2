@@ -297,8 +297,8 @@ void EnvelopeParameter::set(Component *comp,char c, const char *s){
     for(int i=n;i<ENVSIZE*2;i++)arr[i]=0;
     n=0;
     for(int i=0;i<ENVSIZE;i++){
-        e.levels[i]=arr[n++];
         e.times[i]=arr[n++];
+        e.levels[i]=arr[n++];
         printf("Env %d: %f at time %f\n",i,e.levels[i],e.times[i]);
     }
 }

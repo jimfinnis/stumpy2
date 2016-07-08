@@ -12,7 +12,7 @@
 
 class Component;
 
-#define ENVSIZE 4
+#define ENVSIZE 6
 struct Envelope {
     float times[ENVSIZE];
     float levels[ENVSIZE];

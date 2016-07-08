@@ -7,7 +7,7 @@ import org.pale.stumpy2.model.ParameterChangeListener;
 
 public class EnvelopeParam extends Parameter {
 	
-	public static int ENVSIZE=4; // must agree with server side.
+	public static int ENVSIZE=6; // must agree with server side.
 	public static class Envelope {
 		
 		float[] times;;
@@ -23,8 +23,8 @@ public class EnvelopeParam extends Parameter {
 			s=s.substring(0, s.length()-1);
 			String nums[] = s.split(",");
 			for(int i=0;i<nums.length;i+=2){
-				times[i/2]=Integer.parseInt(nums[i]);
-				levels[i/2]=Integer.parseInt(nums[i+1]);
+				times[i/2]=Float.parseFloat(nums[i]);
+				levels[i/2]=Float.parseFloat(nums[i+1]);
 			}
 		}
 		public String getString(){
@@ -43,6 +43,10 @@ public class EnvelopeParam extends Parameter {
 		super(name);
 		val = new Envelope(string);
 		setEncodedValue(string);
+	}
+	
+	public void encode(){
+		setEncodedValue(val.getString());
 	}
 	
 	static public class Memento extends Parameter.Memento {

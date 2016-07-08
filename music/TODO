@@ -13,6 +13,11 @@
     - chord input
   
 * Clocks go out of sync!
+* ramps/envelopes (have to be quite long in duration)
+
+Should be impossible to close lib. with a patch open
+
+Mixer.
   
 crossfader, and global vel multiplier for it. Works with a float
 input, so 0 gives all 0, 0.5 gives 0.5 of 0 and 0.5 of 1. Flow
@@ -28,7 +33,6 @@ threshgate:
     If gate>thresh, outputs=inputs, else outputs=0
     
 
-ramps/envelopes (have to be quite long in duration)
 perlin noise
 
 switcher for other types?

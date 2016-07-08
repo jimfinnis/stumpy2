@@ -153,7 +153,7 @@ public:
             int ct=0;
             for(int i=0;i<128;i++){
                 if(b.get(i)){
-                    printf("Note set: %d\n",i);
+//                    printf("Note set: %d\n",i);
                     int n = i + trans;
                     if(n>=0 && n<128)
                         notes[ct++]=n;

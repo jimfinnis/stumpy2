@@ -275,7 +275,7 @@ void EnvelopeParameter::set(Component *comp,char c, const char *s){
     // the data is in the form l,t,l,t,...,l,t;
     // where l and t are level and time
     checkCode(c);
-    Envelope e;
+    Envelope &e = comp->paramVals[idx].d.env;
     
     const char *p = s;
     char buf[1024];

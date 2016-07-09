@@ -114,6 +114,7 @@ public class PatchLibrary implements PatchChangeListener {
         p.setName(candidateName);
         
         patchList.add(p);
+        p.lib = this;
         p.addPatchChangeListener(this);
         p.addPatchChangeListener(patchChangeUpdater);
         notifyAdd();
@@ -193,6 +194,7 @@ public class PatchLibrary implements PatchChangeListener {
         for(Patch.Memento pm : m.getPatchList()){
         	Patch p = new Patch(pm);
             patchList.add(p);
+            p.lib=this;
             p.addPatchChangeListener(this);
             p.addPatchChangeListener(patchChangeUpdater);
         }

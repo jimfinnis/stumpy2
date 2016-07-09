@@ -26,6 +26,8 @@ import bibliothek.gui.dock.common.intern.CDockable;
  * 
  */
 public class Patch {
+	public PatchLibrary lib; // the lib I'm in
+	
 	/** counter used to construct unique IDs */
 	static int idcounter;
 	/**

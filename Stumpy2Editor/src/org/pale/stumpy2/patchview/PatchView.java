@@ -3,7 +3,9 @@ package org.pale.stumpy2.patchview;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JLabel;
@@ -24,6 +26,8 @@ import org.pale.stumpy2.ui.ControlledDockable;
 import org.pale.stumpy2.ui.support.Images;
 
 import bibliothek.gui.dock.common.event.CDockableStateListener;
+import bibliothek.gui.dock.common.event.CVetoClosingEvent;
+import bibliothek.gui.dock.common.event.CVetoClosingListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.mode.ExtendedMode;
 
@@ -55,7 +59,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 	public Patch getPatch(){
 		return patch;
 	}
-
+	
 	public PatchView(Patch p) {
 		super("pv"+(pvidx++));
 
@@ -81,7 +85,6 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 		setStatus("ready");
 		pane.add(statusBar,BorderLayout.SOUTH);
 
-
 		patch = p;
 		p.addPatchChangeListener(this);
 		p.addPatchChangeListener(ComponentBoxView.getInstance());
@@ -92,7 +95,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 		addCDockableStateListener(this);
 		
 		setFocusComponent(canvas);
-
+		
 		setVisible(true);
 	}
     /**
@@ -210,6 +213,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 			patch.removePatchChangeListener(this);
 			patch.removePatchChangeListener(ComponentBoxView.getInstance());
 			patch.removeFromViews(this);
+			
 			removeCDockableStateListener(this);
 		}
 	}

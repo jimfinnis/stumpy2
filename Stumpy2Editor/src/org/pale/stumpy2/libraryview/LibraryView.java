@@ -27,6 +27,8 @@ import org.pale.stumpy2.ui.PopupMenu;
 import org.pale.stumpy2.ui.support.Images;
 
 import bibliothek.gui.dock.common.event.CDockableStateListener;
+import bibliothek.gui.dock.common.event.CVetoClosingEvent;
+import bibliothek.gui.dock.common.event.CVetoClosingListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.layout.RequestDimension;
 import bibliothek.gui.dock.common.mode.ExtendedMode;
@@ -82,7 +84,10 @@ public class LibraryView extends ControlledDockable {
 
 		@Override
 		public int getSize() {
-			return library.getPatchList().size();
+			if(library==null)
+				return 0;
+			else
+				return library.getPatchList().size();
 		}
 
 		@Override
@@ -232,6 +237,28 @@ public class LibraryView extends ControlledDockable {
 			@Override
 			public void extendedModeChanged(CDockable arg0, ExtendedMode arg1) {}
 		});
+		
+		
+		addVetoClosingListener(new CVetoClosingListener() {
+			
+			@Override
+			public void closing(CVetoClosingEvent arg0) {
+				for(Patch p: library.getPatchList()){
+					if(p.hasOpenViews()){
+						arg0.cancel();
+						break;
+					}
+				}
+				
+			}
+			
+			@Override
+			public void closed(CVetoClosingEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 		Main.getControl().addDockable(this);
 		setVisible(true);        
 	}

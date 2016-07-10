@@ -25,6 +25,7 @@ import org.pale.stumpy2.model.UnknownComponentTypeException;
 import org.pale.stumpy2.ui.ControlledDockable;
 import org.pale.stumpy2.ui.support.Images;
 
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.event.CVetoClosingEvent;
 import bibliothek.gui.dock.common.event.CVetoClosingListener;
@@ -74,7 +75,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 		scroller = new JScrollPane(canvas);
 		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scroller.setPreferredSize(new Dimension(600,600));
+		scroller.setMinimumSize(new Dimension(600,600));
 		pane.add(scroller, BorderLayout.CENTER);
 
 		// add a status bar
@@ -96,6 +97,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 		
 		setFocusComponent(canvas);
 		
+		setLocation(CLocation.base().normalWest(0.8));
 		setVisible(true);
 	}
     /**

@@ -2,6 +2,7 @@ package org.pale.stumpy2.libraryview;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -18,6 +19,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.pale.stumpy2.Main;
+import org.pale.stumpy2.componentview.ComponentBoxView;
 import org.pale.stumpy2.model.MementoizationException;
 import org.pale.stumpy2.model.Patch;
 import org.pale.stumpy2.model.PatchLibrary;
@@ -26,6 +28,7 @@ import org.pale.stumpy2.ui.ControlledDockable;
 import org.pale.stumpy2.ui.PopupMenu;
 import org.pale.stumpy2.ui.support.Images;
 
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.event.CVetoClosingEvent;
 import bibliothek.gui.dock.common.event.CVetoClosingListener;
@@ -139,8 +142,7 @@ public class LibraryView extends ControlledDockable {
 	public LibraryView(PatchLibrary p){
 		super("patchlib"+p.getFileName());
 		library = p;
-		setResizeLockedHorizontally(true);
-
+		setLocation(CLocation.base().normalNorth(0.3));
 		model = new MyListModel();
 		library.addChangeListener(model);
 		setTitleText(library.getFileName());
@@ -220,7 +222,7 @@ public class LibraryView extends ControlledDockable {
 			public void focusLost(FocusEvent arg0) {
 			}
 		});
-
+		scpane.setMinimumSize(new Dimension(200,100));
 		add(scpane);
 		// make sure we can close the library, and also that when we do
 		// all the patches go away, and that the top controller loses access.
@@ -260,6 +262,8 @@ public class LibraryView extends ControlledDockable {
 		});
 		
 		Main.getControl().addDockable(this);
+		setResizeRequest(new RequestDimension(300,true),true);
+		setResizeLockedHorizontally(true);
 		setVisible(true);        
 	}
 	public Patch.Memento getMementoForSelectedPatch()

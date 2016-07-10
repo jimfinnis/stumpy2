@@ -17,6 +17,7 @@ import org.pale.stumpy2.ui.support.Controller;
 import bibliothek.gui.dock.ExpandableToolbarItemStrategy;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CLocation;
+import bibliothek.gui.dock.common.layout.RequestDimension;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
 import bibliothek.gui.dock.toolbar.CToolbarItem;
 import bibliothek.gui.dock.toolbar.expand.DefaultExpandableToolbarItemStrategy;
@@ -45,6 +46,7 @@ public class Main {
 		
 		
 		final JFrame frame = new JFrame(); // our all-encompassing main frame
+		frame.setTitle("VIOLET PHEASANT");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		control = new CControl(frame);
@@ -100,7 +102,10 @@ public class Main {
 		
 		ComponentBoxView bv = ComponentBoxView.getInstance();
 		control.addDockable(bv);
-		bv.setLocation(CLocation.base().normalEast(0.4));
+		bv.setLocation(CLocation.base().normalSouth(0.4));
+		bv.setResizeRequest(new RequestDimension(300,true),true);
+		bv.setResizeLockedHorizontally(true);
+
 		bv.setVisible(true);
 		
 		control.addDockable(statitem);

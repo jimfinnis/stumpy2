@@ -24,6 +24,7 @@ public:
         setInput(0,tChord,"chord");
         setInput(1,tInt,"tick");
         setInput(2,tFloat,"velmod");
+        setInput(3,tFloat,"dur mult");
         setOutput(0,tFlow,"flow");
         setParams(
                   pChan=new IntParameter("channel",0,15,0),
@@ -59,10 +60,12 @@ public:
         // have to always call this.
         BitField b = tChord->getInput(ci,0);
         float velmod = tFloat->getInput(ci,2);
+        float durmul = c->isInputConnected(3) ? tFloat->getInput(ci,3) : 1.0f;
     
         float nextTime = d->startTime + gap*(float)d->curNote;
         if(Time::now() > nextTime && d->curNote>=0){
-            float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
+            float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
+            dur *= 60.0/gTempo; // convert beats to seconds
             float vel = pVel->get(c) + pVelMod->get(c)*velmod;
             // get the notes. Ugly.
             int notes[128];
@@ -101,11 +104,14 @@ class NotePlay : public ComponentType {
 public:
     NotePlay() : ComponentType("noteplay","music"){}
     virtual void init(){
+        width = 150;
+        
         setInput(0,tInt,"gate");
         setInput(1,tInt,"notetrig");
         setInput(2,tFloat,"note");
         setInput(3,tFloat,"velmod");
         setInput(4,tChord,"chord");
+        setInput(5,tFloat,"dur mult");
         
         setOutput(0,tFlow,"flow");
         
@@ -143,9 +149,11 @@ public:
         int noteidx = (int)(tFloat->getInput(ci,2)+0.5f);
         float velmod = tFloat->getInput(ci,3);
         BitField b = tChord->getInput(ci,4);
+        float durmul = c->isInputConnected(5) ? tFloat->getInput(ci,5) : 1.0f;
         
         if(gate && notetrig){
-            float dur = pDur->get(c)*(float)(1<<pDurPow2->get(c));
+            float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
+            dur *= 60.0/gTempo; // convert beats to seconds
             float vel = pVel->get(c) + pVelMod->get(c)*velmod;
             int trans = pTranspose->get(c);
             // as I said above, Ugly.

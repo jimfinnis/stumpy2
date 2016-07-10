@@ -1,6 +1,7 @@
 package org.pale.stumpy2.componentview;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -10,12 +11,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.pale.stumpy2.Main;
 import org.pale.stumpy2.model.Component;
 import org.pale.stumpy2.model.Patch;
 import org.pale.stumpy2.model.PatchChangeListener;
 import org.pale.stumpy2.ui.ControlledDockable;
 import org.pale.stumpy2.ui.support.Images;
+
+import bibliothek.gui.dock.common.CLocation;
+import bibliothek.gui.dock.common.layout.RequestDimension;
 
 /**
  * Displays a list of components and their editors.
@@ -40,11 +43,10 @@ public class ComponentBoxView extends ControlledDockable implements PatchChangeL
 	private ComponentBoxView() {
 		super("compbox");
 		setTitleIcon(Images.getImageIcon("icons/bricks"));
-		setResizeLockedHorizontally(true);
-		
 		pane = new JPanel();
 		pane.setLayout(new BoxLayout(pane,BoxLayout.PAGE_AXIS));
 		JScrollPane scpane = new JScrollPane(pane);
+		scpane.setMinimumSize(new Dimension(300,200));
 		getContentPane().add(scpane);
 	}
 

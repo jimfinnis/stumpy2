@@ -1,7 +1,10 @@
 All protocol commands documented in the form:
 Client message
 Description
-                Server responses
+                Server responses in the form
+                nnn message
+                nnn>=100 are errors and stop the message receive loop.
+
               
 
 LOCK
@@ -64,7 +67,6 @@ component
                 
 ====== Editing commands =======
 
-
 clear
 clear the entire library
                     000 OK
@@ -80,11 +82,12 @@ delete a patch in this library
 nc <pid> <cid> <type>
 create new component, given the patch ID, ID for new component, and type
                     000 OK 
+                OR  001 <pid> <cid> <extra text data>
                 OR  nnn error
 
 dc <pid> <cid>
 delete component
-                    000 OK 
+                        000 OK 
                 OR  nnn error
 
 lc <pid> <incid> <inputidx> <outcid> <outputidx>
@@ -106,6 +109,7 @@ p <pid> <cid> <paramidx> <typecode> <encodedval>
 change a parameter value - the encoding depends on the parameter type
 and ranges set in the component
                     000 OK 
+                OR  001 <pid> <cid> <extra text data>
                 OR  nnn error
 
 pss <pid> <cid> <paramidx> <typecode> <stringid 0-9>
@@ -113,6 +117,7 @@ change a parameter value - the encoding depends on the parameter type
 and ranges set in the component, value fetched from previously
 set stored string
                     000 OK 
+                OR  001 <pid> <cid> <extra text data>
                 OR  nnn error
 
 run <pid>

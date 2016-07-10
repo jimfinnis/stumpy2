@@ -11,11 +11,14 @@
 
 class Vel : public ComponentType {
     FloatParameter *pVel,*pMod;
+    static const int NUMINS = 4;
 public:
     Vel() : ComponentType("vel","state"){}
     virtual void init(){
-        setInput(0,tFlow,"flow");
-        setInput(1,tFloat,"mod");
+        setInput(0,tFloat,"mod");
+        for(int i=0;i<NUMINS;i++){
+            setInput(1+i,tFlow,"flow");
+        }
         setOutput(0,tFlow,"flow");
         
         setParams(
@@ -28,10 +31,12 @@ public:
         Component *c = ci->component;
         
         float p = gVel;
-        gVel *= pVel->get(c) + (pMod->get(c)*tFloat->getInput(ci,1));
+        gVel *= pVel->get(c) + (pMod->get(c)*tFloat->getInput(ci,0));
         if(gVel<0)gVel=0;
         if(gVel>1)gVel=1;
-        tFlow->getInput(ci,0);
+        for(int i=0;i<NUMINS;i++){
+            tFlow->getInput(ci,1+i);
+        }
         gVel=p;
     }
                   

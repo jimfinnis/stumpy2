@@ -98,6 +98,14 @@ public class Patch {
 	public int getID(){
 		return id;
 	}
+	
+	public Component getComponentByID(int id){
+		for(Component c: components){
+			if(c.id == id)
+				return c;
+		}
+		return null;
+	}
 
 	/**
 	 * Find a component which intersects the given position, and whether we were
@@ -144,7 +152,7 @@ public class Patch {
 		Component c = t.create(this,pos);
 		components.addLast(c);
 
-		update(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));
+		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));
 
 		return c;
 	}
@@ -187,7 +195,7 @@ public class Patch {
 		for (Component c : set) {
 			remove(c);
 		}
-		update(new PatchChangeListener.PatchChange(PatchChangeType.REMOVESET,
+		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.REMOVESET,
 				set));
 
 	}
@@ -207,7 +215,7 @@ public class Patch {
 				p.removeInputConnections(c, output);
 			}
 		});
-		update(new PatchChangeListener.PatchChange(
+		notifyChange(new PatchChangeListener.PatchChange(
 				PatchChangeType.UNLINKOUTPUT, c, 0, null, output));
 	}
 
@@ -221,7 +229,7 @@ public class Patch {
 	public void unlinkInput(Component c, int input)
 			throws ConnectionOutOfRangeException {
 		c.unsetInput(input);
-		update(new PatchChangeListener.PatchChange(PatchChangeType.UNLINKINPUT,
+		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.UNLINKINPUT,
 				c, input));
 	}
 
@@ -248,7 +256,7 @@ public class Patch {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		update(new PatchChangeListener.PatchChange(PatchChangeType.NAME));
+		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.NAME));
 	}
 
 	/**
@@ -308,9 +316,9 @@ public class Patch {
 	 * @param change
 	 *            the change which has occurred
 	 */
-	public void update(PatchChangeListener.PatchChange change) {
+	public void notifyChange(PatchChangeListener.PatchChange change) {
 		for (PatchChangeListener p : patchChangeListeners) {
-			p.update(this, change);
+			p.onPatchChange(this, change);
 
 		}
 	}
@@ -438,7 +446,7 @@ public class Patch {
 				}
 			}
 		}
-		update(new PatchChangeListener.PatchChange(PatchChangeType.ADDSET,
+		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.ADDSET,
 				notification));
 		return notification;
 
@@ -508,7 +516,7 @@ public class Patch {
 			int output) throws ConnectionOutOfRangeException,
 			ConnectionTypeMismatchException {
 		c.setInput(input, c2, output);
-		update(new PatchChange(PatchChangeType.LINK, c, input, c2, output));
+		notifyChange(new PatchChange(PatchChangeType.LINK, c, input, c2, output));
 	}
 
 	/**

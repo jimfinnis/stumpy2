@@ -37,6 +37,11 @@ public interface PatchChangeListener {
          * case, the "input" value actually contains the number of the output
          * because of how these constructors work. Hackhackhack. */
         RUNALWAYS,
+        /**
+         * A component has had its "extra text" updated by the server, or perhaps a name change
+         * of some kind. Whatever, the component should be redrawn
+         */
+        COMPONENTBOX
     }
 
     /**
@@ -144,5 +149,5 @@ public interface PatchChangeListener {
      * has occurred in the patch.
      * @param change
      */
-    public void update(Patch p, PatchChange change);
+    public void onPatchChange(Patch p, PatchChange change);
 }

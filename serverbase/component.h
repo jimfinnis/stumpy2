@@ -222,6 +222,12 @@ public:
     /// shutdown the private runtime data
     virtual void shutdownComponentInstance(UNUSED ComponentInstance *c){};
     
+    /// call after param update and creation, gets an optional string
+    /// to display in the editor's box
+    virtual const char *getExtraText(UNUSED Component *c,char *buf)
+    {return NULL;}
+    
+    
     /// an array of the types of each output
     
     ConnectionType *inputTypes[NUMINPUTS];
@@ -442,6 +448,11 @@ public:
         if(type != NULL)
             throw Exception("component type already assigned");
         type = t;
+    }
+    
+    const char *getExtraText(){
+        static char buf[256];
+        return type->getExtraText(this,buf);
     }
 };
 

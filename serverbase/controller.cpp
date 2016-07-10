@@ -118,9 +118,7 @@ METHOD(SetRunAlways){
     c->setOutputRunAlways(oid,*argv[3]=='y');
     server->success();
 }
-    
-    
-    
+
 METHOD(NewComponent){
     uint32_t pid = atoi(argv[0]);
     Patch *p = library->get(pid);
@@ -129,8 +127,12 @@ METHOD(NewComponent){
     uint32_t cid = atoi(argv[1]);
     
     const char *type = argv[2];
-    p->createComponent(cid,type);
-    server->success(cid);
+    Component *c = p->createComponent(cid,type);
+    const char *s = c->getExtraText();
+    if(s)
+        output("001 %d %d %s\n",pid,cid,s);
+    else
+        server->success();
 }
 
 METHOD(DeleteComponent){
@@ -323,7 +325,11 @@ METHOD(ParamSet){
            paramid,c->type->name,val);
     
     c->setParamValue(paramid,code,val);
-    server->success();
+    const char *s = c->getExtraText();
+    if(s)
+        output("001 %d %d %s\n",pid,cid,s);
+    else
+        server->success();
 }
     
 METHOD(ParamSetStoredString){
@@ -349,7 +355,11 @@ METHOD(ParamSetStoredString){
            paramid,c->type->name,val);
     
     c->setParamValue(paramid,code,val);
-    server->success();
+    const char *s = c->getExtraText();
+    if(s)
+        output("001 %d %d %s\n",pid,cid,s);
+    else
+        server->success();
 }
 
 METHOD(RunPatch){

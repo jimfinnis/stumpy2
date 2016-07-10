@@ -329,7 +329,7 @@ public class PatchLibrary implements PatchChangeListener {
      * A patch has changed. If the name has changed, we need to tell the view.
      */
     @Override
-    public void update(Patch p, PatchChange change) {
+    public void onPatchChange(Patch p, PatchChange change) {
         if(change.getType() == PatchChangeType.NAME){
             notifyChange(patchList.indexOf(p));
         }
@@ -358,6 +358,14 @@ public class PatchLibrary implements PatchChangeListener {
      */
 	public Patch getActivePatch() {
 		return activePatch;
+	}
+	
+	public Patch getPatchByID(int id){
+		for(Patch p : patchList){
+			if(p.getID() == id)
+				return p;
+		}
+		return null;
 	}
 
 	/**

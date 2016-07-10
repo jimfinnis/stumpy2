@@ -337,6 +337,10 @@ public class ComponentType {
 
         g.setColor(selected ? Color.WHITE : Color.BLACK);
         g.drawString(name, c.rect.x + 2, c.rect.y + 12);
+        
+        if(c.extraText!=null){
+        	g.drawString(c.extraText, c.rect.x+2, c.rect.y+25);
+        }
 
         for (ConnectionInfo i : inputList)
             i.draw(g, c.rect.x, c.rect.y);

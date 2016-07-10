@@ -132,7 +132,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
      *            a set of changes
      */
     @Override
-    public void update(Patch p,PatchChange change) {
+    public void onPatchChange(Patch p,PatchChange change) {
         // if the patch changes its name, set our title.
     	switch(change.getType()){
     	case NAME:
@@ -145,6 +145,9 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
     	case UNLINKOUTPUT:
     	case LINK:
     		canvas.repaint();
+    		break;
+    	case COMPONENTBOX:
+    		canvas.repaint(change.getC().rect);
     		break;
 		default:
 			break;

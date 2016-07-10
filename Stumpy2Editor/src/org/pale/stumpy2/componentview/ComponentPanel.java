@@ -127,7 +127,7 @@ public class ComponentPanel extends JPanel  {
 				public void itemStateChanged(ItemEvent arg0) {
 					boolean state = ch.isSelected();
 					component.setRunOutputAlways(index,state);
-	                patch.update(new PatchChange(PatchChangeType.RUNALWAYS,
+	                patch.notifyChange(new PatchChange(PatchChangeType.RUNALWAYS,
 	                		component,index));
 
 					System.out.println("Output "+index+" now "+state);
@@ -147,7 +147,7 @@ public class ComponentPanel extends JPanel  {
         List<JComponent> list = component.createEditors(new ParameterChangeListener(component) {
             @Override
             public void onChange(Parameter p) {
-                getPatch().update(new PatchChange(PatchChangeType.PARAMETER,getComponent(),p));
+                getPatch().notifyChange(new PatchChange(PatchChangeType.PARAMETER,getComponent(),p));
             }
         });
         

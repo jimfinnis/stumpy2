@@ -35,6 +35,11 @@ public class Component implements Visitable {
      * Position in canvas
      */
     public Rectangle rect;
+    
+    /**
+     * Special text which may be sent from the server
+     */
+    public String extraText;
 
     /**
      * The connection (component and output) to which each input is connected.
@@ -434,6 +439,11 @@ public class Component implements Visitable {
      */
 	public Patch getPatch() {
 		return patch;
+	}
+
+
+	public void setExtraText(String str) {
+		extraText = str;
 	}
 
     

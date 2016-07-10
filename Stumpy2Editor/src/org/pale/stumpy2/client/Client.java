@@ -16,9 +16,15 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
 import org.pale.stumpy2.Configuration;
-//import org.pale.stumpy2.main.TopController;
+import org.pale.stumpy2.libraryview.LibraryViewController;
+import org.pale.stumpy2.model.Component;
+import org.pale.stumpy2.model.Patch;
+import org.pale.stumpy2.model.PatchChangeListener.PatchChange;
+import org.pale.stumpy2.model.PatchChangeListener.PatchChangeType;
+import org.pale.stumpy2.model.PatchLibrary;
 import org.pale.stumpy2.model.ProtocolException;
 import org.pale.stumpy2.model.UnknownComponentTypeException;
+//import org.pale.stumpy2.main.TopController;
 
 /**
  * Underlying client class for communicating with the server, using non-blocking sockets
@@ -243,6 +249,7 @@ public class Client {
 						return new CommsResult(505,"return from server has non-numeric code");
 					int code = Integer.parseInt(bits[0]);
 					System.out.println(code);
+					processSpecialCommand(code,bits[1]);
 					return new CommsResult(code,bits[1]);
 				} catch (IOException e) {
 					return new CommsResult(503,"IO exception in read");
@@ -250,6 +257,40 @@ public class Client {
 			}
 		}
 		return new CommsResult(510,"timeout");
+	}
+
+	/**
+	 * This is used to process special responses from the server beyond the usual OK/FAIL stuff.
+	 * It has to be stateless.
+	 * @param code
+	 * @param string
+	 */
+	private void processSpecialCommand(int code, String string) {
+		String[] bits;
+		int pid,cid;
+		switch(code){
+		case 1:
+			bits = string.split("\\s+");
+			pid = Integer.parseInt(bits[0]);
+			cid = Integer.parseInt(bits[1]);
+			String str = bits[2];
+			PatchLibrary lib = LibraryViewController.getInstance().getLibrary();
+			if(lib!=null){
+				Patch p = lib.getPatchByID(pid);
+				if(p!=null){
+					Component c = p.getComponentByID(cid);
+					if(c!=null){
+						c.setExtraText(str);
+						// tell the system that this component needs redrawing.
+						p.notifyChange(new PatchChange(PatchChangeType.COMPONENTBOX, c));
+					}
+				}
+			}
+			break;
+		default:
+			break;
+
+		}
 	}
 
 
@@ -318,6 +359,8 @@ public class Client {
 							int code = Integer.parseInt(bits[0]);
 							System.out.println(code);
 
+							processSpecialCommand(code,bits[1]);
+
 							// this might some some weird 400+ code, which isn't
 							// an error per se, but shouldn't arrive here.
 							return new CommsResult(code,bits[1]);
@@ -342,7 +385,7 @@ public class Client {
 
 				r = processSelectorLoop();
 				System.out.println("Code: "+r.getCode());
-				if(r.getCode()!=0)
+				if(r.getCode()>=100)
 					break;
 			}
 			return r;
@@ -401,7 +444,7 @@ public class Client {
 		if(syncRead().getCode()!=999)
 			throw new ProtocolException("lock failed, unexpected message");
 	}
-	
+
 	/**
 	 * Send an UNLOCK message, undoing the action of lock().
 	 * @throws ProtocolException
@@ -412,6 +455,6 @@ public class Client {
 		if(syncRead().getCode()!=998)
 			throw new ProtocolException("lock failed, unexpected message");
 	}
-	
+
 
 }

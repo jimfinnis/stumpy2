@@ -15,7 +15,7 @@
 * Clocks go out of sync!
 * ramps/envelopes (have to be quite long in duration)
 
-Should be impossible to close lib. with a patch open
+* Should be impossible to close lib. with a patch open
 
 Mixer.
   

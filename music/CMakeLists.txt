@@ -13,7 +13,7 @@ set(SERVERSOURCES
 add_executable(music 
     main.cpp midi.cpp globals.cpp
     components/time.cpp components/state.cpp
-    components/math.cpp components/output.cpp
+    components/math.cpp components/control.cpp
     components/chord.cpp components/players.cpp
     components/sequencers.cpp components/env.cpp
     ${SERVERSOURCES})

@@ -104,7 +104,7 @@ public class ComponentBoxView extends ControlledDockable implements PatchChangeL
 	}
 
 	@Override
-	public void update(Patch p, PatchChange change) {
+	public void onPatchChange(Patch p, PatchChange change) {
 		System.out.println("Change received in compbox");
 		switch(change.getType()){
 		case REMOVESET:

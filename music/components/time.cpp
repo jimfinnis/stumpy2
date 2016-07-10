@@ -42,6 +42,8 @@ public:
         }
         gTempo=prev;
     }
+    
+    
 };
 static Tempo regtempo;
 
@@ -103,6 +105,15 @@ public:
         
         tInt->setOutput(ci,out,tick);
     }
+    virtual const char *getExtraText(Component *c,char *buf){
+        // can't take account of tempo here, sadly; we'd have
+        // to get this called every time the tempo changed upstream.
+        float t= powf(2.0,(float)pPower2->get(c))
+              * pMul->get(c) + pAdd->get(c);
+        
+        sprintf(buf,"%.3f",t);
+        return buf;
+    }
 };
 static Clock regclock;
 
@@ -156,7 +167,8 @@ static TickPrint regtickprint;
 
 
 static const char *waveNames[]=
-{"sin","saw(ascending)","saw(descending)","triangle","square"};
+{"sin","saw(ascending)","saw(descending)","triangle","square",NULL};
+static const char *waveAbbrev[]={"SN","SA","SD","TR","SQ"};
     
 class OscComponent : public ComponentType {
 public:
@@ -211,6 +223,10 @@ public:
             v += amp;
         
         tFloat->setOutput(ci,0,v);
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"%s:%.3f",waveAbbrev[pWave->get(c)],pFreq->get(c));
+        return buf;
     }
     
 private:

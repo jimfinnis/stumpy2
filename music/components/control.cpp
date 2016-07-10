@@ -29,5 +29,27 @@ public:
     }
 };
 
-static Output reg;
+class Mixer : public ComponentType {
+    static const int NUMINS = 6;
+public:
+    Mixer() : ComponentType("mixer","control"){}
+    virtual void init(){
+        width=170;
+        for(int i=0;i<NUMINS;i++){
+            char buf[32];
+            sprintf(buf,"in %d",i);
+            setInput(i,tFlow,strdup(buf));
+        }
+        setOutput(0,tFlow,"flow");
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        for(int i=0;i<NUMINS;i++){
+            ci->getInput(i);
+        }
+    }
+};
+
+static Mixer mreg;
+static Output oreg;
         

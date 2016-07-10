@@ -269,8 +269,8 @@ void simpleMidiUpdate(){
 }
 
 void simpleMidiPlay(int chan, int note, int vel,float dur){
-//    printf("PLAY %d, %d, vel %d, dur %f\n",
-//           chan,note,vel,dur);
+    printf("PLAY %d, %d, vel %d, dur %f\n",
+           chan,note,vel,dur);
     if(chan>=0 && chan<16 && note>=0 && note<128){
         noteEnds[chan][note] = Time::now()+dur;
         sendNoteOn(out,chan,note,vel);

@@ -279,5 +279,10 @@ public class LibraryView extends ControlledDockable {
 	public PatchLibrary getLibrary() {
 		return library;
 	}
+
+	public void redraw() {
+		list.invalidate();
+		list.repaint();
+	}
 }
 

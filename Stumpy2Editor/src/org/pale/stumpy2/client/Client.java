@@ -100,6 +100,7 @@ public class Client {
 			return;
 		}
 		INSTANCE.disconnect();
+		INSTANCE=null;
 		notifyStatusListeners(false, "link closed down");
 
 	}

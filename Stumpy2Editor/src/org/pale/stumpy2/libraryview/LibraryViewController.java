@@ -216,8 +216,12 @@ public class LibraryViewController extends Controller {
 				return new Command(false) {
 					public void execute() {
 						library.setActivePatch(view.getSelectedPatch());
+						view.redraw();
 					}
 				};
+			}
+			public boolean enabled(){
+				return library!=null && view!=null && view.getSelectedPatch()!=null;
 			}
 		});
 			

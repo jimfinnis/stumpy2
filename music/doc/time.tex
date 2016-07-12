@@ -1,0 +1,12 @@
+\section{Time components}
+
+\comp{tempo}{change the tempo of components feeding in}{mod:float, 8$\times$in:flow}{flow:flow}
+The tempo component modifies the tempo global variable, pushing
+the original onto the stack. It then runs its inputs, and restores the
+original. Thus, all components in the input will use the accelerated tempo,
+affecting their timing if they use tempo-based times.
+
+\startparams
+tempo & float & the new tempo in bpm \\
+mod & float & modulation amount ($out = p_{mod} \times in_{mod}$)\\
+\end{tabularx}

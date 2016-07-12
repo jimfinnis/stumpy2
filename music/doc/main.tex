@@ -1,0 +1,119 @@
+\documentclass[a4paper]{article}
+%\usepackage{wrapfig}
+\usepackage[pdftex]{graphicx}
+%\usepackage[version=3]{mhchem}
+\usepackage{fancyvrb}
+%\usepackage{multirow}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\author{Jim Finnis}
+\title{Music Components}
+
+\newcommand{\todo}[1]{
+    \begin{center}
+    \fbox{\parbox{4in}{\textbf{To Do}\vspace*{1em} \\#1}}
+    \end{center}}
+
+\newenvironment{important}
+{\begin{quote}\color{red}\large%
+\begin{center}{\Large \textbf{IMPORTANT}}\end{center}}
+{\end{quote}}
+
+\newenvironment{notebox}[1][]
+{\begin{framed}%
+\ifthenelse{\equal{#1}{}}{}{%
+    \begin{center}%
+    {\Large \textbf{#1}}%
+    \end{center}%
+    }%
+    }%    
+{\end{framed}}
+
+% different commands for left and right margin notes                                                                                                   
+\newcommand{\weeboxL}[1]{\rule{15mm}{0.5pt}\\ \parbox[t]{15mm}{\raggedright\footnotesize#1}}                                                                         
+\newcommand{\weeboxR}[1]{\rule{15mm}{0.5pt}\\ \parbox[t]{15mm}{\raggedleft\footnotesize#1}}
+                                                                                                                                                       
+% this selects which command to use for margin notes                                                                                                   
+\newcommand{\marg}[1]{\marginpar[\weeboxL{#1}]{\weeboxR{#1}}}
+
+\DefineVerbatimEnvironment{v}{Verbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\small,xleftmargin=15pt}
+\DefineVerbatimEnvironment{vv}{Verbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\small,xleftmargin=15pt}
+\DefineVerbatimEnvironment{v2}{Verbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\scriptsize,xleftmargin=0pt}
+\DefineVerbatimEnvironment{v3}{Verbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\tiny,xleftmargin=0pt}
+\DefineVerbatimEnvironment{bv2}{BVerbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\scriptsize,xleftmargin=0pt}
+\DefineVerbatimEnvironment{bv}{BVerbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm,
+    fontsize=\scriptsize,xleftmargin=0pt}
+\DefineVerbatimEnvironment{bvc}{BVerbatim}{
+    %numbers=left,numbersep=5pt,
+    %frame=lines,framerule=0.5mm
+    commandchars=+\[\],
+    fontsize=\scriptsize,xleftmargin=0pt}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+\usepackage[hmargin=3cm,vmargin=5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\hypersetup{colorlinks}
+
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{color}
+
+\usepackage{array}
+
+
+% \component{name}{desc}{inputs(Comma sep)}{outputs(comma sep)}
+\newcolumntype{Z}{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}r}
+\newcommand{\comp}[4]{%
+    \addcontentsline{toc}{subsection}{#1}
+    \begin{tabularx}{\textwidth}{@{}XZ@{}}
+    \toprule
+    \emph{#1} & \emph{#2} \\
+    \end{tabularx}
+    \begin{tabularx}{\textwidth}{@{}XZ@{}}
+    \textbf{in:} \emph{#3} & \textbf{out:} \emph{#4}   \\    
+    \bottomrule
+    \end{tabularx}\vspace{1em}
+}
+
+\newcommand{\startparams}
+{\vspace*{1em} \noindent \textbf{Parameters:} \vspace{1em}\\
+\noindent \begin{tabularx}{\textwidth}{@{}lp{1in}X@{}}}
+
+\begin{document}
+
+\maketitle
+\LetLtxMacro\oldincludegraphics\includegraphics
+% Stuff to redefine includegraphics to show the document file
+% underneath; useful for referencing.
+\renewcommand{\includegraphics}[2][]{%
+%    \rotatebox[origin=tr]{270}{\tiny #2} %
+    \oldincludegraphics[#1]{#2}%
+    \\{\scriptsize #2}%
+}
+
+\include{body}
+\include{time}
+
+\end{document}
+

@@ -36,4 +36,8 @@ threshgate:
 perlin noise
 
 switcher for other types?
-    
+
+DOCUMENTATION.
+
+Fadeout & transfer to another patch
+("fadeout", "fadein" and "transfer" components) AND DOCS because complex.

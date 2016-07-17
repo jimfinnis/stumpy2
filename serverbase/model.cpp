@@ -157,6 +157,22 @@ ComponentInstance *PatchInstance::getInstance(Component *c){
     return instances+c->slot;
 }
 
+void Component::setParamValue(int paramnum,char code,const char *val){
+    if(paramnum>=type->paramct)
+        throw SE_NOSUCHPARAM;
+    type->params[paramnum]->set(this,code,val);
+    
+    // iterate over the patch instances to get the component instances,
+    // and inform them.
+    for(PatchInstance *p = patch->instances.head();p;p=patch->instances.next(p)){
+        ComponentInstance *i = p->getInstance(this);
+        type->onParamChanged(i,type->params[paramnum]);
+    }
+    
+
+}
+
+
 
 void PatchLibrary::instantiateAsActive(uint32_t id){
     if(!patches.find(id))

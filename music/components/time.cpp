@@ -141,6 +141,50 @@ public:
 static TickCombiner tickcombinereg;
 
 
+
+struct ClockDivData {
+    int ct;
+};
+
+class ClockDivider : public ComponentType {
+    IntParameter *pDiv;
+public:
+    ClockDivider() : ComponentType("clockdiv","time"){}
+    virtual void init(){
+        setInput(0,tInt,"tick");
+        setOutput(0,tInt,"tick");
+        setParams(pDiv=new IntParameter("div",1,32,2),
+                  NULL);
+    }
+    virtual void initComponentInstance(ComponentInstance *c){
+        ClockDivData *d = new ClockDivData();
+        c->privateData = (void *)d;
+        d->ct=0;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((ClockDivData *)c->privateData);
+    }
+    virtual void run(ComponentInstance *ci,int out){
+        ClockDivData *d = (ClockDivData *)ci->privateData;
+        Component *c = ci->component;
+        
+        int o = 0;
+        
+        if(tInt->getInput(ci,0)){
+            if(++d->ct == pDiv->get(c)){
+                o=1;
+                d->ct=0;
+            }
+        }   
+        
+        tInt->setOutput(ci,0,o);
+    }
+};
+static ClockDivider clockdivreg;
+
+
+
 class TickPrint : public ComponentType {
     StringParameter *pStr;
 public:
@@ -207,6 +251,7 @@ public:
             v = -((v-floorf(v))*2.0f-1.0f);break;
         case 3: //triangle
             v = 2.0f*fabsf(2.0*(v-floorf(v+0.5)))-1.0; //fr. wikipedia "triangle wave"
+            break;
         case 4: //square
             // form triangle
             v = fabsf(2.0*(v-floorf(v+0.5)));
@@ -216,11 +261,13 @@ public:
         }
         
         float amp = pAmp->get(c);
+        float off = pOffset->get(c);
+        if(pMinZero->get(c)){
+            v += 1.0;
+            v *= 0.5f;
+        }
         v *= amp;
-        v += pOffset->get(c);
-        
-        if(pMinZero->get(c))
-            v += amp*0.5f;
+        v += off;
         
         tFloat->setOutput(ci,0,v);
     }

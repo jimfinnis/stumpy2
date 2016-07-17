@@ -96,11 +96,14 @@ static ChordPlay cpreg;
 
 struct NPData {
     bool playing;
+    float noteStarts[128]; // when last notes started on this key
+    float noteDurs[128]; // length of last note on this key
 };
 
 class NotePlay : public ComponentType {
     FloatParameter *pVelMod,*pDur,*pVel;
     IntParameter *pChan,*pDurPow2,*pTranspose;
+    BoolParameter *pSuppressRetrig;
 public:
     NotePlay() : ComponentType("noteplay","music"){}
     virtual void init(){
@@ -121,6 +124,7 @@ public:
                   pVelMod=new FloatParameter("velmod",-64,64,0),
                   pDur = new FloatParameter("duration",0.1,1,0.2),
                   pDurPow2 = new IntParameter("duration-pow2",0,4,0),
+                  pSuppressRetrig = new BoolParameter("suppress retrig",true),
                   pTranspose = new IntParameter("transpose",-24,24,0),
                   NULL);
               
@@ -129,6 +133,10 @@ public:
     virtual void initComponentInstance(ComponentInstance *c){
         NPData *d = new NPData();
         c->privateData = (void *)d;
+        for(int i=0;i<128;i++){
+            d->noteStarts[i]=-100;
+            d->noteDurs[i]=0;
+        }
     }
     
     virtual void shutdownComponentInstance(ComponentInstance *c){
@@ -149,6 +157,7 @@ public:
         float velmod = tFloat->getInput(ci,3);
         BitField b = tChord->getInput(ci,4);
         float durmul = c->isInputConnected(5) ? tFloat->getInput(ci,5) : 1.0f;
+        bool suppressRetrigBeforeComplete = pSuppressRetrig->get(c);
         
         if(gate && notetrig){
             float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
@@ -158,6 +167,9 @@ public:
             // as I said above, Ugly.
             int notes[128];
             int ct=0;
+            float now = Time::now();
+            // this is where we get a list of possible notes
+            // by scanning the chord for set notes.
             for(int i=0;i<128;i++){
                 if(b.get(i)){
 //                    printf("Note set: %d\n",i);
@@ -167,11 +179,21 @@ public:
                 }
             }
             if(ct){
+                printf("Note selected: %d   ",noteidx);
                 int oct = noteidx/ct;
                 noteidx %= ct;
+                printf(" = %d in oct %d\n",noteidx,oct);
                 vel *= gVel;
-                simpleMidiPlay(pChan->get(c),notes[noteidx]+oct*12,
-                               vel,dur);
+                
+                // get true MIDI note
+                noteidx = notes[noteidx]+oct*12;
+                
+                if(!suppressRetrigBeforeComplete || 
+                   now-d->noteStarts[noteidx] > d->noteDurs[noteidx]){
+                    simpleMidiPlay(pChan->get(c),noteidx,vel,dur);
+                    d->noteStarts[noteidx]=now;
+                    d->noteDurs[noteidx]=dur;
+                }
             }
         }
     }

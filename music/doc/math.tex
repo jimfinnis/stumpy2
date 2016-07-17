@@ -30,8 +30,12 @@ mul2 & float & multiplies $in2+add2$\\
 Takes the two inputs and processes them through multiply and add
 parameters, puts the result through a function, and then puts the
 output through another multiply and add stage. If an input is
-not connected, it is zero.
-Functions supported include: sine, cosine, gaussian(x+y), x mod y, abs(x+y)
+not connected, it is zero. Thus, the output is:
+\[
+p_{addout} + p_{mulout} \times f\Big((p_{add1}+in_1)\times p_{mul1} +
+(p_{add2}+in_2)\times p_{mul2} \Big)
+\]
+Functions supported include: sine, cosine, gaussian(x+y), x mod y, abs(x+y).
 \startparams
 add1 & float & added to input 1 before multiplication by mul1\\
 mul1 & float & multiplies $in1+add1$\\
@@ -41,3 +45,35 @@ func & enum & function to perform\\
 mulout & float & multiplies function output\\
 addout & float & added to output
 \end{tabularx}
+
+\clearpage
+\comp{perlin}{Perlin coherent noise generator (input is values or current time)}
+{x:float,y:float}{out:perlin(x+y),zerocrosstrig:int}
+Calculates 
+\[
+p_{addout} + p_{mulout} \times \operatorname{perlin}\Big((p_{add1}+in_1)\times p_{mul1} +
+(p_{add2}+in_2)\times p_{mul2} \Big)
+\]
+where \emph{perlin} is the Perlin noise function with range [-1,1].
+Thus, it generates
+smoothly varying coherent random noise. If neither input is connected, 
+$in_1$ is the current time. If the output crosses zero, i.e. the previous
+output was one side of zero and the new output is the other side, 
+the \emph{zerocrosstrig} output is set high. This is typically used
+with no inputs to generate randomly timed events, with \emph{mul1} set
+to control the frequency.
+\startparams
+octaves & int & number of octaves in noise function -- the higher, the
+more ``fractal'' the noise and the ``busier'' it becomes\\
+persistence & float & the noise persistence -- how much the amplitudes
+decrease for each successive octave\\
+add1 & float & added to input 1 (or time if no inputs are connected) 
+before multiplication by mul1\\
+mul1 & float & multiplies $in1+add1$\\
+add2 & float & added to input 2 before multiplication by mul2\\
+mul2 & float & multiplies $in2+add2$\\
+mulout & float & multiplies function output\\
+addout & float & added to output
+\end{tabularx}
+For more information on \emph{octaves} and \emph{persistence}, and Perlin
+noise is general, see the documentation for \texttt{libnoise}.

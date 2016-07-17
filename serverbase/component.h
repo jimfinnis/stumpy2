@@ -222,6 +222,9 @@ public:
     /// shutdown the private runtime data
     virtual void shutdownComponentInstance(UNUSED ComponentInstance *c){};
     
+    /// when a component parameter changes, all instances are informed
+    virtual void onParamChanged(UNUSED ComponentInstance *ci,UNUSED Parameter *p){}
+    
     /// call after param update and creation, gets an optional string
     /// to display in the editor's box
     virtual const char *getExtraText(UNUSED Component *c,char *buf)
@@ -319,11 +322,8 @@ public:
     ParameterValue *paramVals;
     
     /// set a parameter's value from an encoded value and type code.
-    void setParamValue(int paramnum,char code,const char *val){
-        if(paramnum>=type->paramct)
-            throw SE_NOSUCHPARAM;
-        type->params[paramnum]->set(this,code,val);
-    }
+    /// Inform all instances (through their components).
+    void setParamValue(int paramnum,char code,const char *val);
     
     /// make the component always run when a value for this output
     /// is requested, even if this is done multiple times in the same tick.

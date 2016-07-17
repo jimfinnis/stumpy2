@@ -49,7 +49,8 @@ phase & float & phase\\
 mod & float & amount of phase modulation\\
 amp & float & amplitude of wave\\
 offset & float & added to output\\
-minzero & boolean & if true, wave's minimum value is zero (i.e. $amp/2$ is added)\\
+minzero & boolean & if true, wave's default range becomes $[0,amp]$ rather
+than $[-amp,amp]$\\
 width & float & pulsewidth if square wave selected (default is 0.5, which is a true square wave)
 \end{tabularx}
 
@@ -92,3 +93,10 @@ to before an earlier stage, and moving an earlier stage to after
 a later stage will cause the later stage times to move.
 Two stages may have the same time, in which case the higher-numbered
 stages level is jumped to.
+
+\comp{clockdiv}{Clock divider}
+{tick:int}{tick:int}
+The clock divider accepts a sequence of ticks, and outputs every $n$th one.
+\startparams
+div & int & clock division ratio -- output 1 tick for every $div$ input ticks
+\end{tabularx}

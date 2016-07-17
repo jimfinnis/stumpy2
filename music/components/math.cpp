@@ -6,6 +6,11 @@
 
 #include <math.h>
 #include "model.h"
+#include "../perlin.h"
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
 
 class AddComponent : public ComponentType {
 public:
@@ -131,5 +136,79 @@ private:
     FloatParameter *pAddOut,*pMulOut;
     EnumParameter *pFunc;
 };
-
 static FuncComponent reg;
+
+
+struct PCData {
+    PerlinNoise p;
+    float prev;
+};
+
+class PerlinComponent : public ComponentType {
+    FloatParameter *pAddIn,*pMulIn1;
+    FloatParameter *pMulIn2;
+    FloatParameter *pAddOut,*pMulOut;
+    IntParameter *pOctaves;
+    FloatParameter *pPersist;
+public:
+    PerlinComponent() : ComponentType("perlin","maths"){}
+    virtual void init(){
+        setInput(0,tFloat,"x");
+        setInput(1,tFloat,"y");
+        setOutput(0,tFloat,"perlin(x+y)");
+        setOutput(1,tInt,"zerocrosstrig");
+        setParams(
+                  pOctaves = new IntParameter("octaves",1,8,2),
+                  pPersist = new FloatParameter("persistence",0,1,0.5),
+                  pMulIn1 = new FloatParameter("mul-in-x",-100,100,1),
+                  pMulIn2 = new FloatParameter("mul-in-y",-100,100,1),
+                  pAddIn = new FloatParameter("add-in",-100,100,0),
+                  pMulOut = new FloatParameter("mul-out",-100,100,1),
+                  pAddOut = new FloatParameter("add-out",-100,100,0),
+                  NULL
+                  );
+    }
+    virtual void initComponentInstance(ComponentInstance *c){
+        PCData *d = new PCData();
+        d->prev = 1;
+        c->privateData = (void *)d;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((PCData *)c->privateData);
+    }
+        
+    virtual void run(ComponentInstance *ci,int outnum){
+        Component *c = ci->component;
+        PCData *d = (PCData *)ci->privateData;
+        d->p.mOctaves = pOctaves->get(c);
+        d->p.mPersistence = pPersist->get(c);
+        
+        float in1,in2;
+        
+        // if neither input connected, use the time (as input 1)
+        if(!c->isInputConnected(0) && !c->isInputConnected(1)){
+            in1 = Time::now()*pMulIn1->get(c);;
+            in2 = 0;
+        }  else {
+            in1 = tFloat->getInput(ci,0)*pMulIn1->get(c);
+            in2 = tFloat->getInput(ci,0)*pMulIn2->get(c);
+        }
+        float out = d->p.get(in1+in2+pAddIn->get(c));
+        out *= pMulOut->get(c);
+        out += pAddOut->get(c);
+        
+        int zerocrossed;
+        if(sgn<float>(out) != sgn<float>(d->prev))
+            zerocrossed=1;
+        else
+            zerocrossed=0;
+        d->prev = out;
+        
+        tFloat->setOutput(ci,0,out);
+        tInt->setOutput(ci,1,zerocrossed);
+    }
+        
+};
+static PerlinComponent perlinreg;
+

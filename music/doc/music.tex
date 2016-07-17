@@ -99,7 +99,10 @@ velmod & float & the \emph{vel} input is multiplied by this, then
 added to the \emph{vel} parameter.\\
 duration & float & base duration (beats)\\
 duration-pow2 & float & duration is multiplied by 2 to this power\\
-transpose & int & interval in semitones, added to the output note
+transpose & int & interval in semitones, added to the output note\\
+suppress retrig & bool & if true, do not allow notes to be played
+if this player is already playing them (some other player could do it,
+though)
 \end{tabularx}
 
 \clearpage
@@ -154,3 +157,20 @@ seq & string & sequence of denary digits and gap characters defining the
 output values and durations
 \end{tabularx}
 
+\clearpage
+\comp{denpick}{Pick values from denary string (can be random)}
+{tick:int,select:float}{eventtick:int,value:float}
+This component has a string of denary digits (similar to \emph{denseq} 
+but gaps are not permitted). When the input ticks, it sets the
+output value to a value chosen from this string by \emph{select}.
+If there is no \emph{select} input, the value is chosen randomly.
+\startparams
+vals & string & denary values to pick from \\
+unit in & boolean & if true, the input is in the range 0-1 and is
+scaled up to the full range. Otherwise $\lfloor select \rfloor$ 
+selects the value. Has no effect if \emph{select} is not connected.\\
+cycle & boolean & if \emph{select} is not connected, i.e. random
+selection is used, will shuffle the numbers each cycle and output
+them one at a time rather than just picking a random element each time.
+This produces a better distribution.
+\end{tabularx}

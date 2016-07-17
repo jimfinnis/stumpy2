@@ -60,7 +60,8 @@ public:
         // have to always call this.
         BitField b = tChord->getInput(ci,0);
         float velmod = tFloat->getInput(ci,2);
-        float durmul = c->isInputConnected(3) ? tFloat->getInput(ci,3) : 1.0f;
+        float durmul = 
+              c->isInputConnected(3) ? tFloat->getInput(ci,3) : 1.0f;
     
         float nextTime = d->startTime + gap*(float)d->curNote;
         if(Time::now() > nextTime && d->curNote>=0){
@@ -99,7 +100,6 @@ struct NPData {
 
 class NotePlay : public ComponentType {
     FloatParameter *pVelMod,*pDur,*pVel;
-    BoolParameter *pLoop;
     IntParameter *pChan,*pDurPow2,*pTranspose;
 public:
     NotePlay() : ComponentType("noteplay","music"){}
@@ -117,7 +117,6 @@ public:
         
         setParams(
                   pChan=new IntParameter("channel",0,15,0),
-                  pLoop=new BoolParameter("loop",true),
                   pVel=new FloatParameter("vel",0,64,50),
                   pVelMod=new FloatParameter("velmod",-64,64,0),
                   pDur = new FloatParameter("duration",0.1,1,0.2),

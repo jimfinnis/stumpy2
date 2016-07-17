@@ -1,0 +1,12 @@
+\section{Control components}
+\comp{output}
+{A ``root'' component which simply runs all its inputs}
+{in:4$\times$input:flow}{}
+The patch runs by finding all \emph{output} components and running
+their inputs. Therefore, this component must be present for the patch to run. 
+
+\comp{mixer}
+{A component which simply runs all its inputs}
+{in:6$\times$input:flow}{output:flow}
+This component, when run, runs all its inputs.
+

@@ -39,11 +39,14 @@ static const char *scaleNames[]= {
 
 static const int scaleData[][20]=
 {
-    {0,2,4,5,7,9,11},
-    {0,2,3,5,7,8,11},
-    {0,1,2,3,4,5,6,7,8,9,10,11},
-    {0,2,4,7,9}
+    {0,2,4,5,7,9,11,-1},
+    {0,2,3,5,7,8,11,-1},
+    {0,1,2,3,4,5,6,7,8,9,10,11,-1},
+    {0,2,4,7,9,-1},
+    
+    {-1} // terminator
 };
+unsigned char scaleLengths[64]; // at least as many as there are entries in above table.
     
 struct ChordData {
     BitField lastChord;
@@ -65,14 +68,22 @@ public:
         setOutput(0,tChord,"chord");
         setParams(
                   pChords[0]=new StringParameter("default chord",DEFCHORD),
-                  pChords[1]=new StringParameter("chord 2",DEFCHORD),
-                  pChords[2]=new StringParameter("chord 3",DEFCHORD),
-                  pChords[3]=new StringParameter("chord 4",DEFCHORD),
+                  pChords[1]=new StringParameter("chord 1",DEFCHORD),
+                  pChords[2]=new StringParameter("chord 2",DEFCHORD),
+                  pChords[3]=new StringParameter("chord 3",DEFCHORD),
                   pOctave = new IntParameter("octave",0,5,2),
                   pInversions = new BoolParameter("inversions",true),
                   pPrint = new BoolParameter("print",false),
                   pScale = new EnumParameter("scale",scaleNames,0),
                   NULL);
+        
+        // count notes in each scale
+        for(int i=0;scaleData[i][0]>=0;i++){
+            int ct;
+            for(ct=0;scaleData[i][ct]>=0;ct++){}
+            printf("Scale %d, len %d\n",i,ct);
+            scaleLengths[i]=ct;
+        }
     }
     
     virtual void initComponentInstance(ComponentInstance *c){
@@ -105,6 +116,7 @@ public:
         // construct the chord
         
         const int *sc = scaleData[pScale->get(c)];
+        int sclen = scaleLengths[pScale->get(c)];
         BitField b;
         if(pInversions->get(c)){
             // here, we have to scan through the inversions
@@ -112,13 +124,13 @@ public:
             float cent = getCentre(d->lastChord);
             if(cent<0.01){
                 // no last cord
-                b = construct(base,str,sc,0);
+                b = construct(base,str,sc,sclen,0);
             } else {
                 int found=0;
                 int mindist=10000;
                 BitField bs[11];
                 for(int i=0;i<11;i++){
-                    bs[i] = construct(base,str,sc,i-5);
+                    bs[i] = construct(base,str,sc,sclen,i-5);
                     float dist = fabsf(getCentre(bs[i])-cent);
                     if(dist<mindist){
                         mindist=dist;
@@ -129,7 +141,7 @@ public:
             }
         } else {
             // the easy way!
-            b = construct(base,str,sc,0);
+            b = construct(base,str,sc,sclen,0);
         }
         
         
@@ -152,7 +164,7 @@ public:
                                       "G#","A","A#","B"};
             bool qqq=false;
             for(int i=24;i<128;i++){
-                if(b.get(i)){
+                if(b2.get(i)){
                     printf("%s%d(%d) ",notes[(i-24)%12],(i-24)/12,i);
                     qqq=true;
                 }
@@ -175,7 +187,7 @@ private:
     // the chromatic notes 0,4,7 (i.e. a major triad)
     
     BitField construct(int base, const char *str, 
-                       const int *scale,int inv){
+                       const int *scale,int sclen,int inv){
         BitField b;
         b.clear();
         int len = strlen(str);
@@ -191,7 +203,7 @@ private:
                 note = (c - 'a')+10; 
             else
                 note = c-'0';
-            note = scale[note];
+            note = scale[note%sclen];
             note += base+(octave-99)*12;
 
             if(note>=0 && note<128)

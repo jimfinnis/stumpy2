@@ -86,9 +86,11 @@
 \newcolumntype{Z}{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}r}
 \newcommand{\comp}[4]{%
     \addcontentsline{toc}{subsection}{#1}
-    \begin{tabularx}{\textwidth}{@{}XZ@{}}
+    \label{comp:#1}
+    \vspace*{4em}
+    \noindent \begin{tabularx}{\textwidth}{@{}XZ@{}}
     \toprule
-    \emph{#1} & \emph{#2} \\
+    \textbf{\Large #1} & \emph{#2} \\
     \end{tabularx}
     \begin{tabularx}{\textwidth}{@{}XZ@{}}
     \textbf{in:} \emph{#3} & \textbf{out:} \emph{#4}   \\    
@@ -97,7 +99,7 @@
 }
 
 \newcommand{\startparams}
-{\vspace*{1em} \noindent \textbf{Parameters:} \vspace{1em}\\
+{\vspace*{1em} \leavevmode \\ \noindent \textbf{Parameters:} \vspace{1em}\\
 \noindent \begin{tabularx}{\textwidth}{@{}lp{1in}X@{}}}
 
 \begin{document}
@@ -113,7 +115,12 @@
 }
 
 \include{body}
+
+\include{control}
 \include{time}
+\include{state}
+\include{math}
+\include{music}
 
 \end{document}
 

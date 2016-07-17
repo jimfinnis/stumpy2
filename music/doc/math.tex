@@ -1,0 +1,43 @@
+\section{Mathematics components}
+\comp{add}
+{Adds the inputs together}
+{in1:float,in2:float}{$mul1\times(in1+add1) + mul2\times(in2+add2)$}
+Adds together the inputs, after they have been processed through
+some parameters.
+\startparams
+add1 & float & added to input 1 before multiplication by mul1\\
+add2 & float & added to input 2 before multiplication by mul2\\
+mul1 & float & multiplies $in1+add1$\\
+mul2 & float & multiplies $in2+add2$\\
+\end{tabularx}
+
+\comp{mul}
+{Multiplies the inputs together.}
+{in1:float,in2:float}{$mul1\times(in1+add1) \times mul2\times(in2+add2)$}
+Multiplies together the inputs, after they have been processed through
+some parameters. Yes, the two multiplies are redundant.
+\startparams
+add1 & float & added to input 1 before multiplication by mul1\\
+add2 & float & added to input 2 before multiplication by mul2\\
+mul1 & float & multiplies $in1+add1$\\
+mul2 & float & multiplies $in2+add2$\\
+\end{tabularx}
+
+\clearpage
+\comp{func}
+{Performs one of a number of functions on the sum of the inputs.}
+{in1:float,in2:float}{$addout+mulout\times f \big(mul1(in1+add1)+ mul2(in2+add2)\big)$}
+Takes the two inputs and processes them through multiply and add
+parameters, puts the result through a function, and then puts the
+output through another multiply and add stage. If an input is
+not connected, it is zero.
+Functions supported include: sine, cosine, gaussian(x+y), x mod y, abs(x+y)
+\startparams
+add1 & float & added to input 1 before multiplication by mul1\\
+mul1 & float & multiplies $in1+add1$\\
+add2 & float & added to input 2 before multiplication by mul2\\
+mul2 & float & multiplies $in2+add2$\\
+func & enum & function to perform\\
+mulout & float & multiplies function output\\
+addout & float & added to output
+\end{tabularx}

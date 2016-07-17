@@ -102,10 +102,10 @@ public:
         setInput(1,tFloat,"y");
         setOutput(0,tFloat,"f(x)");
         setParams(
-                  pMulIn1 = new FloatParameter("mul-in-x",-100,100,1),
                   pAddIn1 = new FloatParameter("add-in-x",-100,100,0),
-                  pMulIn2 = new FloatParameter("mul-in-y",-100,100,1),
+                  pMulIn1 = new FloatParameter("mul-in-x",-100,100,1),
                   pAddIn2 = new FloatParameter("add-in-y",-100,100,0),
+                  pMulIn2 = new FloatParameter("mul-in-y",-100,100,1),
                   pFunc = new EnumParameter("func",funcNames,0),
                   pMulOut = new FloatParameter("mul-out",-100,100,1),
                   pAddOut = new FloatParameter("add-out",-100,100,0),
@@ -116,8 +116,8 @@ public:
     virtual void run(ComponentInstance *ci,int outnum){
         Component *c = ci->component;
         
-        float in1 = tFloat->getInput(ci,0)*pMulIn1->get(c)+pAddIn1->get(c);
-        float in2 = tFloat->getInput(ci,1)*pMulIn2->get(c)+pAddIn2->get(c);
+        float in1 = (tFloat->getInput(ci,0)+pAddIn1->get(c))*pMulIn1->get(c);
+        float in2 = (tFloat->getInput(ci,0)+pAddIn2->get(c))*pMulIn2->get(c);
         float out = dofunc(in1,in2,pFunc->get(c));
         out *= pMulOut->get(c);
         out += pAddOut->get(c);

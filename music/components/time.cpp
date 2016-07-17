@@ -220,7 +220,7 @@ public:
         v += pOffset->get(c);
         
         if(pMinZero->get(c))
-            v += amp;
+            v += amp*0.5f;
         
         tFloat->setOutput(ci,0,v);
     }

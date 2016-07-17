@@ -1,12 +1,94 @@
 \section{Time components}
-
-\comp{tempo}{change the tempo of components feeding in}{mod:float, 8$\times$in:flow}{flow:flow}
+\comp{tempo}
+{Changes the tempo of components feeding in}
+{mod:float, 8$\times$in:flow}{flow:flow}
 The tempo component modifies the tempo global variable, pushing
 the original onto the stack. It then runs its inputs, and restores the
 original. Thus, all components in the input will use the accelerated tempo,
 affecting their timing if they use tempo-based times.
-
 \startparams
 tempo & float & the new tempo in bpm \\
 mod & float & modulation amount ($out = p_{mod} \times in_{mod}$)\\
 \end{tabularx}
+
+\comp{clock}
+{Gives a regular ``ticking'' integer output, relative to the tempo.}
+{}{4$\times$tick:int, outputs 1+ happen after a delay}
+Generates a regular tick (integer 1) on outputs, which are 0 the
+rest of the time. The tick frequency is relative to the tempo,
+and is set by parameters. Output 0 is the reference, the other outputs
+tick on subsequent updates -- so output 0 ticks, then on the next
+frame output 1 will tick and so on. If the \emph{gapbeats} parameter
+is set, the interval between the outputs is increased to be some
+fraction of the time between tempo beats.
+\startparams
+poweroftwo & int & tempo is multiplied by 2 to the power of this value\\
+mul & float & tempo is then multiplied by this value\\
+add & float & tempo finally has this value added\\
+gapbeats & float & fraction of a beat between each output
+\end{tabularx}
+
+\clearpage
+\comp{tickcombine}
+{Combines multiple tick outputs into a single tick stream.}
+{4$\times$in:int}{out:int}
+Takes a number of inputs which are usually zero. If any of the
+inputs are nonzero, the output will be 1. Typically used to combine
+a number of clocks (or similar) into a single stream.
+
+\comp{osc}
+{Generates a periodic waveform.}
+{mod:float}{wave:float}
+Given a frequency in periods/beat (according to the current tempo),
+produces a wave on the output. Various waveforms are available.
+The phase can be modulated by an input.
+\startparams
+wave & enum & waveform\\
+freq & float & frequency (periods/beat)\\
+phase & float & phase\\
+mod & float & amount of phase modulation\\
+amp & float & amplitude of wave\\
+offset & float & added to output\\
+minzero & boolean & if true, wave's minimum value is zero (i.e. $amp/2$ is added)\\
+width & float & pulsewidth if square wave selected (default is 0.5, which is a true square wave)
+\end{tabularx}
+
+
+\comp{time}
+{Gives the time since the program started.}
+{}{time:float}
+Produces the number of seconds since the start of the program,
+times a ``rate'' parameter.
+\startparams
+rate & float & the number of seconds is multiplied by this to
+produce the output
+\end{tabularx}
+
+\clearpage
+\comp{env}{Envelope generator}
+{trigger:int}{out:float}
+This is a 6 stage envelope generator. Each stage has a level
+and a time relative to the start, in seconds. There is an implied
+level=0, time=0 stage. The generator can function in three modes:
+\begin{itemize}
+\item \textbf{retrig}: the envelope restarts whenever \emph{trig} is
+non-zero;
+\item \textbf{noretrig}: the envelope only restarts when \emph{trig} is
+high and any previous envelope has completed;
+\item \textbf{freerun}: the envelope retriggers as soon as it stops
+running, and starts running as soon as its output is connected to
+a running component.
+\end{itemize}
+\startparams
+mode & enum & retrigger mode as described above\\
+rate powerof2 & int & the time since the start is multiplied by 2
+to this power before being used to calculate the envelope state\\
+env & env & the actual envelope (considered as a single parameter
+so the editor can put a fancy graphic on it)
+\end{tabularx}
+Within the envelope parameter each stage has a level and time.
+Times are autocorrected: a later stage cannot have its time moved
+to before an earlier stage, and moving an earlier stage to after
+a later stage will cause the later stage times to move.
+Two stages may have the same time, in which case the higher-numbered
+stages level is jumped to.

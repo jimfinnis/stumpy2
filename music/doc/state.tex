@@ -1,0 +1,21 @@
+\section{State modifier components}
+All these components work by modifying some global state, so that
+the components below them in the tree use this modified value.
+On exit from the component, the original state is restored.
+
+See also the \emph{tempo} component (p.~\pageref{comp:tempo}).
+
+\comp{vel}
+{Modifies note velocity for components below}
+{in:4$\times$input:flow, mod:float}{output:flow}
+Modify the velocity of all notes played by components below
+this. The new velocity will be
+\[
+vel \gets vel \times (p_{vel}+p_{mod}\times in)
+\]
+\startparams
+vel & float & the amount to multiply the velocity by\\
+mod & float & the amount to multiply the modulation input by, which
+is then added to $vel$
+\end{tabularx}
+

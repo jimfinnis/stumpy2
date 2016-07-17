@@ -67,10 +67,15 @@ produce the output
 
 \clearpage
 \comp{env}{Envelope generator}
-{trigger:int}{out:float}
+{trigger:int}{out:float,finish:int}
 This is a 6 stage envelope generator. Each stage has a level
 and a time relative to the start, in seconds. There is an implied
-level=0, time=0 stage. The generator can function in three modes:
+level=0, time=0 stage. 
+The envelope is started when \emph{trigger} is high -- this is always
+high if the input is unconnected (be careful of the mode here).
+When the envelope completes, it sends
+a single-frame 1 on \emph{finish}. 
+The generator can function in three modes:
 \begin{itemize}
 \item \textbf{retrig}: the envelope restarts whenever \emph{trig} is
 non-zero;
@@ -79,6 +84,8 @@ high and any previous envelope has completed;
 \item \textbf{freerun}: the envelope retriggers as soon as it stops
 running, and starts running as soon as its output is connected to
 a running component.
+\item \textbf{oneshot}: Cannot be retriggered.
+Maintains its level at the end and outputs a \emph{finish}.
 \end{itemize}
 \startparams
 mode & enum & retrigger mode as described above\\
@@ -91,8 +98,6 @@ Within the envelope parameter each stage has a level and time.
 Times are autocorrected: a later stage cannot have its time moved
 to before an earlier stage, and moving an earlier stage to after
 a later stage will cause the later stage times to move.
-Two stages may have the same time, in which case the higher-numbered
-stages level is jumped to.
 
 \comp{clockdiv}{Clock divider}
 {tick:int}{tick:int}

@@ -15,17 +15,21 @@ static const char *modeNames[]={
     "retrig", // can be restarted during its run
     "noretrig", // must finish before being restarted (if trig is held high, repeats)
     "freerun", // constantly repeats
+    "oneshot", // never terminates (but signals done)
     NULL
 };
 
 #define MODE_RETRIG 0
 #define MODE_NORETRIG 1
 #define MODE_FREERUN 2
+#define MODE_ONESHOT 3
 
 
 struct EnvGenData {
     float start; // time elapsed; -1 is not running
     int nextstage; // stage we are waiting for, undef if start<0
+    float op; // output
+    bool oneshotdone;
 };
 
 class EnvGen : public ComponentType {
@@ -35,8 +39,9 @@ class EnvGen : public ComponentType {
 public:
     EnvGen() : ComponentType("env","time"){}
     virtual void init(){
-        setOutput(0,tFloat,"out");
         setInput(0,tInt,"trigger");
+        setOutput(0,tFloat,"out");
+        setOutput(1,tInt,"finish");
         
         setParams(pMode=new EnumParameter("mode",modeNames,0),
                   pPower2 = new IntParameter("rate powerof2",-4,4,0),
@@ -47,6 +52,8 @@ public:
         EnvGenData *d = new EnvGenData();
         c->privateData = (void *)d;
         d->start = -1;
+        d->op = 0;
+        d->oneshotdone=false;
     }
     virtual void shutdownComponentInstance(ComponentInstance *c){
         delete ((EnvGenData *)c->privateData);
@@ -57,17 +64,21 @@ public:
         EnvGenData *d = (EnvGenData *)ci->privateData;
         Component *c = ci->component;
         Envelope& e = pEnv->get(c);
-        float op;
         
-        // always read to ensure the components in it run.
-        int trig = tInt->getInput(ci,0);
+        int trig;
+        // always trigger if not connected.
+        if(!c->isInputConnected(0))trig=1;
+        else trig = tInt->getInput(ci,0);
         
+        int finishout=0;
         
         // do we retrigger?
         bool retrig=false;
         switch(pMode->get(c)){
         case MODE_RETRIG: // we retrigger if input high
             if(trig)retrig=true;break;
+        case MODE_ONESHOT: // we retrigger if input high AND we've never done before
+            if(trig && d->start<0 && !d->oneshotdone)retrig=true;break;
         case MODE_NORETRIG: // we retrigger if input high AND we're done
             if(trig && d->start<0)retrig=true;break;
         case MODE_FREERUN: // we retrigger when we're done
@@ -77,6 +88,7 @@ public:
         if(retrig){
             d->start = Time::now();
             d->nextstage=0;
+            d->op=0;
         }
         
         float mul = powf(2.0,(float)pPower2->get(c));
@@ -90,8 +102,10 @@ public:
             while(t>=e.times[d->nextstage]){
                 // we have hit the next stage
                 if(++d->nextstage == ENVSIZE){
+                    // we have run out of envelope!
                     d->start = -1;
-                    op=0;
+                    d->oneshotdone=true;
+                    finishout=1;
                     break;
                 }
             }
@@ -110,15 +124,15 @@ public:
                 // interpolate and deal with zero-length steps
                 if(t2-t1 > 0.0001f){
                     float a = (t-t1)/(t2-t1);
-                    op = a*l2 + (1.0f-a)*l1;
+                    d->op = a*l2 + (1.0f-a)*l1;
                 } else {
-                    op = l2; // use the second entry
+                    d->op = l2; // use the second entry
                 }
             }
-        } else
-            op = 0;
+        }
         
-        tFloat->setOutput(ci,0,op);
+        tFloat->setOutput(ci,0,d->op);
+        tInt->setOutput(ci,1,finishout);
     }
     
 };

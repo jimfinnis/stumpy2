@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.pale.stumpy2.model.Component;
 import org.pale.stumpy2.model.ComponentType;
 import org.pale.stumpy2.model.ComponentTypeRegistry;
@@ -139,6 +141,37 @@ public class PatchViewPopup extends PopupMenu {
                     }
                 };
             }
+			@Override
+			public boolean enabled() {
+				return canvas.getSelected().size()>0;
+			}
+        });
+        
+        addMenuItem("comment",new CommandFactory(){
+			@Override
+			public Command create() {
+				return new Command(true){
+					@Override
+					public void execute(){
+						String txt="";
+                        Set<Component> set = canvas.getSelected();
+                        if(set.size() == 1){
+                        	for(Component c: set){
+                        		txt=c.getComment(); // ugly
+                        	}
+                        }
+                        for(Component c: set){
+                        	c.setComment((String)JOptionPane.showInputDialog("Component comment",txt));
+                        }
+                        canvas.repaint();
+					}
+				};
+
+			}
+			@Override
+			public boolean enabled() {
+				return canvas.getSelected().size()>0;
+			}
         });
     }
 

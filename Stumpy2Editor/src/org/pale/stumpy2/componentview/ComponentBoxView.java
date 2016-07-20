@@ -73,6 +73,12 @@ public class ComponentBoxView extends ControlledDockable implements PatchChangeL
 		pane.revalidate();
 		pane.repaint();
 	}
+	
+	public void commentChanged(Component c){
+		if(map.containsKey(c)){
+			map.get(c).commentChanged();
+		}
+	}
 
 	/**
 	 * Add a component to the list. Will not recreate the panel

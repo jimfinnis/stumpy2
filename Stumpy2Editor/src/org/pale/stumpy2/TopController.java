@@ -63,6 +63,8 @@ public class TopController extends Controller {
                         try {
                             
                             JFileChooser fc = new JFileChooser();
+                            File workingDirectory = new File(System.getProperty("user.dir"));
+                            fc.setCurrentDirectory(workingDirectory);
                             fc.setFileFilter(new LibraryFileFilter());
                             fc.setAcceptAllFileFilterUsed(false);
                             int rv = fc.showOpenDialog(f);

@@ -189,6 +189,8 @@ public class LibraryViewController extends Controller {
                         try {
                             if (library.save() == false) { // didn't have a name
                                 JFileChooser fc = new JFileChooser();
+                                File workingDirectory = new File(System.getProperty("user.dir"));
+                                fc.setCurrentDirectory(workingDirectory);
                                 fc.setFileFilter(new LibraryFileFilter());
                                 fc.setAcceptAllFileFilterUsed(false);
                                 int rv = fc.showSaveDialog(null);

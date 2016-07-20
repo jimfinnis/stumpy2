@@ -327,6 +327,7 @@ public class ComponentType {
      *            the graphics context to draw on
      * @param selected
      *            true to highlight the image when it's the current focus
+
      */
     public void draw(Graphics g, boolean selected, Component c) {
         g.setColor(selected ? Color.GRAY : LIGHT_GREY);
@@ -340,6 +341,10 @@ public class ComponentType {
         
         if(c.extraText!=null){
         	g.drawString(c.extraText, c.rect.x+2, c.rect.y+25);
+        }
+        if(c.getComment()!=null){
+        	g.setColor(Color.BLACK);
+        	g.drawString(c.getComment(), c.rect.x+2,c.rect.y-7);
         }
 
         for (ConnectionInfo i : inputList)

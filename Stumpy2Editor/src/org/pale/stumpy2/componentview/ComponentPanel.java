@@ -40,6 +40,7 @@ public class ComponentPanel extends JPanel  {
 	private JPanel titleBox;
 	private JPanel contents;
 	private JButton hideButton;
+	private JLabel commentBox;
 
 
 
@@ -69,6 +70,9 @@ public class ComponentPanel extends JPanel  {
         JPanel butpanel = new JPanel(new FlowLayout());
         hideButton = new JButton(null,Images.getImageIcon("icons/arrow_in"));
         final JButton closeButton = new JButton(null,Images.getImageIcon("icons/cancel"));
+        commentBox = new JLabel(component.getComment());
+        butpanel.setOpaque(false);
+        butpanel.add(commentBox);
         butpanel.add(hideButton);
         butpanel.add(closeButton);
         titleBox.add(butpanel,BorderLayout.EAST);
@@ -205,6 +209,10 @@ public class ComponentPanel extends JPanel  {
 			revalidate();
 			repaint();
 		}
+	}
+
+	public void commentChanged() {
+		commentBox.setText(component.getComment());
 	}
 
 }

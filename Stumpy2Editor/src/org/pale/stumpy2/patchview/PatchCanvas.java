@@ -44,7 +44,7 @@ import org.pale.stumpy2.ui.PopupMenu;
  */
 @SuppressWarnings("serial")
 public class PatchCanvas extends JPanel implements MouseInputListener,
-		MouseWheelListener {
+MouseWheelListener {
 
 	class PatchKeyListener implements KeyListener {
 
@@ -360,18 +360,28 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 		AffineTransform t = new AffineTransform();
 		t.setToScale(scale, scale);
 		g2D.transform(t); // this used to say setTransform(). That was WRONG.
-							// TWO DAYS this cost me.
+		// TWO DAYS this cost me.
 
+		// we visit twice, drawing the connections over the components so they're always visible.
+		patch.visitAll(new Visitor() {
+			@Override
+			public void visitComponent(Component c) {
+				c.draw(g, isSelected(c));
+			}
+		});
 		patch.visitAll(new Visitor() {
 			@Override
 			public void visitComponent(Component c) {
 				try {
-					c.draw(g, isSelected(c));
+					c.drawConnections(g, isSelected(c));
 				} catch (ConnectionOutOfRangeException e) {
 					view.setStatus("error in draw: connection index out of range!");
 				}
 			}
 		});
+
+
+
 		if (isDraggingSelection()) {
 			g.setColor(Color.GRAY);
 			selectionBox.draw(g);
@@ -401,8 +411,9 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 		Point p;
 		try {
 			p = rubberbandingConnection.getPosition();
+			g.setColor(Color.BLACK);
 			if (p != null) { // if this is null, we've probably had a connection
-								// out of range
+				// out of range
 				g.drawLine(p.x, p.y, rubberbandEndpoint.x, rubberbandEndpoint.y);
 			}
 		} catch (ConnectionOutOfRangeException e) {
@@ -630,21 +641,21 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	public boolean isRubberbandingConnection() {
 		return rubberbandingConnection != null;
 	}
-	
+
 	/**
 	 * The user has started dragging from an input, so we should delete any
 	 * existing connection there.
 	 * @param c
 	 * @param ep
 	 */
-    public void breakConnection(ComponentAndConnection cc) {
-        try {
-            cc.disconnect(patch);
-        } catch (ConnectionOutOfRangeException e) {
-            view.setStatus("cannot disconnect");
-            e.printStackTrace();
-        }
-    }
+	public void breakConnection(ComponentAndConnection cc) {
+		try {
+			cc.disconnect(patch);
+		} catch (ConnectionOutOfRangeException e) {
+			view.setStatus("cannot disconnect");
+			e.printStackTrace();
+		}
+	}
 
 
 
@@ -698,7 +709,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 		rubberbandEndpoint = p;
 		repaint();
 	}
-	
+
 	/* TODO - the component map handling in canvas
 
 	/**
@@ -706,7 +717,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	 * to reopen a view on a component, we'll just pull the existing one to the
 	 * front.
 	 */
-//	Map<Component, ComponentView> openComponentViews = new HashMap<Component, ComponentView>();
+	//	Map<Component, ComponentView> openComponentViews = new HashMap<Component, ComponentView>();
 
 	/**
 	 * Open a component view to edit this component - or if one is already open,
@@ -717,7 +728,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 	public void openComponentView(final Component c) {
 		ComponentBoxView bv = ComponentBoxView.getInstance();
 		bv.add(c);
-/*		ComponentView v = openComponentViews.get(c);
+		/*		ComponentView v = openComponentViews.get(c);
 		if (v != null) {
 			v.toFront();
 		} else {
@@ -759,7 +770,7 @@ public class PatchCanvas extends JPanel implements MouseInputListener,
 			});
 			openComponentViews.put(c, v);
 		}
-*/	}
+		 */	}
 
 	/**
 	 * Create the popup menu

@@ -9,6 +9,7 @@
 #include "model.h"
 #include "../globals.h"
 #include "time.h"
+#include "util.h"
 
 struct SeqData {
     int n;
@@ -113,16 +114,6 @@ struct PickData {
     char *str;
 };
 
-// fisher-yates
-inline void shuf(char *s,int len){
-    for(int i=len-1;i>0;i--){
-        int j = rand()%(i+1);
-        char c = s[i];
-        s[i] = s[j];
-        s[j] = c;
-    }
-}
-
 class DenaryPick : public ComponentType {
     StringParameter *pVals;
     BoolParameter *pUnit,*pCycle;
@@ -192,7 +183,7 @@ public:
             if(d->cur>=d->len){
                 // cycle
                 if(isRandom)
-                    shuf(d->str,d->len); // no select input, randomize
+                    shuf<char>(d->str,d->len); // no select input, randomize
                 d->cur=0;
             }
         

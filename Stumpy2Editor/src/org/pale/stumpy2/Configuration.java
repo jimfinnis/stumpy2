@@ -30,6 +30,8 @@ public class Configuration {
 	/// this is a synchronous chat with the server to load the initial
 	/// configuration data
 	public static void readConfiguration(Client c) throws UnknownComponentTypeException, IOException, ProtocolException{
+		
+		
 		c.lock();
 		
 		// get connection types
@@ -54,6 +56,7 @@ public class Configuration {
 			}
 		}
 		
+		ComponentTypeRegistry.getInstance().clear();
 		c.doSend("startcomps");
 		boolean compsDone = false;
 

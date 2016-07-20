@@ -558,4 +558,15 @@ public class Patch {
 		cmds.add("run " + id);
 
 	}
+
+    /**
+     * rehash all components, reassociating them with types from the new typemap.
+     * This could actually screw things up royally if the new type is really different.
+     * @throws UnknownComponentTypeException 
+     */
+	public void rehash() throws UnknownComponentTypeException {
+		for (Component c : components) {
+			c.rehash();
+		}
+	}
 }

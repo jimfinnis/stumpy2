@@ -63,6 +63,8 @@ struct ComponentInstance {
     
     /// the last tick this instance updated the given output
     uint32_t updatedOutputTime[ComponentType::NUMOUTPUTS]; 
+    /// the last tick any output was updated
+    uint32_t updatedTime;
           
     /// the value of my outputs, which run() will write
     ConnectionValue outputs[ComponentType::NUMOUTPUTS];
@@ -95,6 +97,7 @@ struct ComponentInstance {
         
         // initialise inputs and outputs
         
+        updatedTime=-1;
         for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
             updatedOutputTime[i]=-1;
             outputs[i] = noData;
@@ -142,10 +145,13 @@ struct ComponentInstance {
     /// true if this is the first time that the component has been run on this frame, for
     /// this output
     inline bool isFirstCallThisFrameForOutput(int n){
-        if(updatedOutputTime[n]!=Time::ticks()){
-            return true;
-        } else
-            return false;
+        return updatedOutputTime[n]!=Time::ticks();
+    }
+    
+    /// this is used to protect components which really should be called
+    /// only once per frame
+    inline bool isFirstCallThisFrame(){
+        return updatedTime!=Time::ticks();
     }
     
     /// get the output FOR SETTING. No range checking, for speed! If this isn't called
@@ -153,6 +159,7 @@ struct ComponentInstance {
     /// Returns a reference to a value which can be set.
     inline ConnectionValue& output(int n){
         updatedOutputTime[n]=Time::ticks();
+        updatedTime=Time::ticks();
         return outputs[n];
     }
     

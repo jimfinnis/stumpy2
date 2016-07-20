@@ -30,6 +30,13 @@ public class ComponentTypeRegistry {
     private Map<String,ComponentType> map = new HashMap<String,ComponentType>();
     
     /**
+     * Discard the previous set
+     */
+    public void clear(){
+    	map.clear();
+    }
+    
+    /**
      * Add a type object to the map
      * @param t type object to add
      */

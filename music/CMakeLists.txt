@@ -16,6 +16,7 @@ add_executable(music
     components/math.cpp components/control.cpp
     components/chord.cpp components/players.cpp
     components/sequencers.cpp components/env.cpp
+    components/generators.cpp
     ${SERVERSOURCES})
     
 target_include_directories(music PUBLIC ../serverbase)    

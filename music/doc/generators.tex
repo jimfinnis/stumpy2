@@ -1,0 +1,48 @@
+\section{Generators}
+Generators use algorithms to generate sequences of data, as opposed
+to \emph{denseq} and \emph{denpick} which just generate data
+in sequence or pick from a sequence.
+
+\comp{thue-morse}
+{Generate data using the Generalized Thue-Morse Sequence}
+{tick:int,gate:float,regen:int}
+{eventtick:int,output:float,cycletick:int,cyclecount:float}
+This component generates pseudorandom sequences using a Thue-Morse
+algorithm. The \emph{length} parameter determines how long the sequence
+should be, and the \emph{depth} parameter determines how many different
+values are picked. The \emph{perms} are a string of digits, which
+are the values which are set in the actual output from the 
+output of the algorithm, at each stage. Changing these changes the
+pattern in the output, but don't expect to see values higher than
+\emph{depth} even if you set them in \emph{perms}.
+
+The \emph{regen} input will cause the generator to shuffle its
+permutations and restart, giving a new sequence. This can be
+done automatically with a parameter.
+
+\textbf{Note} that the \emph{gate} input will not only suppress the
+output tick, but it will also stop the next note being selected. This
+seems obvious, but it is tempting to feed the output of a Thue-Morse
+directly into the gate of another to produce rests. This won't work
+(or rather it will, but not as you expect). Instead, to generate
+rests:
+\begin{itemize}
+\item create a note-generating TM.
+\item create a gate-generating TM with a depth set to the chance.
+of a rest happening -- so (say) 10 for a 1 in 10 chance.
+\item Connect the trigger and output of the first into a \emph{noteplay}.
+\item Connect the output of the second to the gate of the \emph{noteplay}.
+\item Connect them all to the same trigger.
+\end{itemize}
+\startparams
+length & int & length of sequence\\
+depth & int & how many different values are generated $(0\cdots depth-1)$\\
+perms & string & a string of hex digits for the permutations --
+all that matters is the relative frequencies, they are shuffled and
+added to and modded with the depth. Use it as a random seed for the 
+sequence\\
+symmetric & bool & generates a sequence whose second half is the first
+half backwards\\
+auto-regen & bool & automatically create a new sequence when the old
+one ends
+\end{tabularx}

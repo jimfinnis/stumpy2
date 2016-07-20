@@ -3,6 +3,8 @@ package org.pale.stumpy2;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -29,6 +31,8 @@ public class TopController extends Controller {
 		instance = new TopController(f);
 	}
 	
+	private List<PatchLibrary> openLibs = new ArrayList<PatchLibrary>();
+	
     /**
      * Private constructor, adds the commands.
      * 
@@ -42,6 +46,7 @@ public class TopController extends Controller {
                     @Override
                     public void execute() {
                         PatchLibrary p = new PatchLibrary();
+                        openLibs.add(p);
                         new LibraryView(p);
                     }
                 };
@@ -65,6 +70,8 @@ public class TopController extends Controller {
                                 File file = fc.getSelectedFile();
                                 fileName = file.getPath();
                                 PatchLibrary p = new PatchLibrary(fileName);
+                                openLibs.add(p);
+
                                 new LibraryView(p);
                             }
                         } catch (FileNotFoundException e) {
@@ -153,5 +160,16 @@ public class TopController extends Controller {
         		return Client.isConnected();
         	}
         });
+    }
+    
+    /**
+     * Iterate through all components in all libraries, "rehashing" them by reassociating
+     * their component types (which may have been reloaded from the server)
+     * @throws UnknownComponentTypeException 
+     */
+    public void rehashLibraries() throws UnknownComponentTypeException{
+    	for(PatchLibrary lib: openLibs){
+    		lib.rehash();
+    	}
     }
 }

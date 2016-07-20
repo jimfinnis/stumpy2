@@ -89,6 +89,10 @@ public:
             }
         }
     }        
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"MIDI:%d",pChan->get(c));
+        return buf;
+    }
 };
 static ChordPlay cpreg;
 
@@ -109,7 +113,7 @@ public:
     virtual void init(){
         width = 150;
         
-        setInput(0,tInt,"gate");
+        setInput(0,tFloat,"gate");
         setInput(1,tInt,"notetrig");
         setInput(2,tFloat,"note");
         setInput(3,tFloat,"velmod");
@@ -147,11 +151,9 @@ public:
         Component *c = ci->component;
         NPData *d = (NPData *)ci->privateData;
         
-        int gate;
-        if(!c->isInputConnected(0))
-            gate = 1;
-        else
-            gate = tInt->getInput(ci,0);            
+        float gate = (!c->isInputConnected(0))?1:
+        tFloat->getInput(ci,0);
+        
         int notetrig = tInt->getInput(ci,1);
         int noteidx = (int)(tFloat->getInput(ci,2)+0.5f);
         float velmod = tFloat->getInput(ci,3);
@@ -159,7 +161,7 @@ public:
         float durmul = c->isInputConnected(5) ? tFloat->getInput(ci,5) : 1.0f;
         bool suppressRetrigBeforeComplete = pSuppressRetrig->get(c);
         
-        if(gate && notetrig){
+        if(gate>0.5 && notetrig){
             float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
             dur *= 60.0/gTempo; // convert beats to seconds
             float vel = pVel->get(c) + pVelMod->get(c)*velmod;
@@ -196,6 +198,10 @@ public:
                 }
             }
         }
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"MIDI:%d",pChan->get(c));
+        return buf;
     }
 };
 static NotePlay npreg;

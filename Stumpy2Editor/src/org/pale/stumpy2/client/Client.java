@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 
 import org.pale.stumpy2.Configuration;
+import org.pale.stumpy2.TopController;
 import org.pale.stumpy2.libraryview.LibraryViewController;
 import org.pale.stumpy2.model.Component;
 import org.pale.stumpy2.model.Patch;
@@ -81,8 +82,10 @@ public class Client {
 			/// send command to fetch component data etc.
 			try {
 				Configuration.readConfiguration(INSTANCE);
+				// rehash all existing components so they point to the new component types
+				TopController.getInstance().rehashLibraries();
 			} catch (UnknownComponentTypeException e) {
-				notifyStatusListeners(false, "couldn't find the primitive component type");
+				notifyStatusListeners(false, "couldn't find a component type: "+e.getTypeName());
 				destroy();
 			} catch (IOException e) {
 				notifyStatusListeners(false, "IOException occurred in setup");

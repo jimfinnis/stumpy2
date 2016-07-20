@@ -386,4 +386,14 @@ public class PatchLibrary implements PatchChangeListener {
             c.unlock();
         }
     }
+
+    /**
+     * rehash all patches, reassociating components with types from the new typemap
+     * @throws UnknownComponentTypeException 
+     */
+	public void rehash() throws UnknownComponentTypeException {
+		for(Patch p : patchList){
+			p.rehash();
+		}		
+	}
 }

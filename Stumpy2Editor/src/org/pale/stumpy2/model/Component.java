@@ -200,10 +200,12 @@ public class Component implements Visitable {
      * @throws ConnectionOutOfRangeException
      *             this really shouldn't happen.
      */
-    public void draw(Graphics g, boolean highlight)
-            throws ConnectionOutOfRangeException {
+    public void draw(Graphics g, boolean highlight) {
         g.setColor(Color.BLACK);
         type.draw(g, highlight, this);
+    }
+    
+    public void drawConnections(Graphics g,boolean highlight) throws ConnectionOutOfRangeException{
         type.drawConnections(g, highlight, this);
     }
 
@@ -444,6 +446,18 @@ public class Component implements Visitable {
 
 	public void setExtraText(String str) {
 		extraText = str;
+	}
+
+	/** 
+	 * set a new component type from the old one, getting the new one
+	 * from the current list. If this new type has different params/connections
+	 * this might be "fun".
+	 * @throws UnknownComponentTypeException 
+	 */
+
+	public void rehash() throws UnknownComponentTypeException {
+		String name = type.getName();
+		type = ComponentTypeRegistry.getInstance().getComponentType(name);
 	}
 
     

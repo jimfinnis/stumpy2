@@ -16,7 +16,7 @@ public:
         setOutput(0,tFloat,"out");
         setParams(pTopic=new StringParameter("topic","data"),
                   pMul=new FloatParameter("mul",-100,100,1),
-                  pAdd=new FloatParameter("mul",-100,100,1),
+                  pAdd=new FloatParameter("add",-100,100,0),
                   NULL);
     }
     
@@ -31,9 +31,13 @@ public:
     }
     
     virtual void onParamChanged(ComponentInstance *ci,UNUSED Parameter *p){
-        if(p == pTopic){
-            const char *s = pTopic->get(ci->component);
-            diamondapparatus::subscribe(s);
+        try {
+            if(p == pTopic){
+                const char *s = pTopic->get(ci->component);
+                diamondapparatus::subscribe(s);
+            }
+        } catch(diamondapparatus::DiamondException e){
+            printf("Diamond problem : %s\n",e.what());
         }
     }
     
@@ -44,18 +48,22 @@ public:
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         const char *s = pTopic->get(c);
-        diamondapparatus::Topic t = diamondapparatus::get(s);
-        float o;
-        o = t[0].f();
-        
-        o *= pMul->get(c);
-        o += pAdd->get(c);
-        tFloat->setOutput(ci,0,o);
+        try {
+            diamondapparatus::Topic t = diamondapparatus::get(s);
+            float o;
+            o = t[0].f();
+            
+            o *= pMul->get(c);
+            o += pAdd->get(c);
+            tFloat->setOutput(ci,0,o);
+        } catch(diamondapparatus::DiamondException e){
+            printf("Diamond problem : %s\n",e.what());
+        }
     }
 };
 
 static DiamondComponent diamondgen;
-        
-              
-    
-    
+
+
+
+

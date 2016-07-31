@@ -19,6 +19,9 @@ NOTE : * means done, - means not done
 
 * Should be impossible to close lib. with a patch open
 
+* CUT AND PASTE.
+
+
 - any type input?
 
 - switcher for all types?
@@ -54,8 +57,6 @@ Has an N second delay. Idiom: multiple triggers firing from a long ramp.
   will be used for four ticks, and input 1 for three.
   Envisaged as being driven by the cycle tick output of sequencers
   and generators to produce interesting repeating cycles.
-
-- CUT AND PASTE.
 
 - Fadeout & transfer to another patch
  ("fadeout", "fadein" and "transfer" components) AND DOCS because complex.

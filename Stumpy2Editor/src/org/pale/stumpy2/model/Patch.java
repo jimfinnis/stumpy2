@@ -375,6 +375,15 @@ public class Patch {
 							d[0] = mapFromPatchToSubsetIdx.get(outCompIdx);
 							d[1] = inp.output;
 							inputData[i] = d;
+						} else {
+							// if the input component index wasn't found - meaning that it is
+							// outside the subset from which this memento was made - use the
+							// raw index, but with a high bit set so we know it's an EXTERNAL
+							// index (i.e. one from the set as a whole.
+							int[] d = new int[2];
+							d[0] = outCompIdx + 16384;
+							d[1] = inp.output;
+							inputData[i] = d;
 						}
 					}
 				}
@@ -395,16 +404,18 @@ public class Patch {
 	 * a positional offset in cut/paste)
 	 * 
 	 * @param m
+	 * @param isLoad this is a load of an entire patch, not a paste of a subset
 	 * @throws UnknownComponentTypeException
 	 * @throws ConnectionTypeMismatchException
 	 * @throws ConnectionOutOfRangeException
 	 */
-	public Collection<Component> resetFromMemento(Memento m,boolean setName)
+	public Collection<Component> resetFromMemento(Memento m,boolean isLoad)
 			throws UnknownComponentTypeException,
 			ConnectionOutOfRangeException, ConnectionTypeMismatchException {
 
 		// set the straightforward properties
-		setName(m.getName());
+		if(isLoad)
+			setName(m.getName());
 
 		// useful class for associating mementoes with their components
 		class Pairing {
@@ -439,8 +450,18 @@ public class Patch {
 			int inputData[][] = cm.getInputData();
 			for (int j = 0; j < inputData.length; j++) {
 				int d[] = inputData[j];
-				if (d != null) {
-					Component out = pairing[d[0]].c;
+				if (d != null){
+					// if the output component index has 16384 set, that means
+					// rather than being an index into the set of components in
+					// the memento, it's an index into the patch itself. This is 
+					// because it's a connection coming into a clipboard memento from
+					// outside that memento's set. Capisce?
+					Component out;
+					if(d[0]>16383){
+						out = components.get(d[0] & ~16384);
+					} else {
+						out = pairing[d[0]].c;
+					}
 					int outIndex = d[1];
 					pairing[i].c.setInput(j, out, outIndex);
 				}

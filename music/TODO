@@ -19,6 +19,11 @@ NOTE : * means done, - means not done
 
 * Should be impossible to close lib. with a patch open
 
+- any type input?
+
+- switcher for all types?
+
+
 - Clocks don't go out of sync now, but it's really hard to change
 their frequency on the fly because of how they work.
 
@@ -40,9 +45,15 @@ Has an N second delay. Idiom: multiple triggers firing from a long ramp.
     float i/o pairs + gate + threshmodulator.
     If input not connected, is assumed to be 1. (to act as thresh).
     If gate>thresh, outputs=inputs, else outputs=0
-    
 
-- switcher for all types?
+- bar switcher: takes a tick input and a number of other inputs.
+  Selects from the inputs based on the current tick count indexing
+  into a "select string" and "select count string".
+  For example, the select string "01" means that input 0 is used, then
+  input 1, then repeat. With the select count string "43", input 0
+  will be used for four ticks, and input 1 for three.
+  Envisaged as being driven by the cycle tick output of sequencers
+  and generators to produce interesting repeating cycles.
 
 - CUT AND PASTE.
 

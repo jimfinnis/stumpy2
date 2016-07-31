@@ -67,6 +67,24 @@ public:
 extern IntCon *tInt;
 
 
+class AnyCon : public ConnectionType {
+public:
+    // type ID==25  will not be checked in client for connection
+    // type match.
+    AnyCon() : ConnectionType(25,"any",0xa0a000ff,ANY){}
+    
+    void setOutput(ComponentInstance *ci,int o,ConnectionValue &v){
+        ConnectionValue& vv = ci->output(o);
+        vv = v;
+    }
+    
+    ConnectionValue& getInput(ComponentInstance *ci,int in){
+        ConnectionValue& v = ci->getInput(in);
+        return v;
+    }
+};
+extern AnyCon *tAny;
+
 
 
 

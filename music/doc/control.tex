@@ -1,12 +1,32 @@
 \section{Control components}
 \comp{output}
 {A ``root'' component which simply runs all its inputs}
-{in:4$\times$input:flow}{}
+{4$\times$input:flow}{}
 The patch runs by finding all \emph{output} components and running
 their inputs. Therefore, this component must be present for the patch to run. 
 
 \comp{mixer}
 {A component which simply runs all its inputs}
-{in:6$\times$input:flow}{output:flow}
+{6$\times$input:flow}{output:flow}
 This component, when run, runs all its inputs.
+
+\comp{switcher}
+{Selects one input to pass through to the output}
+{select:float, 6$\times$inputs:ANY}{output:ANY}
+This component simply selects one of its inputs and executes it,
+passing the obtained value to the output without interpreting it.
+The output and inputs (apart from the selection value) may therefore
+be of any type. 
+
+The selection value is typically in the range [0,1], and is
+mapped onto [0,$n$] where $n$ is the number of the highest connected
+\emph{any} input. For example, if only two \emph{any} inputs are connected,
+values less than 0.5 will select the first choice, otherwise the 
+second choice will be selected.
+\startparams
+mul & float & select input is multiplied by this value before use \\
+add & float & select input is then added to this value before use\\
+unit & bool & determines whether or not the value is mapped onto [1,0]
+or [0,$n-1$] for selection (true means the former)
+\end{tabularx}
 

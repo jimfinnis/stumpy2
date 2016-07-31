@@ -87,7 +87,7 @@ public class Component implements Visitable {
 		comment = c;
 		ComponentBoxView.getInstance().commentChanged(this);
 	}
-	
+
 	public String getComment(){
 		return comment;
 	}
@@ -167,9 +167,12 @@ public class Component implements Visitable {
 		if (output >= c.type.getOutputCount())
 			throw new ConnectionOutOfRangeException();
 
-		if (c.getType().getOutputType(output).getID() != getType()
-				.getInputType(input).getID())
-			throw new ConnectionTypeMismatchException();
+		if(getType().getInputType(input).getID()<25 && 
+				c.getType().getOutputType(output).getID()<25){ // type ID code 25 not checked (is ANY type).
+			if (c.getType().getOutputType(output).getID() != getType()
+					.getInputType(input).getID())
+				throw new ConnectionTypeMismatchException();
+		}
 
 		inputs[input] = new Input(c, output);
 	}

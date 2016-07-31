@@ -38,6 +38,8 @@ extern LinkedList<class ConnectionType,0> connectionTypeList;
 /// union of those underlying types.
 
 enum ConnectionBaseType {
+    ANY = -1, //!< any value is accepted on this connection
+          
     FLOAT, //!< 32-bit float
     INT, //!< 32-bit signed int          
     BITFIELD, //!< 128-bit field
@@ -232,7 +234,6 @@ public:
     
     
     /// an array of the types of each output
-    
     ConnectionType *inputTypes[NUMINPUTS];
     ConnectionType *outputTypes[NUMOUTPUTS];
     
@@ -347,7 +348,10 @@ public:
         if(!c->type)
             throw SE_LINKUNINIT;
         
-        if(type->getInputType(i) != c->type->getOutputType(output)){
+        // ANY type input can connect to any type of output
+        if((type->getInputType(i)->base != ANY) && 
+           (c->type->getOutputType(output)->base != ANY) && 
+           (type->getInputType(i) != c->type->getOutputType(output))){
             printf("Input component : %s, input number : %d\n",
                    type->name,i);
             printf("Output component : %s, output number : %d\n",

@@ -19,8 +19,11 @@ ChordCon *tChord;
 int main(int argc,char *argv[]){
     
     simpleMidiInit();
-    // create (and autoregister) new connection types
+    // create (and register) new connection types
     tChord = new ChordCon();
+    
+    
+    
     
     Time::init();
     try {

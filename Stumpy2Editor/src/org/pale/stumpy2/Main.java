@@ -1,18 +1,15 @@
 package org.pale.stumpy2;
 
-import java.awt.event.KeyEvent;
-
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
 import org.pale.stumpy2.componentview.ComponentBoxView;
 import org.pale.stumpy2.libraryview.LibraryMenu;
 import org.pale.stumpy2.libraryview.LibraryViewController;
+import org.pale.stumpy2.patchview.PatchMenu;
 import org.pale.stumpy2.patchview.PatchViewController;
-import org.pale.stumpy2.ui.Menu;
 import org.pale.stumpy2.ui.ServerStatus;
 import org.pale.stumpy2.ui.Toolbar;
-import org.pale.stumpy2.ui.support.Controller;
 
 import bibliothek.gui.dock.ExpandableToolbarItemStrategy;
 import bibliothek.gui.dock.common.CControl;
@@ -33,17 +30,6 @@ public class Main {
 	}
 	
 	public static void main(String[] args){
-
-		@SuppressWarnings("serial")
-		class FileMenu extends Menu {
-			public FileMenu(Controller c) {
-				super("File", c);
-				addMenuItem("New",KeyEvent.VK_N,"new");
-				addMenuItem("Open",KeyEvent.VK_O,"open");
-				addMenuItem("Quit",KeyEvent.VK_W,"quit");
-			}
-		}
-		
 		
 		final JFrame frame = new JFrame(); // our all-encompassing main frame
 		frame.setTitle("VIOLET PHEASANT");
@@ -65,6 +51,7 @@ public class Main {
 		frame.setJMenuBar(menuBar);
 		menuBar.add(new FileMenu(TopController.getInstance()));
 		menuBar.add(new LibraryMenu(LibraryViewController.getInstance()));
+		menuBar.add(new PatchMenu(PatchViewController.getInstance()));
 		
 		/* Instead of a CContentArea we create a CToolbarContentArea. This class adds four CToolbarAreas around
 		 * the five CStations that are usually shown by the CContentArea. */

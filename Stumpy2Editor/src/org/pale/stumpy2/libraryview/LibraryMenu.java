@@ -11,10 +11,10 @@ public class LibraryMenu extends Menu {
 		super("Library", c);
 		addMenuItem("New Patch",KeyEvent.VK_L,"newpatch");
 		addMenuItem("Save Library",KeyEvent.VK_S,"save");
-		addMenuItem("Copy Patch",KeyEvent.VK_C,"copy"); 
-		addMenuItem("Cut Patch",KeyEvent.VK_X,"cut");
+		addMenuItem("Copy Patch","copy"); 
+		addMenuItem("Cut Patch","cut");
 		addMenuItem("Sync Patch",KeyEvent.VK_Y,"sync");
-		addMenuItem("Paste Patch",KeyEvent.VK_V,"paste");
+		addMenuItem("Paste Patch","paste");
 		addMenuItem("Rename Patch","rename");
 		addMenuItem("Delete Patch","delete");
 	}			

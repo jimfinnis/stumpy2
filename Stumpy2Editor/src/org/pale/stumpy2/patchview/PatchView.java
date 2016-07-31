@@ -60,17 +60,17 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 	public Patch getPatch(){
 		return patch;
 	}
-	
+
 	public PatchView(Patch p) {
 		super("pv"+(pvidx++));
 
 		setController(PatchViewController.getInstance());
 		PatchViewController.getInstance().setView(this);
 		Main.getControl().addDockable(this);
-		
+
 		Container pane = getContentPane();
 		setTitleIcon(Images.getImageIcon("icons/page"));
-		
+
 		canvas = new PatchCanvas(p,this);
 		scroller = new JScrollPane(canvas);
 		scroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -94,68 +94,68 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 
 		setCloseable(true);
 		addCDockableStateListener(this);
-		
+
 		setFocusComponent(canvas);
-		
+
 		setLocation(CLocation.base().normalWest(0.8));
 		setVisible(true);
 	}
-    /**
-     * 
-     * @return the view's scroll pane, which wraps the editor canvas
-     */
-    public JScrollPane getScrollPane(){
-        return scroller;
-    }
-    
-    /**
-     * Set the status text
-     * @param t
-     */
-    public void setStatus(String t){
-        statusBar.setText(t);
-    }
-    
-    
-    /**
-     * 
-     * @return true if both scrollbars are visible (so we can scroll out)
-     */
-    public boolean areScrollbarsVisible(){
-        boolean h = scroller.getHorizontalScrollBar().isVisible();
-        boolean v = scroller.getVerticalScrollBar().isVisible();
-        return h && v;
-    }
-    
-    /**
-     * This important method deals with changes in the model.
-     * 
-     * @param change
-     *            a set of changes
-     */
-    @Override
-    public void onPatchChange(Patch p,PatchChange change) {
-        // if the patch changes its name, set our title.
-    	switch(change.getType()){
-    	case NAME:
-            setTitleText(patch.getName());
-            break;
-    	case ADD:
-    	case ADDSET:
-    	case REMOVESET:
-    	case UNLINKINPUT:
-    	case UNLINKOUTPUT:
-    	case LINK:
-    		canvas.repaint();
-    		break;
-    	case COMPONENTBOX:
-    		canvas.repaint(change.getC().rect);
-    		break;
+	/**
+	 * 
+	 * @return the view's scroll pane, which wraps the editor canvas
+	 */
+	public JScrollPane getScrollPane(){
+		return scroller;
+	}
+
+	/**
+	 * Set the status text
+	 * @param t
+	 */
+	public void setStatus(String t){
+		statusBar.setText(t);
+	}
+
+
+	/**
+	 * 
+	 * @return true if both scrollbars are visible (so we can scroll out)
+	 */
+	public boolean areScrollbarsVisible(){
+		boolean h = scroller.getHorizontalScrollBar().isVisible();
+		boolean v = scroller.getVerticalScrollBar().isVisible();
+		return h && v;
+	}
+
+	/**
+	 * This important method deals with changes in the model.
+	 * 
+	 * @param change
+	 *            a set of changes
+	 */
+	@Override
+	public void onPatchChange(Patch p,PatchChange change) {
+		// if the patch changes its name, set our title.
+		switch(change.getType()){
+		case NAME:
+			setTitleText(patch.getName());
+			break;
+		case ADD:
+		case ADDSET:
+		case REMOVESET:
+		case UNLINKINPUT:
+		case UNLINKOUTPUT:
+		case LINK:
+			canvas.repaint();
+			break;
+		case COMPONENTBOX:
+			canvas.repaint(change.getC().rect);
+			break;
 		default:
 			break;
-    	}
-    }
-    
+		}
+	}
+
 	/**
 	 * attempt to close the dockable
 	 */
@@ -165,48 +165,53 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 
 
 
-    Patch.Memento clipboard;
+	Patch.Memento clipboard;
 
-    /**
-     * 
-     * @param set the set I want to copy to the clipboard
-     * @throws MementoizationException
-     */
-    public void copyToClipboard(Set<Component> set) throws MementoizationException {
-       clipboard = patch.createMemento(set);
-        
-    }
+	/**
+	 * 
+	 * @param set the set I want to copy to the clipboard
+	 * @throws MementoizationException
+	 */
+	public void copyToClipboard(Set<Component> set) throws MementoizationException {
+		clipboard = patch.createMemento(set);
 
-    public void cutToClipboard(Set<Component> set) throws MementoizationException {
-        clipboard = patch.createMemento(set);
-        patch.removeSet(set);
-        canvas.unselectAll();
-    }
+	}
 
-    /**
-     * Paste the items from the clipboard, select them, then copy the new
-     * items into the clipboard (in order that the add offset works!)
-     * @throws UnknownComponentTypeException
-     * @throws ConnectionOutOfRangeException
-     * @throws ConnectionTypeMismatchException
-     * @throws MementoizationException 
-     */
-    public void pasteFromClipboard() throws UnknownComponentTypeException, ConnectionOutOfRangeException, ConnectionTypeMismatchException, MementoizationException {
-        Collection<Component> cs = patch.resetFromMemento(clipboard,false);
-        
-        canvas.unselectAll();
-        for(Component c: cs){
-        	c.rect.x += 10*canvas.scale;
-        	c.rect.y += 10*canvas.scale;
-        	canvas.select(c);
-        }
-        copyToClipboard(canvas.getSelected());
-        
-    }
+	public void cutToClipboard(Set<Component> set) throws MementoizationException {
+		clipboard = patch.createMemento(set);
+		patch.removeSet(set);
+		canvas.unselectAll();
+	}
+	
+	public boolean hasClipboard(){
+		return clipboard!=null;
+	}
 
-    public Set<Component> getSelected() {
-        return canvas.getSelected();
-    }
+	/**
+	 * Paste the items from the clipboard, select them, then copy the new
+	 * items into the clipboard (in order that the add offset works!)
+	 * @throws UnknownComponentTypeException
+	 * @throws ConnectionOutOfRangeException
+	 * @throws ConnectionTypeMismatchException
+	 * @throws MementoizationException 
+	 */
+	public void pasteFromClipboard() throws UnknownComponentTypeException, ConnectionOutOfRangeException, ConnectionTypeMismatchException, MementoizationException {
+		if(clipboard!=null){
+			Collection<Component> cs = patch.resetFromMemento(clipboard,false);
+
+			canvas.unselectAll();
+			for(Component c: cs){
+				c.rect.x += 10*canvas.scale;
+				c.rect.y += 10*canvas.scale;
+				canvas.select(c);
+			}
+			copyToClipboard(canvas.getSelected());
+		}
+	}
+
+	public Set<Component> getSelected() {
+		return canvas.getSelected();
+	}
 
 	@Override
 	public void extendedModeChanged(CDockable arg0, ExtendedMode m) {
@@ -218,7 +223,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 			patch.removePatchChangeListener(this);
 			patch.removePatchChangeListener(ComponentBoxView.getInstance());
 			patch.removeFromViews(this);
-			
+
 			removeCDockableStateListener(this);
 		}
 	}

@@ -15,12 +15,12 @@ public class CopyCommand extends org.pale.stumpy2.ui.support.Controller.Command 
         super(true);
         
         this.pv = pv;
-        //this.set = pv.getSelected();
+        this.set = pv.getSelected();
     }
 
     @Override
     public void execute() throws MementoizationException {
-        //pv.copyToClipboard(set);
+        pv.copyToClipboard(set);
 
     }
 

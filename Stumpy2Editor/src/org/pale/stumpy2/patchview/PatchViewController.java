@@ -81,6 +81,12 @@ public class PatchViewController extends Controller {
             public Command create() {
                 return new PasteCommand(view);
             }
+            @Override
+            public boolean enabled(){
+            	return view!=null && view.hasClipboard();
+            }
+            
+
         });
 
     }

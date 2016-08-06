@@ -100,4 +100,88 @@ public:
     }
 };
 static Switcher swReg;    
+
+static const char *threshTypes[]={"inactive","rising","falling"};
+#define THR_INACTIVE 0
+#define THR_RISING 1
+#define THR_FALLING 2
+
+#define THRESHINS 6
+struct ThreshData {
+    float prev[THRESHINS];
+    bool hasprev[THRESHINS];
+};
+
+class Threshold : public ComponentType {
     
+    FloatParameter *pAdd,*pMul;
+    FloatParameter *pThresh[THRESHINS];
+    EnumParameter *pType[THRESHINS];
+    
+public:
+    Threshold() : ComponentType("threshold","control"){}
+    virtual void init(){
+        width = 170;
+        setInput(0,tFloat,"input");
+        addParameter(pMul=new FloatParameter("mul",-100,100,1));
+        addParameter(pAdd=new FloatParameter("add",-100,100,0));
+        for(int i=0;i<THRESHINS;i++){
+            char buf[32];
+            sprintf(buf,"trig %d",i);
+            setOutput(i,tInt,strdup(buf));
+
+            sprintf(buf,"level %d",i);
+            addParameter(pThresh[i]=new FloatParameter(strdup(buf),
+                                                       -1,1,0));
+            sprintf(buf,"type %d",i);
+            addParameter(pType[i]=new EnumParameter(strdup(buf),
+                                                    threshTypes,
+                                                    THR_INACTIVE));
+        }
+    }
+        
+              
+    virtual void initComponentInstance(ComponentInstance *c){
+        ThreshData *d = new ThreshData();
+        c->privateData = (void *)d;
+        for(int i=0;i<THRESHINS;i++){
+            d->hasprev[i]=false;
+        }
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((ThreshData *)c->privateData);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        ThreshData *d = (ThreshData *)ci->privateData;
+        Component *c = ci->component;
+        
+        float in = tFloat->getInput(ci,0);
+        in *= pMul->get(c);
+        in += pAdd->get(c);
+        
+        float o=0;
+        
+        float p = d->prev[out];
+        float thresh = pThresh[out]->get(c);
+        
+        if(d->hasprev[out]){
+            switch(pType[out]->get(c)){
+            default:
+            case THR_INACTIVE:break;
+            case THR_RISING:
+                if(p<thresh && in>=thresh)o=1;
+                break;
+            case THR_FALLING:
+                if(p>thresh && in<=thresh)o=1;
+            }
+        } else {
+            d->hasprev[out]=true;
+        }
+        d->prev[out]=in;
+        tInt->setOutput(ci,out,o);
+    }
+};
+
+static Threshold thresreg;

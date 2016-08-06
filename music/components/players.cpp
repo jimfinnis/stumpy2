@@ -81,7 +81,7 @@ public:
             }
             if(ct){
                 vel *= gVel;
-                simpleMidiPlay(pChan->get(c),notes[d->curNote],vel,dur);
+                simpleMidiPlay(pChan->get(c),gTrans+notes[d->curNote],vel,dur);
                 d->curNote++;
                 if(d->curNote==ct){
                     d->curNote=-1;
@@ -192,7 +192,7 @@ public:
                 
                 if(!suppressRetrigBeforeComplete || 
                    now-d->noteStarts[noteidx] > d->noteDurs[noteidx]){
-                    simpleMidiPlay(pChan->get(c),noteidx,vel,dur);
+                    simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur);
                     d->noteStarts[noteidx]=now;
                     d->noteDurs[noteidx]=dur;
                 }

@@ -30,3 +30,17 @@ unit & bool & determines whether or not the value is mapped onto [1,0]
 or [0,$n-1$] for selection (true means the former)
 \end{tabularx}
 
+\clearpage
+\comp{threshold}
+{Outputs triggers when thresholds are crossed}
+{input:float}{trigger$\times$6:int}
+Contains 6 thresholding units, which detect when the input
+crosses a boundary (rising or falling) and output a single pulse
+trigger on the output for the unit.
+\startparams
+mul & float & input is multiplied by this value before use \\
+add & float & input is then added to this value before use\\
+&&\\
+level $n$ & float & level of threshold\\
+type $n$     & inactive,rising or falling & threshold type\\
+\end{tabularx}

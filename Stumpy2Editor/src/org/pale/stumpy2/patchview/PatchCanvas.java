@@ -424,6 +424,9 @@ MouseWheelListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		// just to make damn sure we have the right view. Ugly.
+		PatchViewController.getInstance().setView(view);
+
 		Point p = getInverse(e.getPoint());
 		strategy.mouseClicked(e, p);
 

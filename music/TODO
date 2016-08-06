@@ -1,3 +1,4 @@
+
 NOTE : * means done, - means not done
 
 * lengthen duration (pow2 mult)
@@ -20,12 +21,6 @@ NOTE : * means done, - means not done
 * Should be impossible to close lib. with a patch open
 
 * CUT AND PASTE.
-
-
-- any type input?
-
-- switcher for all types?
-
 
 - Clocks don't go out of sync now, but it's really hard to change
 their frequency on the fly because of how they work.

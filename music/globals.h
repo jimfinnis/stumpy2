@@ -11,4 +11,6 @@
 extern float gTempo;    
 // global velocity multiplier
 extern float gVel;
+// global transposition
+extern int gTrans;
 #endif /* __GLOBALS_H */

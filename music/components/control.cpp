@@ -185,3 +185,74 @@ public:
 };
 
 static Threshold thresreg;
+
+
+class ConnectIn : public ComponentType {
+    IntParameter *pN;
+public:
+    ConnectIn() : ComponentType("connectin","control"){}
+    virtual void init(){
+        width=height=20;
+        setInput(0,tAny,"in");
+        addParameter(pN = new IntParameter("num",0,127,0));
+        isRoot=true;
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        int n = pN->get(c);
+        // just store the component and output number in
+        // the patch's array of connection data
+        c->patch->connectors[n]= *(c->getInput(0));
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"%d",pN->get(c));
+        return buf;
+    }
+};
+
+class ConnectOut : public ComponentType {
+    IntParameter *pN;
+public:
+    ConnectOut() : ComponentType("connectout","control"){}
+    virtual void init(){
+        width=height=20;
+        setOutput(0,tAny,"in");
+        addParameter(pN = new IntParameter("num",0,127,0));
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        int n = pN->get(c);
+        
+        // OK, now get the thing the corresponding input
+        // is connected to and run it.
+        Component::Input& i = c->patch->connectors[n];
+        // but only put something there if we really are connected
+        // to something
+        if(i.c){
+            // get the instance we are running in, and get the instance
+            // of the connected component in that same patch instance.
+            ComponentInstance *cc = ci->patchInst->getInstance(i.c);
+        
+            // request the output to which the connection is connected
+            // (which will run it)
+            ConnectionValue &v = cc->getOutput(i.output);
+        
+            // and write that to OUR output
+            ci->output(0) = v;
+        } else {
+            // if not connected, we write a dummy value
+            ConnectionValue v;
+            ci->output(0) = v;
+        }
+        
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"%d",pN->get(c));
+        return buf;
+    }
+};
+
+static ConnectIn cinreg;
+static ConnectOut coutreg;

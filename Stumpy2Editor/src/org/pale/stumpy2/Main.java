@@ -32,7 +32,7 @@ public class Main {
 	public static void main(String[] args){
 		
 		final JFrame frame = new JFrame(); // our all-encompassing main frame
-		frame.setTitle("VIOLET PHEASANT");
+		frame.setTitle("SILVER AMUSEMENT");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		control = new CControl(frame);

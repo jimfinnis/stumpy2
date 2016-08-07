@@ -17,7 +17,7 @@ public class PasteCommand extends org.pale.stumpy2.ui.support.Controller.Command
 
     @Override
     public void execute() throws UnknownComponentTypeException, ConnectionOutOfRangeException, ConnectionTypeMismatchException, MementoizationException {
-        this.pv.pasteFromClipboard();
+        this.pv.pasteFromClipboard();        
     }
 
     @Override

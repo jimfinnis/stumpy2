@@ -55,7 +55,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 	/**
 	 * The canvas for editing.
 	 */
-	private PatchCanvas canvas;
+	PatchCanvas canvas;
 
 	public Patch getPatch(){
 		return patch;
@@ -204,6 +204,7 @@ public class PatchView extends ControlledDockable implements PatchChangeListener
 				c.rect.x += 10*canvas.scale;
 				c.rect.y += 10*canvas.scale;
 				canvas.select(c);
+				c.page = canvas.curpage; // move to this page
 			}
 			copyToClipboard(canvas.getSelected());
 		}

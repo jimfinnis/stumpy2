@@ -23,6 +23,7 @@ class PatchInstance;
 class Patch {
     friend class PatchInstance;
     static const int INITIALPOOLSIZE = 128; 
+    static const int NUMCONNECTORS = 128;
     
     int *freeList; //!< the freelist for the component instance data pools
     int freeListSize; //!< the current size of the freelist
@@ -56,6 +57,10 @@ public:
     /// integer-keyed hash of components
     IntKeyedHash<Component> components;
     
+    // the connection table for this patch, used by the connectin
+    // and connectout indirect connection components
+    Component::Input connectors[NUMCONNECTORS];
+    
     /// the library we're in, which must be set from the outside
     /// (since we're using hash semantics to construct)
     
@@ -70,6 +75,8 @@ public:
         firstFree=0;
         library = NULL;
         valid = true;
+        for(int i=0;i<NUMCONNECTORS;i++)
+            connectors[i].c=NULL;
     }
     
     /// dump all components (type and ID) to stdout

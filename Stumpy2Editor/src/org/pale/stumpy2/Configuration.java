@@ -9,6 +9,7 @@ import org.pale.stumpy2.client.Client.CommsResult;
 import org.pale.stumpy2.model.ComponentType;
 import org.pale.stumpy2.model.ComponentTypeRegistry;
 import org.pale.stumpy2.model.ConnectionType;
+import org.pale.stumpy2.model.ConnectorComponentType;
 import org.pale.stumpy2.model.Parameter;
 import org.pale.stumpy2.model.ProtocolException;
 import org.pale.stumpy2.model.UnknownComponentTypeException;
@@ -74,7 +75,13 @@ public class Configuration {
 				int height = Integer.parseInt(bits[6]);
 				System.out.println("Component:"+name+" Inputs:"+inputs+
 						" Outputs:"+outputs+" ParamCount:"+paramct);
-				ComponentType ct = new ComponentType(name,category,width,height);
+
+				ComponentType ct;
+				if(name.equals("connectin")||name.equals("connectout"))
+					ct = new ConnectorComponentType(name,category,width,height);
+				else
+					ct = new ComponentType(name,category,width,height);
+
 				// create the inputs
 				for(int i=0;i<inputs.length();i++){
 					char cc = inputs.charAt(i);

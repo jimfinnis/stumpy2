@@ -37,6 +37,11 @@ public class Component implements Visitable {
 	 * Position in canvas
 	 */
 	public Rectangle rect;
+	
+	/**
+	 * page number
+	 */
+	public int page=0;
 
 	/**
 	 * Special text which may be sent from the server
@@ -222,9 +227,16 @@ public class Component implements Visitable {
 		type.draw(g, highlight, this);
 	}
 
-	public void drawConnections(Graphics g, boolean highlight)
+	/**
+	 * Draw connections, dealing with different pages
+	 * @param g
+	 * @param highlight
+	 * @param curpage
+	 * @throws ConnectionOutOfRangeException
+	 */
+	public void drawConnections(Graphics g, boolean highlight, int curpage)
 			throws ConnectionOutOfRangeException {
-		type.drawConnections(g, highlight, this);
+		type.drawConnections(g, highlight, this, curpage);
 	}
 
 	/**
@@ -253,9 +265,10 @@ public class Component implements Visitable {
 	 * 
 	 * @param p
 	 *            the point on the canvas
+	 * @param curpage 
 	 * @return an object describing the component and input or output, or null.
 	 */
-	public ComponentAndConnection getComponentClick(Point p) {
+	public ComponentAndConnection getComponentClick(Point p, int curpage) {
 		// first we check that it can intersect at all!
 		Rectangle br = new Rectangle(rect);
 		br.grow(ComponentType.CONNECTION_DETECT_WIDTH,
@@ -263,7 +276,7 @@ public class Component implements Visitable {
 
 		// if that's true, go on to check all the inputs and outputs; a more
 		// detailed check.
-		if (br.contains(p)) {
+		if (br.contains(p) && page==curpage) {
 			return type.getComponentClick(this, p);
 		} else {
 			return null;
@@ -291,6 +304,8 @@ public class Component implements Visitable {
 		 * The comment text
 		 */
 		public String comment;
+		
+		int page;
 
 		public String getComment() {
 			return comment;
@@ -354,6 +369,14 @@ public class Component implements Visitable {
 			this.type = type;
 		}
 
+		public void setPage(int page) {
+			this.page = page;
+		}
+
+		public int getPage() {
+			return page;
+		}
+
 	}
 
 	/**
@@ -368,6 +391,7 @@ public class Component implements Visitable {
 		m.setLocation(new Point(rect.x, rect.y));
 		m.setRunOutputAlways(runOutputAlways);
 		m.setComment(comment);
+		m.setPage(page);
 
 		Parameter.Memento p[] = new Parameter.Memento[params.length];
 		for (int i = 0; i < params.length; i++) {
@@ -398,6 +422,8 @@ public class Component implements Visitable {
 		this.rect = new Rectangle(pos, type.getSize());
 		this.runOutputAlways = cm.getRunOutputAlways();
 		this.comment = cm.getComment();
+		this.page = cm.getPage();
+		
 		// create the parameters from the parameter mementoes
 		Parameter.Memento[] pms = cm.getParameters();
 		params = new Parameter[pms.length];

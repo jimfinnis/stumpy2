@@ -85,9 +85,6 @@ public class PatchViewController extends Controller {
             public boolean enabled(){
             	return view!=null && view.hasClipboard();
             }
-            
-
         });
-
     }
 }

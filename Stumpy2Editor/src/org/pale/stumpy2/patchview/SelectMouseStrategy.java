@@ -25,14 +25,14 @@ public class SelectMouseStrategy extends MouseStrategy {
     }
 
     @Override
-    public void mousePressed(MouseEvent e, Point ep) {
-        if(handlePopUp(e,ep))return;
+    public void mousePressed(MouseEvent e, Point ep, int curpage) {
+        if(handlePopUp(e,ep, curpage))return;
 //        if(e.getButton()!=MouseEvent.BUTTON1)return;
 
         Patch p = canvas.getPatch();
         
         
-        ComponentAndConnection cc = p.getComponentAtPoint(ep);
+        ComponentAndConnection cc = p.getComponentAtPoint(ep, curpage);
         if (cc != null) {
             switch (cc.type) {
             case NO_CONNECTION:
@@ -59,7 +59,7 @@ public class SelectMouseStrategy extends MouseStrategy {
     
     // we have to check for pop up triggers in both mousePressed() and mouseReleased(),
     // so I do it here.
-    private boolean handlePopUp(MouseEvent arg0, Point ep){
+    private boolean handlePopUp(MouseEvent arg0, Point ep, int curpage){
         if(arg0.isPopupTrigger()) {
             canvas.openPopup(arg0, ep);
             return true;
@@ -69,8 +69,8 @@ public class SelectMouseStrategy extends MouseStrategy {
 
 
     @Override
-    public void mouseReleased(MouseEvent e,Point ep) {
-        if(handlePopUp(e,ep))return;
+    public void mouseReleased(MouseEvent e,Point ep, int curpage) {
+        if(handlePopUp(e,ep, curpage))return;
         if(e.getButton()!=MouseEvent.BUTTON1)return;
         if (canvas.isDraggingComponent())
             canvas.endDragComponent();
@@ -81,7 +81,7 @@ public class SelectMouseStrategy extends MouseStrategy {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e, Point ep) {
+    public void mouseDragged(MouseEvent e, Point ep, int curpage) {
         if (canvas.isDraggingComponent())
             canvas.handleDragComponent(ep);
         if(canvas.isDraggingSelection())

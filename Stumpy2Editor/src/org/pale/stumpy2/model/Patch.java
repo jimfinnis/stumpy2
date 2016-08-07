@@ -114,15 +114,16 @@ public class Patch {
 	 * 
 	 * @param p
 	 *            a point on the canvas
+	 * @param curpage 
 	 * @return an object describing what's at the click, or null for no
 	 *         component
 	 */
 
-	public ComponentAndConnection getComponentAtPoint(final Point p) {
+	public ComponentAndConnection getComponentAtPoint(final Point p, int curpage) {
 		Iterator<Component> ri = components.descendingIterator();
 		while(ri.hasNext()){
 			Component c = ri.next();
-			ComponentAndConnection cc = c.getComponentClick(p);
+			ComponentAndConnection cc = c.getComponentClick(p,curpage);
 			if (null != cc)
 				return cc;
 		}

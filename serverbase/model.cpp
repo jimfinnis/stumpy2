@@ -66,6 +66,15 @@ void Patch::deleteComponent(uint32_t id){
         ci->shutdown();
     }
     
+    // make sure connectors don't try to read this data
+    
+    for(int i=0;i<NUMCONNECTORS;i++){
+        if(connectors[i].c==c)
+            connectors[i].c=NULL;
+    }
+    
+    // and deallocate the component slot
+    
     deallocateComponentSlot(c->slot);
     
     // detach inputs leading from this component in any other component

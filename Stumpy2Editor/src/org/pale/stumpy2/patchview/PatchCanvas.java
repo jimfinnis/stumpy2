@@ -70,6 +70,13 @@ MouseWheelListener {
 					revalidate();
 					repaint();
 				}
+
+				break;
+			case KeyEvent.VK_HOME:
+				changePage(-1);
+				break;
+			case KeyEvent.VK_END:
+				changePage(1);
 				break;
 			default:
 				break;
@@ -83,6 +90,17 @@ MouseWheelListener {
 		@Override
 		public void keyTyped(KeyEvent e) {
 		}
+	}
+	
+	// change page, taking selected components with us
+	private void changePage(int dir){
+		if(dir>0 && curpage==9)return;
+		if(dir<0 && curpage==0)return;
+		curpage+=dir;
+		for(Component c: selected){
+			c.page = curpage;
+		}
+		revalidate();repaint();
 	}
 
 	/**
@@ -146,6 +164,10 @@ MouseWheelListener {
 	 * The patch we're viewing
 	 */
 	Patch patch;
+	/**
+	 * the page we're on
+	 */
+	int curpage;
 	/**
 	 * The parent view frame (with toolbar, menu etc.)
 	 */
@@ -309,7 +331,7 @@ MouseWheelListener {
 		patch.visitAll(new Visitor() {
 			@Override
 			public void visitComponent(Component c) {
-				if (r.intersects(c.rect))
+				if (c.page==curpage && r.intersects(c.rect))
 					select(c);
 			}
 		});
@@ -324,7 +346,7 @@ MouseWheelListener {
 		patch.visitAll(new Visitor() {
 			@Override
 			public void visitComponent(Component c) {
-				if (r.intersects(c.rect))
+				if (c.page==curpage && r.intersects(c.rect))
 					unselect(c);
 			}
 		});
@@ -356,6 +378,10 @@ MouseWheelListener {
 		super.paintComponent(g);
 
 		Graphics2D g2D = (Graphics2D) g;
+		
+		// without the transform..
+		g.setColor(Color.BLACK);
+		g.drawString(String.valueOf(curpage), 0,10);
 
 		AffineTransform t = new AffineTransform();
 		t.setToScale(scale, scale);
@@ -364,16 +390,18 @@ MouseWheelListener {
 
 		// we visit twice, drawing the connections over the components so they're always visible.
 		patch.visitAll(new Visitor() {
+
 			@Override
 			public void visitComponent(Component c) {
-				c.draw(g, isSelected(c));
+				if(c.page == curpage)
+					c.draw(g, isSelected(c));
 			}
 		});
 		patch.visitAll(new Visitor() {
 			@Override
 			public void visitComponent(Component c) {
 				try {
-					c.drawConnections(g, isSelected(c));
+					c.drawConnections(g, isSelected(c),curpage);
 				} catch (ConnectionOutOfRangeException e) {
 					view.setStatus("error in draw: connection index out of range!");
 				}
@@ -399,6 +427,8 @@ MouseWheelListener {
 		 * Integer.toString(x)+","+Integer.toString(y); g.drawString(str, x, y);
 		 * } }
 		 */
+		
+		
 	}
 
 	/**
@@ -428,47 +458,47 @@ MouseWheelListener {
 		PatchViewController.getInstance().setView(view);
 
 		Point p = getInverse(e.getPoint());
-		strategy.mouseClicked(e, p);
+		strategy.mouseClicked(e, p, curpage);
 
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		Point p = getInverse(e.getPoint());
-		strategy.mouseEntered(e, p);
+		strategy.mouseEntered(e, p, curpage);
 
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		Point p = getInverse(e.getPoint());
-		strategy.mouseExited(e, p);
+		strategy.mouseExited(e, p, curpage);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 
 		Point p = getInverse(e.getPoint());
-		strategy.mousePressed(e, p);
+		strategy.mousePressed(e, p, curpage);
 
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		Point p = getInverse(e.getPoint());
-		strategy.mouseReleased(e, p);
+		strategy.mouseReleased(e, p, curpage);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		Point p = getInverse(e.getPoint());
-		strategy.mouseDragged(e, p);
+		strategy.mouseDragged(e, p, curpage);
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		Point p = getInverse(e.getPoint());
-		strategy.mouseMoved(e, p);
+		strategy.mouseMoved(e, p, curpage);
 	}
 
 	/**
@@ -670,7 +700,7 @@ MouseWheelListener {
 	 */
 	public void endConnectionRubberband(Point p) {
 		// anything at the endpoint?
-		ComponentAndConnection endPoint = patch.getComponentAtPoint(p);
+		ComponentAndConnection endPoint = patch.getComponentAtPoint(p,curpage);
 		if (endPoint != null && isRubberbandingConnection()) {
 			// if we came from an input; we need to find an output
 			try {

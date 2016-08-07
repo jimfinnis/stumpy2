@@ -31,7 +31,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseClicked(MouseEvent e, Point p) {
+    public void mouseClicked(MouseEvent e, Point p, int curpage) {
         
     }
 
@@ -40,7 +40,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseEntered(MouseEvent e, Point p) {
+    public void mouseEntered(MouseEvent e, Point p, int curpage) {
     }
 
     /**
@@ -48,7 +48,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseExited(MouseEvent e, Point p) {
+    public void mouseExited(MouseEvent e, Point p, int curpage) {
     }
 
     /**
@@ -56,7 +56,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mousePressed(MouseEvent e, Point p) {
+    public void mousePressed(MouseEvent e, Point p, int curpage) {
     }
 
     /**
@@ -64,7 +64,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseReleased(MouseEvent e, Point p) {
+    public void mouseReleased(MouseEvent e, Point p, int curpage) {
     }
 
     /**
@@ -72,7 +72,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseDragged(MouseEvent e, Point p) {
+    public void mouseDragged(MouseEvent e, Point p, int curpage) {
     }
 
     /**
@@ -80,7 +80,7 @@ public class MouseStrategy {
      * @param e the original event
      * @param p the point within the event, transformed by the canvas' inverse transform
      */
-    public void mouseMoved(MouseEvent e, Point p) {
+    public void mouseMoved(MouseEvent e, Point p, int curpage) {
     }
 
 }

@@ -73,6 +73,7 @@
 \usepackage[hmargin=3cm,vmargin=5cm]{geometry}
 \usepackage{hyperref}
 \usepackage{tabularx}
+\usepackage{makeidx}
 \usepackage{booktabs}
 \hypersetup{colorlinks}
 
@@ -87,6 +88,7 @@
 \newcommand{\comp}[4]{%
     \phantomsection
     \addcontentsline{toc}{subsection}{#1}
+    \index{#1}
     \label{comp:#1}
     \vspace*{4em}
     \noindent \begin{tabularx}{\textwidth}{@{}XZ@{}}
@@ -103,6 +105,7 @@
 {\vspace*{1em} \leavevmode \\ \noindent \textbf{Parameters:} \vspace{1em}\\
 \noindent \begin{tabularx}{\textwidth}{@{}lp{1in}X@{}}}
 
+\makeindex
 \begin{document}
 
 \maketitle
@@ -125,5 +128,6 @@
 \include{generators}
 \include{data}
 
+\printindex
 \end{document}
 

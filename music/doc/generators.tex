@@ -28,11 +28,11 @@ directly into the gate of another to produce rests. This won't work
 rests:
 \begin{itemize}
 \item create a note-generating TM.
-\item create a gate-generating TM with a depth set to the chance.
+\item create a gate-generating TM with a depth set to the chance
 of a rest happening -- so (say) 10 for a 1 in 10 chance.
 \item Connect the trigger and output of the first into a \emph{noteplay}.
 \item Connect the output of the second to the gate of the \emph{noteplay}.
-\item Connect them all to the same trigger.
+\item Connect both TMs to the same trigger.
 \end{itemize}
 \startparams
 length & int & length of sequence\\

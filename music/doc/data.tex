@@ -9,3 +9,17 @@ topic & string & name of the topic\\
 mul & float & topic is multiplied by this\\
 add & float & added to the multiplied result
 \end{tabularx}
+
+\comp{OSC-out}
+{Sends data over Open Sound Control protocol}
+{in$\times$6:float}{flow:flow}
+Sends data over OSC (Open Sound Control) as a float array.
+Typically this is to a SuperCollider program, so the port
+is set to 57120. Only connected ports are sent, so if three
+ports are connected the message will be three floats. A message
+is only sent if one of the inputs has changed value since last
+time.
+\startparams
+topic & string & name of the topic (e.g. \texttt{/foo})\\
+\end{tabularx}
+

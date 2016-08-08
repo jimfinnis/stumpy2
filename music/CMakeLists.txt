@@ -20,5 +20,5 @@ add_executable(music
     ${SERVERSOURCES})
     
 target_include_directories(music PUBLIC ../serverbase)    
-target_link_libraries(music jack diamondapparatus pthread)
+target_link_libraries(music jack diamondapparatus lo pthread)
 

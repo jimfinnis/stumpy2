@@ -1,3 +1,4 @@
 #!/bin/sh
 pdflatex main.tex
+makeindex main
 pdflatex main.tex

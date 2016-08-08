@@ -44,7 +44,7 @@ public:
         setOutput(1,tInt,"finish");
         
         setParams(pMode=new EnumParameter("mode",modeNames,0),
-                  pPower2 = new IntParameter("rate powerof2",-4,4,0),
+                  pPower2 = new IntParameter("rate powerof2",4,-10,0),
                   pEnv=new EnvelopeParameter("env"),
                   NULL);
     }

@@ -5,8 +5,9 @@
  */
 
 // the root component
-
+#include <math.h>
 #include "model.h"
+#include "../globals.h"
 
 class Output : public ComponentType {
     static const int NUMINS = 4;
@@ -113,7 +114,6 @@ struct ThreshData {
 };
 
 class Threshold : public ComponentType {
-    
     FloatParameter *pAdd,*pMul;
     FloatParameter *pThresh[THRESHINS];
     EnumParameter *pType[THRESHINS];
@@ -256,3 +256,48 @@ public:
 
 static ConnectIn cinreg;
 static ConnectOut coutreg;
+
+
+
+class CrossFade : public ComponentType {
+    FloatParameter *pAdd,*pMul;
+    static const int INPUTS=6;
+public:
+    CrossFade() : ComponentType("crossfade","control"){}
+    virtual void init(){
+        width = 170;
+        setInput(0,tFloat,"input");
+        for(int i=0;i<INPUTS;i++){
+            char buf[32];
+            sprintf(buf,"in %d",i);
+            setInput(i+1,tFlow,strdup(buf));
+        }
+        setOutput(0,tFlow,"out");
+        addParameter(pMul=new FloatParameter("mul",-100,100,1));
+        addParameter(pAdd=new FloatParameter("add",-100,100,0));
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        float select = tFloat->getInput(ci,0);
+        select *= pMul->get(c);
+        select += pAdd->get(c);
+        
+        for(int i=0;i<INPUTS;i++){
+            float f = (float)i;
+            
+            float d = fabsf(f-select); // absolute distance
+            float amp = 1.0f-d; // amplitude
+            
+            if(amp>0){
+                float t = gVel;
+                gVel *= amp;
+                ci->getInput(i+1);
+                gVel = t;
+            }
+        }
+    }
+};
+
+static CrossFade cfreg;
+

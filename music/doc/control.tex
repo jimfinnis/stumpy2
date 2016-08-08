@@ -44,3 +44,40 @@ add & float & input is then added to this value before use\\
 level $n$ & float & level of threshold\\
 type $n$     & inactive,rising or falling & threshold type\\
 \end{tabularx}
+
+
+\comp{connectin}
+{Connector (input)}
+{input:ANY}{}
+This is the input side of a connector, which can be used to
+organise complex patches. The output comes out of an output
+connector with the same number.
+
+
+\comp{connectout}
+{Connector (output)}
+{output:ANY}{}
+This is the output side of a connector, which can be used to
+organise complex patches. The input comes from an input
+connector with the same number.
+
+\clearpage
+\comp{crossfade}
+{Crossfader}
+{select:float, input$\times$6:flow}{output:flow}
+This changes the amplitude of the inputs depending on which one
+is selected by modifying the global amplitude. 
+Inputs whose amplitude is nonzero will not run at all.
+The select value determines which input is ``loudest''.
+If the select value is an integer, only that input
+will have a nonzero amplitude. If the select value is between
+two inputs (it is a float), the two inputs either side will both
+run, with their relative amplitudes dependent on how far between
+them the select value is.
+\[
+amp(n) = \begin{cases}
+1-|sel-n| & \quad\mathrm{if}\, 1-|sel-n|>0\\
+0 & \quad\mathrm{otherwise}
+\end{cases}
+\]
+

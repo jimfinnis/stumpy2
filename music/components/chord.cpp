@@ -29,6 +29,9 @@
 // a triad.
 #define DEFCHORD "024" 
 
+#include "scaledata.h"
+
+/*
 static const char *scaleNames[]= {
     "major",
     "minor",
@@ -46,7 +49,8 @@ static const int scaleData[][20]=
     
     {-1} // terminator
 };
-unsigned char scaleLengths[64]; // at least as many as there are entries in above table.
+*/
+unsigned char scaleLengths[128]; // at least as many as there are entries in above table.
     
 struct ChordData {
     BitField lastChord;

@@ -9,6 +9,7 @@
 #include "model.h"
 #include "controller.h"
 #include "server.h"
+#include <diamondapparatus/diamondapparatus.h>
 
 #include "chordcon.h"
 #include "midi.h"
@@ -23,7 +24,12 @@ int main(int argc,char *argv[]){
     tChord = new ChordCon();
     
     
-    
+    try {
+        diamondapparatus::init();
+    } catch(diamondapparatus::DiamondException e){
+        printf("Diamond initialisation problem : %s\n",e.what());
+        exit(1);
+    }
     
     Time::init();
     try {
@@ -43,5 +49,7 @@ int main(int argc,char *argv[]){
         printf("Error: %s\n",errorStrings[x]);
         exit(1);
     }
+    
+    diamondapparatus::destroy();
     simpleMidiShutdown();
 }

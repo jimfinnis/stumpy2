@@ -8,22 +8,27 @@
 #include <diamondapparatus/diamondapparatus.h>
 #include <lo/lo.h>
 
-class DiamondComponent : public ComponentType {
-    FloatParameter *pAdd,*pMul;
+#define NUMDIAMONDCONNS 6
+
+class DiamondInComponent : public ComponentType {
+    FloatParameter *pAdd[NUMDIAMONDCONNS],*pMul[NUMDIAMONDCONNS];
     StringParameter *pTopic;
 public:
-    DiamondComponent() : ComponentType("diamond","data"){}
+    DiamondInComponent() : ComponentType("diamond","data"){}
     virtual void init() {
-        setOutput(0,tFloat,"out");
-        setParams(pTopic=new StringParameter("topic","data"),
-                  pMul=new FloatParameter("mul",-100,100,1),
-                  pAdd=new FloatParameter("add",-100,100,0),
-                  NULL);
+        addParameter(pTopic=new StringParameter("topic","data"));
+        
+        for(int i=0;i<NUMDIAMONDCONNS;i++){
+            setOutput(i,tFloat,"out");
+            char buf[32];
+            sprintf(buf,"mul %d",i);
+            addParameter(pMul[i]=new FloatParameter("mul",-100,100,1));
+            addParameter(pAdd[i]=new FloatParameter("add",-100,100,1));
+        }
     }
     
     virtual void initComponentInstance(ComponentInstance *c){
         try {
-            diamondapparatus::init();
             const char *s = pTopic->get(c->component);
             diamondapparatus::subscribe(s);
         } catch(diamondapparatus::DiamondException e){
@@ -42,28 +47,29 @@ public:
         }
     }
     
-    virtual void shutdownComponentInstance(ComponentInstance *c){
-        diamondapparatus::destroy();
-    }
-    
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         const char *s = pTopic->get(c);
+        float o;
+        
         try {
             diamondapparatus::Topic t = diamondapparatus::get(s);
-            float o;
-            o = t[0].f();
             
-            o *= pMul->get(c);
-            o += pAdd->get(c);
-            tFloat->setOutput(ci,0,o);
+            if(out<t.size()){
+                o = t[out].f();
+                o *= pMul[out]->get(c);
+                o += pAdd[out]->get(c);
+            } else
+                o = 0;
         } catch(diamondapparatus::DiamondException e){
             printf("Diamond problem : %s\n",e.what());
+            o=0;
         }
+        tFloat->setOutput(ci,out,o);
     }
 };
 
-static DiamondComponent diamondgen;
+static DiamondInComponent diamondingen;
 
 
 static lo_address lo;

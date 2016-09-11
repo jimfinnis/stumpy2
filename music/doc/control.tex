@@ -36,13 +36,14 @@ or [0,$n-1$] for selection (true means the former)
 {input:float}{trigger$\times$6:int}
 Contains 6 thresholding units, which detect when the input
 crosses a boundary (rising or falling) and output a single pulse
-trigger on the output for the unit.
+trigger on the output for the unit; or alternatively a 1 or 0
+depending on whether the value is below or above threshold.
 \startparams
 mul & float & input is multiplied by this value before use \\
 add & float & input is then added to this value before use\\
 &&\\
 level $n$ & float & level of threshold\\
-type $n$     & inactive,rising or falling & threshold type\\
+type $n$     & inactive, rising, falling, low, high& threshold type\\
 \end{tabularx}
 
 

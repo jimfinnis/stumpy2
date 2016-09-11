@@ -102,10 +102,12 @@ public:
 };
 static Switcher swReg;    
 
-static const char *threshTypes[]={"inactive","rising","falling"};
+static const char *threshTypes[]={"inactive","rising","falling","high","low",NULL};
 #define THR_INACTIVE 0
 #define THR_RISING 1
 #define THR_FALLING 2
+#define THR_HIGH 3
+#define THR_LOW 4
 
 #define THRESHINS 6
 struct ThreshData {
@@ -175,6 +177,13 @@ public:
                 break;
             case THR_FALLING:
                 if(p>thresh && in<=thresh)o=1;
+                break;
+            case THR_HIGH:
+                if(in>thresh)o=1;
+                break;
+            case THR_LOW:
+                if(in<thresh)o=1;
+                break;
             }
         } else {
             d->hasprev[out]=true;

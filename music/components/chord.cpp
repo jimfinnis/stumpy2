@@ -7,6 +7,7 @@
 #include "model.h"
 #include "time.h"
 #include "../chordcon.h"
+#include "util.h"
 
 #include <math.h>
 
@@ -114,6 +115,7 @@ public:
         while(isel<0)
             isel += NUMCHORDS*100;
         isel %= NUMCHORDS;
+        
         const char *str = pChords[isel]->get(c);
         if(!*str)return; // empty
         
@@ -202,11 +204,7 @@ private:
             
             int note;
             char c = str[noteno];
-            if(c>='a') 
-                // allow hex digits (might be using mad scales)
-                note = (c - 'a')+10; 
-            else
-                note = c-'0';
+            note = hexdigit(c);
             note = scale[note%sclen];
             note += base+(octave-99)*12;
 

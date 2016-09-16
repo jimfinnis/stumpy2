@@ -18,5 +18,8 @@ template<class T> void shuf(T *s,int len,unsigned int *randstate=NULL){
     }
 }
 
+inline int hexdigit(char c){
+    return (c>='a')?(c-'a')+10:c-'0';
+}
 
 #endif /* __UTIL_H */

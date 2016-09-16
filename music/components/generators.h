@@ -49,6 +49,13 @@ public:
     bool cycled(){
         return didcycle;
     }
+    
+    // just restart the same generated sequence, and indicate
+    // that we cycled (cos we sort of did)
+    void rewind(){
+        cur=0;
+        didcycle=true;
+    }
         
     
     void postReset(){

@@ -90,7 +90,7 @@ public:
                     printf("Duration is %f\n",d->dur);
                     
                     // set the output
-                    d->output=s[d->n]-'0';
+                    d->output=hexdigit(s[d->n]);
                     tick=1;
                     printf("Output is %d\n",d->output);
                 }
@@ -178,7 +178,7 @@ public:
         if(d->cur>=d->len)d->cur=d->len-1;
         
         if(tick){
-            d->output = d->str[d->cur] - '0';
+            d->output = hexdigit(d->str[d->cur]);
             if(isRandom)d->cur++;
             if(d->cur>=d->len){
                 // cycle
@@ -195,3 +195,153 @@ public:
     }
 };
 static DenaryPick denrandreg;
+
+
+
+struct BarSwitcherData {
+    int idx;
+    int tick;
+};
+
+class BarSwitcher : public ComponentType {
+    static const int NUMINS=6;
+    static const int OTHERINS=1;
+    StringParameter *pDurs,*pIns;
+public:    
+    BarSwitcher() : ComponentType("barswitcher","music"){}
+    virtual void init(){
+        width=170;
+        setInput(0,tInt,"tick");
+        for(int i=0;i<NUMINS;i++){
+            char buf[32];
+            sprintf(buf,"in %d",i);
+            setInput(i+1,tAny,strdup(buf));
+        }
+        setOutput(0,tAny,"out");
+        setOutput(1,tInt,"bar end");
+        
+        setParams(pDurs=new StringParameter("durs","4444"),
+                  pIns=new StringParameter("ins","0000"),
+                  NULL);
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        BarSwitcherData *d = new BarSwitcherData();
+        d->idx=0;
+        d->tick=0;
+        c->privateData = (void *)d;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        BarSwitcherData *d = (BarSwitcherData *)c->privateData;
+        delete d;
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        BarSwitcherData *d = (BarSwitcherData *)ci->privateData;
+        int barEnd=0;
+        
+        const char *durs = pDurs->get(c);
+        const char *ins = pIns->get(c);
+        
+        int len = strlen(durs);
+        if(strlen(ins)<len)len=strlen(ins);
+        
+        if(len==0)
+            tAny->setOutput(ci,0,tAny->getInput(ci,OTHERINS+0));
+        else {
+            // first test may seem unnecessary, but the parameters
+            // may have changed
+            if(d->idx>=len){
+                d->idx=0;
+                d->tick=0;
+            }
+            int curstagelen = hexdigit(durs[d->idx]);
+            if(d->tick>=curstagelen){
+                barEnd=1;
+                d->tick=0;
+                d->idx++;
+                if(d->idx>=len){
+                    d->idx=0;
+                    d->tick=0;
+                }
+            }
+            int in = hexdigit(ins[d->idx]);
+            if(tInt->getInput(ci,0))
+                d->tick++;
+            tAny->setOutput(ci,0,tAny->getInput(ci,OTHERINS+in));
+        }
+        tInt->setOutput(ci,1,barEnd);
+    }
+};
+
+
+class BarPicker : public ComponentType {
+    StringParameter *pDurs,*pVals;
+public:    
+    BarPicker() : ComponentType("barpicker","music"){}
+    virtual void init(){
+        width=170;
+        setInput(0,tInt,"tick");
+        setOutput(0,tFloat,"out");
+        setOutput(1,tInt,"bar end");
+        
+        setParams(pDurs=new StringParameter("durs","4444"),
+                  pVals=new StringParameter("vals","0123"),
+                  NULL);
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        BarSwitcherData *d = new BarSwitcherData();
+        d->idx=0;
+        d->tick=0;
+        c->privateData = (void *)d;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        BarSwitcherData *d = (BarSwitcherData *)c->privateData;
+        delete d;
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        BarSwitcherData *d = (BarSwitcherData *)ci->privateData;
+        int barEnd=0;
+        
+        const char *durs = pDurs->get(c);
+        const char *ins = pVals->get(c);
+        
+        int len = strlen(durs);
+        if(strlen(ins)<len)len=strlen(ins);
+        
+        if(len==0)
+            tInt->setOutput(ci,0,0);
+        else {
+            // first test may seem unnecessary, but the parameters
+            // may have changed
+            if(d->idx>=len){
+                d->idx=0;
+                d->tick=0;
+            }
+            int curstagelen = hexdigit(durs[d->idx]);
+            if(d->tick>=curstagelen){
+                barEnd=1;
+                d->tick=0;
+                d->idx++;
+                if(d->idx>=len){
+                    d->idx=0;
+                    d->tick=0;
+                }
+            }
+            int in = hexdigit(ins[d->idx]);
+            if(tInt->getInput(ci,0))
+                d->tick++;
+            tFloat->setOutput(ci,0,in);
+        }
+        tInt->setOutput(ci,1,barEnd);
+    }
+};
+
+static BarSwitcher barreg;
+static BarPicker barpick;

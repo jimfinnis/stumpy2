@@ -14,6 +14,7 @@
 #define IN_TICK 0
 #define IN_GATE 1
 #define IN_REGEN 2
+#define IN_REWIND 3
 
 #define OUT_TICK 0
 #define OUT_OUTPUT 1
@@ -39,6 +40,7 @@ public:
         setInput(IN_TICK,tInt,"tick");
         setInput(IN_GATE,tFloat,"gate");
         setInput(IN_REGEN,tInt,"regenerate");
+        setInput(IN_REWIND,tInt,"restart");
         setOutput(OUT_TICK,tInt,"event tick");
         setOutput(OUT_OUTPUT,tFloat,"output");
         setOutput(OUT_CYCLETICK,tInt,"cycle tick");
@@ -77,12 +79,17 @@ public:
     }
     
     virtual void run(ComponentInstance *ci,int out){
+        
+        
         Component *c = ci->component;
         TMData *d = (TMData *)ci->privateData;
         
         int tick = tInt->getInput(ci,IN_TICK);
         float gate = (!c->isInputConnected(IN_GATE))?1:
         tFloat->getInput(ci,IN_GATE);
+        
+        if(tInt->getInput(ci,IN_REWIND))
+            d->gen->rewind();
         
         int regen = pAutoRegen->get(c)?1:tInt->getInput(ci,IN_REGEN);
         

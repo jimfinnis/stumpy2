@@ -317,6 +317,26 @@ private:
     
 public:
     
+    bool debug; //!< is debugging active
+    
+    void dprintf(const char *s,...){
+        static char buf[1024];
+        if(debug){
+            va_list args;
+            va_start(args,s);
+            
+            printf("[%s] : %s\n",type->name,buf);
+        
+            vsprintf(buf,s,args);
+            va_end(args);
+        }
+    }
+        
+    
+    /// toggle debugging on/off
+    void toggleDebug(){
+        debug=!debug;
+    }
     
     /// pointer to an array of parameter value unions, set up
     /// by init() from the ComponentType data.

@@ -46,6 +46,7 @@ Controller::Controller(PatchLibrary *l,Server *s){
     REG("p",5,ParamSet); // patchid componentid paramid code encval
     REG("pss",5,ParamSetStoredString); // patchid componentid paramid code stringno
     REG("run",1,RunPatch); // patchid
+    REG("db",2,DebugComp); // patchid componentid
 }
 
 
@@ -144,6 +145,17 @@ METHOD(DeleteComponent){
     if(!p)throw SE_NOSUCHPATCH;
     
     p->deleteComponent(cid);
+    server->success(cid);
+}
+
+METHOD(DebugComp){
+    uint32_t pid = atoi(argv[0]);
+    uint32_t cid = atoi(argv[1]);
+    
+    Patch *p = library->get(pid);
+    if(!p)throw SE_NOSUCHPATCH;
+    
+    p->toggleDebugComponent(cid);
     server->success(cid);
 }
 

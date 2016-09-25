@@ -1,5 +1,3 @@
 #!/bin/bash
-killall music
-killall linuxsampler
-killall zynaddsubfx
-killall jackd
+kill $(cat joblist)
+rm joblist

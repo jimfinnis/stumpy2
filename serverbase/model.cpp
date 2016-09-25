@@ -91,6 +91,13 @@ void Patch::deleteComponent(uint32_t id){
     components.del(id);
 }
 
+void Patch::toggleDebugComponent(uint32_t id){
+    if(!components.find(id))throw SE_NOSUCHCOMP;
+    Component *c = components.getval();
+    c->toggleDebug();
+}
+
+
 void Patch::unlinkComponentOutput(Component *c,int output){
     IteratorPtr<uint32_t> iterator(components.createKeyIterator());
     

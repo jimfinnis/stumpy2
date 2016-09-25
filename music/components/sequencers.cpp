@@ -253,6 +253,7 @@ public:
         else {
             // first test may seem unnecessary, but the parameters
             // may have changed
+            c->dprintf("idx=%d tick=%d",d->idx,d->tick);
             if(d->idx>=len){
                 d->idx=0;
                 d->tick=0;
@@ -318,6 +319,7 @@ public:
         if(len==0)
             tInt->setOutput(ci,0,0);
         else {
+            c->dprintf("idx=%d tick=%d",d->idx,d->tick);
             // first test may seem unnecessary, but the parameters
             // may have changed
             if(d->idx>=len){

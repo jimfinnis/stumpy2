@@ -195,6 +195,96 @@ public:
 
 static Threshold thresreg;
 
+struct SHData {
+    float v;
+};
+
+class SampleHoldComponent : public ComponentType {
+    float t;
+public:
+    SampleHoldComponent() : ComponentType("sample&hold","control"){}
+    virtual void init() {
+        width=100;
+        setInput(0,tInt,"trig");
+        setInput(1,tFloat,"in");
+        setOutput(0,tFloat,"out");
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        SHData *d = new SHData();
+        c->privateData = (void *)d;
+        d->v=0;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((SHData *)c->privateData);
+    }
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        SHData *d = (SHData *)ci->privateData;
+        
+        if(tInt->getInput(ci,0)){
+            d->v = tFloat->getInput(ci,1);
+            c->dprintf("Trigger, out=%f",d->v);
+        }
+        
+        tFloat->setOutput(ci,0,d->v);
+    }
+};
+
+static SampleHoldComponent regsamphold;
+
+struct GateData {
+    bool done;
+};
+
+class Gate : public ComponentType {
+private:
+    FloatParameter *pLev;
+    BoolParameter *pHigh,*pOneshot;
+public:
+    Gate() : ComponentType("gate","control"){}
+    virtual void init(){
+        setInput(0,tInt,"trig");
+        setInput(1,tFloat,"gate");
+        setOutput(0,tInt,"trig");
+        setParams(pLev = new FloatParameter("level",0,10,0.5),
+                  pHigh = new BoolParameter("gate high",true),
+                  pOneshot = new BoolParameter("oneshot",false),
+                  NULL);
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        GateData *d = new GateData();
+        c->privateData = (void *)d;
+        d->done = false;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((GateData *)c->privateData);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        GateData *d = (GateData *)ci->privateData;
+        int outp = 0;
+              
+        if(c->isInputConnected(0) && c->isInputConnected(1)){
+            float trig = tInt->getInput(ci,0);
+            float gateval = tFloat->getInput(ci,1);
+            float lev = pLev->get(c);
+            bool gate = pHigh->get(c) ? (gateval>lev) : (gateval<lev);
+            if(gate && trig && !(d->done && pOneshot->get(c))){
+                d->done = true;
+                outp=1;
+            }
+        }
+        tInt->setOutput(ci,0,outp);
+    }
+};
+static Gate gatereg;
+
+
 
 class ConnectIn : public ComponentType {
     IntParameter *pN;

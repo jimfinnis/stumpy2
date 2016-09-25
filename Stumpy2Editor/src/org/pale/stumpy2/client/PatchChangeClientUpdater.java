@@ -57,6 +57,9 @@ public class PatchChangeClientUpdater implements PatchChangeListener {
 		case UNLINKOUTPUT:
 			cmds.add("uo "+p.getID()+" "+change.getC().getID()+" "+change.getOutput());
 			break;
+		case DEBUG:
+			cmds.add("db "+p.getID()+" "+change.getC().getID());
+			break;
 		default:
 			break;
 		}

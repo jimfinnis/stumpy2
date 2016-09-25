@@ -13,6 +13,8 @@ import org.pale.stumpy2.model.ComponentTypeRegistry;
 import org.pale.stumpy2.model.NoCurrentPatchException;
 import org.pale.stumpy2.model.Patch;
 import org.pale.stumpy2.model.UnknownComponentTypeException;
+import org.pale.stumpy2.model.PatchChangeListener.PatchChange;
+import org.pale.stumpy2.model.PatchChangeListener.PatchChangeType;
 import org.pale.stumpy2.ui.Menu;
 import org.pale.stumpy2.ui.PopupMenu;
 import org.pale.stumpy2.ui.support.Controller;
@@ -172,6 +174,29 @@ public class PatchViewPopup extends PopupMenu {
 			public boolean enabled() {
 				return canvas.getSelected().size()>0;
 			}
+        });
+        
+        addMenuItem("debug toggle",new CommandFactory(){
+			@Override
+			public Command create() {
+				return new Command(true){
+					@Override
+					public void execute(){
+                        Set<Component> set = canvas.getSelected();
+                        if(set.size() == 1){
+                        	for(Component c: set){
+                        		patch.notifyChange(new PatchChange(PatchChangeType.DEBUG, c));
+
+                        	}
+                        }
+					}
+				};
+
+			}
+			@Override
+			public boolean enabled() {
+				return canvas.getSelected().size()>0;
+			}       	
         });
     }
 

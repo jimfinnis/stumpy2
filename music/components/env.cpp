@@ -44,7 +44,7 @@ public:
         setOutput(1,tInt,"finish");
         
         setParams(pMode=new EnumParameter("mode",modeNames,0),
-                  pPower2 = new IntParameter("rate powerof2",4,-10,0),
+                  pPower2 = new IntParameter("rate powerof2",-4,10,0),
                   pEnv=new EnvelopeParameter("env"),
                   NULL);
     }
@@ -85,6 +85,13 @@ public:
             if(d->start<0)retrig=true;break;
         }
         
+        
+        c->dprintf("Trig=%s retrig=%s start=%f nextstage=%d OSD=%s",
+                   trig?"Y":"N",
+                   retrig?"Y":"N",
+                   d->start,d->nextstage,
+                   d->oneshotdone?"Y":"N");
+        
         if(retrig){
             d->start = Time::now();
             d->nextstage=0;
@@ -118,8 +125,8 @@ public:
                 
                 float l2 = e.levels[d->nextstage];
                 float t2 = e.times[d->nextstage];
-//                printf("time %f: waiting for %d, t1=%f,l1=%f  t1=%f,l2=%f\n",
-//                       t-t1,d->nextstage,t1,l1,t2,l2);
+                c->dprintf("time %f: waiting for %d, t1=%f,l1=%f  t1=%f,l2=%f\n",
+                       t-t1,d->nextstage,t1,l1,t2,l2);
                 
                 // interpolate and deal with zero-length steps
                 if(t2-t1 > 0.0001f){
@@ -130,7 +137,7 @@ public:
                 }
             }
         }
-        
+        c->dprintf("Out=%f",d->op);
         tFloat->setOutput(ci,0,d->op);
         tInt->setOutput(ci,1,finishout);
     }

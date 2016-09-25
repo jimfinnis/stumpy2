@@ -126,5 +126,7 @@ start a patch running
                 OR  nnn error
 
 
-
-
+db <pid> <cid>
+toggle debugging on a given component (and all instances of it!)
+                    000 OK 
+                OR  nnn error

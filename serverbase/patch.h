@@ -100,6 +100,9 @@ public:
     /// delete a component and clear all its instance data. Should disconnect, too.
     void deleteComponent(uint32_t id);
     
+    /// toggle debugging on a component
+    void toggleDebugComponent(uint32_t id);
+    
     /// remove an instance from the instances list - is done
     /// by the instance destructor
     

@@ -41,8 +41,11 @@ public interface PatchChangeListener {
          * A component has had its "extra text" updated by the server, or perhaps a name change
          * of some kind. Whatever, the component should be redrawn
          */
-        COMPONENTBOX, 
-
+        COMPONENTBOX,
+        /**
+         * A "toggle debug" message needs to be sent.
+         */
+        DEBUG, 
     }
 
     /**

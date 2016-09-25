@@ -66,6 +66,7 @@ class Controller : public ServerListener {
     DECMETHOD(ParamSet);
     DECMETHOD(ParamSetStoredString);
     DECMETHOD(RunPatch);
+    DECMETHOD(DebugComp);
     
     DECMETHOD(StartComps);
     DECMETHOD(NextComp);

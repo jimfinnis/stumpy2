@@ -1,6 +1,10 @@
 #!/bin/bash
-jackd -d alsa &
+rm /tmp
+jackd -d alsa -d hw:iO2 &
+echo "Jack (allegedly) started"
 sleep 2
+jack_lsp || { echo "Jack startup failed"; exit 1;}
+echo "Jack check OK"
 
 zynaddsubfx -I jack -l silkpad.xmz -U &
 

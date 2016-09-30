@@ -16,6 +16,7 @@
 
 #include "midi.h"
 #include "util/time.h"
+#include "globals.h"
 
 /// all ports must be linked into this.
 std::list<class MidiPort *> portList;
@@ -271,6 +272,13 @@ void simpleMidiUpdate(){
 void simpleMidiPlay(int chan, int note, int vel,float dur){
     printf("PLAY %d, %d, vel %d, dur %f\n",
            chan,note,vel,dur);
+    
+    // oct enforce, octaves based on C
+    if(gEnforcedOct>-100){
+        note %=12;
+        note += (gEnforcedOct+1)*12;
+    }
+    
     if(chan>=0 && chan<16 && note>=0 && note<128){
         noteEnds[chan][note] = Time::now()+dur;
         sendNoteOn(out,chan,note,vel);

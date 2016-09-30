@@ -44,7 +44,8 @@ public:
 static Vel velreg;
 
 class Transposer : public ComponentType {
-    IntParameter *pTrans,*pOct;
+    IntParameter *pTrans,*pOct,*pOctEnforced;
+    BoolParameter *pOctForce;
     static const int NUMINS = 4;
 public:
     Transposer() : ComponentType("trans","state"){}
@@ -58,6 +59,8 @@ public:
         setParams(
                   pTrans = new IntParameter("trans",-12,12,0),
                   pOct = new IntParameter("oct",-4,4,0),
+                  pOctForce = new BoolParameter("enforce octave",false),
+                  pOctEnforced = new IntParameter("enforced oct",0,10,2),
                   NULL);
     }
     
@@ -65,11 +68,16 @@ public:
         Component *c = ci->component;
         
         int t = gTrans;
+        int e = gEnforcedOct;
         gTrans += pTrans->get(c) + 12*pOct->get(c);
+        if(pOctForce->get(c))
+            gEnforcedOct = pOctEnforced->get(c);
         for(int i=0;i<NUMINS;i++){
             tFlow->getInput(ci,1+i);
         }
+        
         gTrans = t;
+        gEnforcedOct = e;
     }
                   
 };

@@ -92,9 +92,7 @@ our private data, and modify run() to get access to it:
     virtual void initComponentInstance(ComponentInstance *c){
         MyPrivateData *d = new MyPrivateData();
         c->privateData = (void *)d;
-        d->start = Time::now();
-        for(int i=0;i<NUMOUTS;i++)
-            d->prevq[i]=-1;
+        // .. init the private data
     }
     
     virtual void shutdownComponentInstance(ComponentInstance *c){

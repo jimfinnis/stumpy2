@@ -5,7 +5,7 @@
  */
 
 
-#define DIAMOND 0
+#define DIAMOND 1
 
 #include "model.h"
 
@@ -19,7 +19,19 @@ class DiamondInComponent : public ComponentType {
     FloatParameter *pAdd[NUMDIAMONDCONNS],*pMul[NUMDIAMONDCONNS];
     StringParameter *pTopic;
 public:
-    DiamondInComponent() : ComponentType("diamond","data"){}
+    DiamondInComponent() : ComponentType("diamond","data"){
+        try {
+            diamondapparatus::init();
+        } catch(diamondapparatus::DiamondException e){
+            printf("Diamond initialisation problem : %s\n",e.what());
+            exit(1);
+        }
+    }
+    
+    ~DiamondInComponent() {
+        diamondapparatus::destroy();
+    }
+        
     virtual void init() {
         addParameter(pTopic=new StringParameter("topic","data"));
         

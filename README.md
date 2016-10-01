@@ -40,7 +40,7 @@ Run '''qmake-qt4''' to build the makefile, and run '''make'''.
 #### Notes on qtserver
 At the moment, this application's components have no documentation!
 Qtserver uses [http://lodev.org/lodepng/](lodepng) to load PNG
-textures. It can also load (some) TGAs, uses old code I had lying
+textures. It can also load (some) TGAs, using old code I had lying
 about. The meshes are a subset of DirectX files I used while at
 Broadsword, and the code for loading them is very old indeed:
 we need better mesh loading code. Writing an OBJ loader is probably

@@ -6,6 +6,15 @@ active patch. Adding a component involves writing a new component type
 object, and creating a single instance of it which will auto-register
 it with the server at startup.
 
+Why ComponentInstance and Component? It's theoretically possible
+to have more than one instance of each component in a patch: this
+was used in the original Stumpy to permit macros, but I haven't
+implemented it here yet.
+
+However, you don't need to worry about that: just remember than when
+you are writing a new component, you're actually writing the singleton
+type object, which does all the work - not the component itself.
+
 Here's the Add component, which adds two numbers having added 
 constants and multiplied them by other constants first:
 

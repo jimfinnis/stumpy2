@@ -62,7 +62,7 @@ and "components/data.cpp" from the source files in CMakeFiles.txt.
 Documentation for the music app's components can be found in
 music/doc, in LaTeX.
 
-### Notes on the music app
+#### Notes on the music app
 You'll need to connect synths to it with Jack; it creates a single
 MIDI port called stumpymusic:out for this purpose. The various
 note playing components allow the channel to be set. There is currently

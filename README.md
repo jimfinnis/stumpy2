@@ -214,3 +214,6 @@ to the media/textures directory: the enumerated parameters are stored
 as integers in the files, so those numbers may now be out of step.
 
 
+# Writing applications and new components
+Please read the (brief) [developer docs](./DEVELOPER.md) and
+the source code.

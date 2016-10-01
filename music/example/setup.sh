@@ -1,5 +1,8 @@
 #!/bin/bash
-rm /tmp
+diamond server -d  # just to make sure
+
+rm jobslist
+
 jackd -d alsa -d hw:iO2 &
 echo "Jack (allegedly) started"
 sleep 2

@@ -17,8 +17,6 @@ QGLWidget(parent)
     connect(timer,SIGNAL(timeout()),this,SLOT(update()));
     timer->start(10);
     
-    server = new Server(65111);
-    server->setListener(new Controller(&lib,server));
 }
 
 
@@ -35,6 +33,11 @@ void GLWidget::initializeGL(){
 
     extern void loadPrims(),loadTextures(),loadEnvMaps();
     loadPrims();loadTextures();loadEnvMaps();
+    
+    // have to do this AFTER things are loaded, because
+    // this will initialise the components.
+    server = new Server(65111);
+    server->setListener(new Controller(&lib,server));
     
     test = new Mesh("media","bevcube.x");
     

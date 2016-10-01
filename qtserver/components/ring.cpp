@@ -51,7 +51,7 @@ public:
             tFlow->getInput(ci,0);
             ms->pop();
         }
-        tFlow->setOutput(ci,0);
+//        tFlow->setOutput(ci,0);
     }
     
     

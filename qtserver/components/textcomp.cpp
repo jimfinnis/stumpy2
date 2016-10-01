@@ -8,61 +8,34 @@
 #include "serverbase/model.h"
 #include <unistd.h>
 
-static const char *texFiles[] = 
-{
-"AladdinBody.tga",
-"AladdinHead.tga",
-"banner.tga",
-"bigrock1.tga",
-"bslogo.tga",
-"font.tga",
-"grass.tga",
-"highrock.tga",
-"Letys3.tga",
-"micrologo.tga",
-"moon.tga",
-"rock.tga",
-"roundmask.tga",
-"sand.tga",
-"snow.tga",
-"star.tga",
-"sun.tga",
-"terrain.tga",
-"test.tga",
-    NULL
-};
+// filenames
+static const char **texFileNames = NULL;
 
 class TextureComponent : public ComponentType {
     EnumParameter *pTex;
-    static Texture **textures;
+    static std::vector<Texture *> textures;
     
 public:
     static int ct;
     /// called after GL is up.
     static void load(){
-        char wd[PATH_MAX];
-        getcwd(wd,PATH_MAX);
-        if(chdir("media"))
-            throw Exception().set("cannot change to media directory");
-        
-        for(ct=0;;ct++){
-            if(!texFiles[ct])break;
-        }
-        
         TextureManager *tMgr = TextureManager::getInstance();
-        textures = new Texture *[ct];
+        tMgr->loadSet("media/textures",textures);
+        
+        ct = textures.size();
+        texFileNames = new const char * [ct+1];// allow for terminator
         for(int i=0;i<ct;i++){
-            textures[i] = tMgr->createOrFind(texFiles[i]);
-            printf("Done %s\n",texFiles[i]);
+            texFileNames[i]=textures[i]->name;
+            printf("Got %s\n",texFileNames[i]);
         }
-        chdir(wd);
+        texFileNames[ct]=NULL;
     }
 
     TextureComponent() : ComponentType("texture","state"){}
     virtual void init() {
         setInput(0,tFlow,"flow");
         setOutput(0,tFlow,"flow");
-        setParams(pTex = new EnumParameter("texture",texFiles,0),
+        setParams(pTex = new EnumParameter("texture",texFileNames,0),
                   NULL);
     }
     
@@ -83,7 +56,7 @@ void loadTextures(){
 }
 
 
-Texture **TextureComponent::textures;
+std::vector<Texture *> TextureComponent::textures;
 int TextureComponent::ct=0;
     
 static TextureComponent reg;

@@ -10,6 +10,7 @@
 #ifndef __TEXTURE_H
 #define __TEXTURE_H
 
+#include <vector>
 #include <QString>
 #include <QMap>
 #define GL_GLEXT_PROTOTYPES 1
@@ -45,7 +46,8 @@ public:
     /// set up GL to start using this texture on a given unit in a given sampler
     void use(int sampler,int unit);
     
-    int mHeight,mWidth;
+    unsigned int mHeight,mWidth;
+    const char *name;
 private:
     GLuint id;
     bool mHasAlpha;
@@ -64,7 +66,10 @@ public:
               
     /// find a texture in the manager or create and init a new one
     Texture *createOrFind(QString name);
-    
+    /// load an vector of textures from
+    /// a directory. Assumes .tga or .png. Yes, I know
+    /// I'm horribly mixing C and C++.
+    void loadSet(const char *dir,std::vector<Texture *>& vec);
 private:
     QMap<QString,Texture *> textures;
     

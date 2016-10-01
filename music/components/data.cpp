@@ -4,12 +4,17 @@
  *
  */
 
+
+#define DIAMOND 0
+
 #include "model.h"
-#include <diamondapparatus/diamondapparatus.h>
+
 #include <lo/lo.h>
 
-#define NUMDIAMONDCONNS 6
 
+#if DIAMOND
+#define NUMDIAMONDCONNS 6
+#include <diamondapparatus/diamondapparatus.h>
 class DiamondInComponent : public ComponentType {
     FloatParameter *pAdd[NUMDIAMONDCONNS],*pMul[NUMDIAMONDCONNS];
     StringParameter *pTopic;
@@ -70,7 +75,7 @@ public:
 };
 
 static DiamondInComponent diamondingen;
-
+#endif
 
 static lo_address lo;
 static void sendOsc(const char *s, float *f,int n){

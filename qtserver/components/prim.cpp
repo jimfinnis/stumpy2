@@ -11,13 +11,12 @@
 static const char *meshNames[]=
 {
     "bevcube.x",
+    "blob.x",
     "ring.x",
     "cube.x",
-    "sphere2.x",
-    "sphere1.x",
-    "aladdin.x",
     "massivesphere.x",
-    "blob.x",
+    "sphere1.x",
+    "sphere2.x",
     NULL
     
 };

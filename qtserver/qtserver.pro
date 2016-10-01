@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
-# CONFIG  += debug
+#CONFIG  += debug
 TARGET = qtserver
 TEMPLATE = app
 LIBS += -lGLU
@@ -19,6 +19,7 @@ SOURCES += main.cpp \
     engine/effect.cpp \
     engine/tga.cpp\
     engine/mesh.cpp\
+    engine/lodepng.cpp\
     serverbase/model.cpp\
     serverbase/errors.cpp\
     serverbase/server.cpp\
@@ -56,6 +57,7 @@ HEADERS  += \
     engine/state.h \
     engine/effect.h \
     engine/tga.h \
+    engine/lodepng.h\
     serverbase/component.h \
     serverbase/controller.h \
     serverbase/errors.h \

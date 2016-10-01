@@ -411,12 +411,6 @@ public:
         slot = -1;
         type = NULL;
         paramVals = NULL;
-        for(int i=0;i<ComponentType::NUMINPUTS;i++){
-            inputs[i].c=NULL;
-        }
-        for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
-            runAlways[i]=false;
-        }
     }
     
         
@@ -444,6 +438,18 @@ public:
         paramVals = new ParameterValue [type->paramct];
         for(int i=0;i<type->paramct;i++){
             type->params[i]->setDefault(paramVals+i);
+        }
+        // set the inputs 
+        for(int i=0;i<ComponentType::NUMINPUTS;i++){
+            inputs[i].c=NULL;
+        }
+        // now set the outputs up
+        for(int i=0;i<ComponentType::NUMOUTPUTS;i++){
+            // flow components always run for every input
+            // they connect to, not just the first.
+            runAlways[i]=
+                  type->outputTypes[i] && 
+                  type->outputTypes[i]->base==NONE;
         }
     }
     

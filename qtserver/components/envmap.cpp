@@ -8,45 +8,28 @@
 #include "serverbase/model.h"
 #include <unistd.h>
 
-static const char *texFiles[] = 
-{
-    "e0.tga",
-    "e1.tga",
-    "e2.tga",
-    "e3.tga",
-    "e4.tga",
-    "e5.tga",
-    "e6.tga",
-    "e7.tga",
-    NULL
-};
+static const char **texFileNames = NULL;
 
 class EnvMapComponent : public ComponentType {
     EnumParameter *pTex;
     FloatParameter *pR,*pG,*pB,*pA;
     FloatParameter *pModR,*pModG,*pModB,*pModA;
-    static Texture **textures;
+    static std::vector<Texture *> textures;
     
 public:
     static int ct;
     /// called after GL is up.
     static void load(){
-        char wd[PATH_MAX];
-        getcwd(wd,PATH_MAX);
-        if(chdir("media"))
-            throw Exception().set("cannot change to media directory");
-        
-        for(ct=0;;ct++){
-            if(!texFiles[ct])break;
-        }
-        
         TextureManager *tMgr = TextureManager::getInstance();
-        textures = new Texture *[ct];
+        tMgr->loadSet("media/envs",textures);
+        
+        ct = textures.size();
+        texFileNames = new const char * [ct+1];// allow for terminator
         for(int i=0;i<ct;i++){
-            textures[i] = tMgr->createOrFind(texFiles[i]);
-            printf("Done %s\n",texFiles[i]);
+            texFileNames[i]=textures[i]->name;
+            printf("Got %s\n",texFileNames[i]);
         }
-        chdir(wd);
+        texFileNames[ct]=NULL;
     }
 
     EnvMapComponent() : ComponentType("envmap","state"){}
@@ -57,7 +40,7 @@ public:
         setInput(3,tFloat,"g-mod"); //gmod
         setInput(4,tFloat,"b-mod"); //bmod
         setOutput(0,tFlow,"flow");
-        setParams(pTex = new EnumParameter("texture",texFiles,0),
+        setParams(pTex = new EnumParameter("texture",texFileNames,0),
                   pA = new FloatParameter("amount",0,1,0.6),
                   pR = new FloatParameter("red",0,1,1),
                   pG = new FloatParameter("green",0,1,1),
@@ -98,11 +81,11 @@ public:
     }
 };
 
-Texture **EnvMapComponent::textures;
 
 void loadEnvMaps(){
     EnvMapComponent::load();
 }
 
+std::vector<Texture *> EnvMapComponent::textures;
 int EnvMapComponent::ct=0;
 static EnvMapComponent reg;

@@ -40,7 +40,7 @@ Run '''qmake-qt4''' to build the makefile, and run '''make'''.
 #### Notes on qtserver
 At the moment, this application's components have no documentation!
 Qtserver uses [http://lodev.org/lodepng/](lodepng) to load PNG
-textures. It can also load (some) TGAs, uses old code I had lying
+textures. It can also load (some) TGAs, using old code I had lying
 about. The meshes are a subset of DirectX files I used while at
 Broadsword, and the code for loading them is very old indeed:
 we need better mesh loading code. Writing an OBJ loader is probably
@@ -62,7 +62,7 @@ and "components/data.cpp" from the source files in CMakeFiles.txt.
 Documentation for the music app's components can be found in
 music/doc, in LaTeX.
 
-### Notes on the music app
+#### Notes on the music app
 You'll need to connect synths to it with Jack; it creates a single
 MIDI port called stumpymusic:out for this purpose. The various
 note playing components allow the channel to be set. There is currently

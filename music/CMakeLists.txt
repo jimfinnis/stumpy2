@@ -6,6 +6,7 @@ set(SERVERSOURCES
     ../serverbase/errors.cpp 
     ../serverbase/model.cpp 
     ../serverbase/server.cpp 
+    ../serverbase/readfile.cpp 
     ../serverbase/util/time.cpp
     ../serverbase/stdConns.cpp)
 

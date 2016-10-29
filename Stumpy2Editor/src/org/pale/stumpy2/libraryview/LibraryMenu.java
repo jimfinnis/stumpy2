@@ -17,6 +17,7 @@ public class LibraryMenu extends Menu {
 		addMenuItem("Paste Patch","paste");
 		addMenuItem("Rename Patch","rename");
 		addMenuItem("Delete Patch","delete");
+		addMenuItem("Save Library to Server Script","savetoserver");
 	}			
 
 }

@@ -33,12 +33,26 @@ public:
     virtual void disconnect() = 0;
 };
 
+/// this class is used to send responses back when they are required.
+/// If we're running client/server, it's the server and responses
+/// are actually sent. If we're reading commands from a file, it's
+/// actually a dummy which exits the program with an error if we
+/// call fail().
+
+class Responder {
+public:
+    virtual void success()=0;
+    virtual void success(int n)=0;
+    virtual void fail(int n)=0;
+    virtual void die()=0;
+    virtual void output(const char *buf)=0;
+};
 
 /// the server handles the communication from the client. There
 /// can only be one client connected at a time; anything else would
 /// be silly.
 
-class Server {
+class Server : public Responder {
     int listenfd; //!< connection listen socket 
     int clientfd; //!< our single actual client connection
     struct sigaction act; //!< signal data
@@ -60,7 +74,7 @@ public:
         listener = l;
     }
     
-    void die(){
+    virtual void die(){
         exitreq=true;
     }
     
@@ -69,17 +83,17 @@ public:
     bool process();
     
     /// write a string to the client
-    void output(const char *s);
+    virtual void output(const char *s);
     
     /// write a predefined error string (see errors.h)
-    void fail(int n){
+    virtual void fail(int n){
         char buf[256];
         sprintf(buf,"%03d %s",n,errorStrings[n]);
         output(buf);
     }
     
     /// output the OK message
-    void success(){
+    virtual void success(){
         fail(0);
     }
     
@@ -95,7 +109,7 @@ public:
     }
     
     /// output an OK message with a numeric argument
-    void success(int n){
+    virtual void success(int n){
         char buf[256];
         sprintf(buf,"000 OK %d",n);
         output(buf);

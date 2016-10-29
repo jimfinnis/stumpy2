@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -374,6 +375,13 @@ public class PatchLibrary implements PatchChangeListener {
 	 */
 	public void setActivePatch(Patch activePatch) {
 		this.activePatch = activePatch;
+        // send a command to make the active patch active
+    	Client c = Client.getInstance();
+        if(Client.isConnected() && (activePatch!=null)) {
+            List<String> cmds = new LinkedList<String>();
+        	activePatch.writeInstantiateCommand(cmds);
+            c.sendAndProcessResponse(cmds);
+        }
 	}
 
     public void sync() throws ProtocolException, IOException {
@@ -395,5 +403,22 @@ public class PatchLibrary implements PatchChangeListener {
 		for(Patch p : patchList){
 			p.rehash();
 		}		
+	}
+
+	/**
+	 * This writes out a set of server commands for creating the library to a file.
+	 * This can be used to initialise the server to a running library without the need for
+	 * starting the client.
+	 * @param f
+	 * @throws FileNotFoundException 
+	 */
+	public void saveToServerFile(String f) throws FileNotFoundException {
+        PrintWriter out = new PrintWriter(f);
+        List<String> cmds = new LinkedList<String>();
+        writeSyncCommands(cmds);
+        for(String c: cmds){
+        	out.println(c);
+        }
+        out.close();
 	}
 }

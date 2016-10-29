@@ -15,7 +15,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-Controller::Controller(PatchLibrary *l,Server *s){
+Controller::Controller(PatchLibrary *l,Responder *s){
     commandct=0;
     server=s;
     library=l;

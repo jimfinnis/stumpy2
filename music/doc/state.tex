@@ -28,3 +28,11 @@ trans & int & the number of semitones to transpose by\\
 oct & int & the number of octaves to transpose by
 \end{tabularx}
 
+\comp{chordstate}
+{Set the global default chord}
+{in:4$\times$input:flow, chord}{output:flow}
+This component sets the chord used by components which have a single
+chord input when that input is unconnected, i.e. the default chord.
+Such components include \emph{noteplay} and \emph{chordplay}. All
+components which are below this component in the tree will use this
+chord as the default chord.

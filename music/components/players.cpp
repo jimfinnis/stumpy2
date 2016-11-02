@@ -58,7 +58,12 @@ public:
         }
         
         // have to always call this.
-        BitField b = tChord->getInput(ci,0);
+        BitField b;
+        if(c->isInputConnected(0))
+            b = tChord->getInput(ci,0);
+        else
+            b = gChord;
+        
         float velmod = tFloat->getInput(ci,2);
         float durmul = 
               c->isInputConnected(3) ? tFloat->getInput(ci,3) : 1.0f;
@@ -157,7 +162,13 @@ public:
         int notetrig = tInt->getInput(ci,1);
         int noteidx = (int)(tFloat->getInput(ci,2)+0.5f);
         float velmod = tFloat->getInput(ci,3);
-        BitField b = tChord->getInput(ci,4);
+        
+        BitField b;
+        if(c->isInputConnected(4))
+            b = tChord->getInput(ci,4);
+        else
+            b = gChord;
+        
         float durmul = c->isInputConnected(5) ? tFloat->getInput(ci,5) : 1.0f;
         bool suppressRetrigBeforeComplete = pSuppressRetrig->get(c);
         

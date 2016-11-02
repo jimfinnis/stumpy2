@@ -82,3 +82,32 @@ public:
                   
 };
 static Transposer transreg;
+
+
+class ChordState : public ComponentType {
+    static const int NUMINS = 4;
+public:
+    ChordState() : ComponentType("chordstate","state"){}
+    virtual void init(){
+        setInput(1,tChord,"chord");
+        for(int i=0;i<NUMINS;i++){
+            setInput(1+i,tFlow,"flow");
+        }
+        setOutput(0,tFlow,"flow");
+    }
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        
+        BitField oldc = gChord;
+        
+        if(c->isInputConnected(1))
+            gChord = tChord->getInput(ci,1);
+        
+        for(int i=0;i<NUMINS;i++){
+            tFlow->getInput(ci,1+i);
+        }
+        gChord=oldc;
+    }
+};
+
+static ChordState chordstatereg;

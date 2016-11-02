@@ -3,7 +3,8 @@ diamond server -d  # just to make sure
 
 rm jobslist
 
-jackd -d alsa -d hw:iO2 &
+#jackd -d alsa -d hw:iO2 &
+jackd -d alsa &
 echo "Jack (allegedly) started"
 sleep 2
 jack_lsp || { echo "Jack startup failed"; exit 1;}

@@ -20,6 +20,7 @@
 #include "intkeyedhash.h"
 #include "errors.h"
 #include "param.h"
+#include "bitfield.h"
 
 // default client screen data
 #define DEFAULTWIDTH 70
@@ -63,29 +64,6 @@ struct ConnectionType {
     static ConnectionType *get(int id);
 };
 
-/// a simple 128-bitfield
-class BitField {
-private:
-    uint32_t bits[4];
-public:
-    /// can't have a ctor because it won't go in the union
-    /// without complicating matters.
-    void clear(){
-        for(int i=0;i<4;i++)bits[i]=0;
-    }
-    bool get(int b) const{
-        uint32_t i = bits[b>>5];
-        return (i & (1<<(b&0x1f)))!=0;
-    }
-    void set(int b,bool v){
-        uint32_t *i = bits+(b>>5);
-        if(v){
-            *i |= 1<<(b&0x1f);
-        } else {
-            *i &= ~(1<<(b&0x1f));
-        }
-    }
-};
 
 /// a struct + union incorporating the different values for connections.
 

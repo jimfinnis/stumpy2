@@ -22,4 +22,5 @@ inline int hexdigit(char c){
     return (c>='a')?(c-'a')+10:c-'0';
 }
 
+
 #endif /* __UTIL_H */

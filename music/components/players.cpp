@@ -173,6 +173,7 @@ public:
         bool suppressRetrigBeforeComplete = pSuppressRetrig->get(c);
         
         if(gate>0.5 && notetrig){
+            c->dprintf("triggered");
             float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
             dur *= 60.0/gTempo; // convert beats to seconds
             float vel = pVel->get(c) + pVelMod->get(c)*velmod;
@@ -182,25 +183,32 @@ public:
             int ct=0;
             float now = Time::now();
             // this is where we get a list of possible notes
-            // by scanning the chord for set notes.
+            // by scanning the chord for set notes. We also calculate
+            // the number of octaves the chord spans.
+            int n;
+            int minnote=-1;
             for(int i=0;i<128;i++){
                 if(b.get(i)){
 //                    printf("Note set: %d\n",i);
-                    int n = i + trans;
+                    n = i + trans;
+                    if(minnote<0)minnote=n;
                     if(n>=0 && n<128)
                         notes[ct++]=n;
                 }
             }
+            int octaves = (n-minnote)/12 + 1;
+            
             if(ct){
-                printf("Note selected: %d   ",noteidx);
+                c->dprintf("Note selected: %d   ",noteidx);
                 int oct = noteidx/ct;
                 noteidx %= ct;
-                printf(" = %d in oct %d\n",noteidx,oct);
+                c->dprintf(" = %d in oct %d\n",noteidx,oct*octaves);
                 vel *= gVel;
                 
                 // get true MIDI note
-                noteidx = notes[noteidx]+oct*12;
-                
+                noteidx = notes[noteidx]+oct*octaves*12;
+                while(noteidx>(128-12))noteidx-=12;
+
                 if(!suppressRetrigBeforeComplete || 
                    now-d->noteStarts[noteidx] > d->noteDurs[noteidx]){
                     simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur);

@@ -96,6 +96,9 @@ public:
         int outtick=0;
         int outcycletick=0;
         
+        // regen if required
+        if(regen)d->gen->reset();
+        
         if(gate>0.5f && tick){
             // recreate if required
             if(!d->gen){
@@ -105,8 +108,6 @@ public:
                                    pSymmetric->get(c),
                                    pPerms->get(c));
             }
-            // regen if required
-            if(regen)d->gen->reset();
             
             // get next value from the sequence
             d->output = d->gen->next();

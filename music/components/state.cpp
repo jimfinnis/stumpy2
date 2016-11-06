@@ -89,7 +89,7 @@ class ChordState : public ComponentType {
 public:
     ChordState() : ComponentType("chordstate","state"){}
     virtual void init(){
-        setInput(1,tChord,"chord");
+        setInput(0,tChord,"chord");
         for(int i=0;i<NUMINS;i++){
             setInput(1+i,tFlow,"flow");
         }
@@ -100,8 +100,8 @@ public:
         
         BitField oldc = gChord;
         
-        if(c->isInputConnected(1))
-            gChord = tChord->getInput(ci,1);
+        if(c->isInputConnected(0))
+            gChord = tChord->getInput(ci,0);
         
         for(int i=0;i<NUMINS;i++){
             tFlow->getInput(ci,1+i);

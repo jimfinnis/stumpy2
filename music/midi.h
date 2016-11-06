@@ -29,5 +29,6 @@ void simpleMidiInit();
 void simpleMidiShutdown();
 void simpleMidiUpdate();
 void simpleMidiPlay(int chan, int note, int vel,float dur);
+void simpleMidiCC(int chan, int ctor,int val);
 
 #endif /* __MIDI_H */

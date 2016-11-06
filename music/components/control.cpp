@@ -384,7 +384,6 @@ public:
         
         for(int i=0;i<INPUTS;i++){
             float f = (float)i;
-            
             float d = fabsf(f-select); // absolute distance
             float amp = 1.0f-d; // amplitude
             
@@ -400,3 +399,32 @@ public:
 
 static CrossFade cfreg;
 
+
+class RunSlow : public ComponentType {
+    IntParameter *pSteps;
+    static const int NUMINS=6;
+public:
+    RunSlow() : ComponentType("runslow","control"){}
+    virtual void init(){
+        setOutput(0,tFlow,"out");
+        for(int i=0;i<NUMINS;i++){
+            setInput(i,tFlow,"in");
+        }
+        setParams(pSteps=new IntParameter("interval",1,1000,10),
+                  NULL);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        
+        if(!(Time::ticks() % pSteps->get(c))){
+            for(int i=0;i<NUMINS;i++){
+                ci->getInput(i);
+            }
+        }
+        tFlow->setOutput(ci,0);
+    }
+};
+
+static RunSlow runslow;
+    

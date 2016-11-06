@@ -184,7 +184,7 @@ This produces a better distribution.
 \end{tabularx}
 
 \comp{chordmorpher}{Given a set of chords, morph between them to produce ``intermediate'' chords with notes from each}
-{morph:float, {8$\times$input:chord}{out:chord}
+{morph:float, $8\times$input:chord}{out:chord}
 The input is in the range [0,1]. First, the two chords which should be morphed between are selected, then these
 are interpolated by shuffling both chords, padding the shortest chord with null notes to the length of the other chord,
 then selecting a number of random notes from both chords. The selection, while random, is deterministic and decided by the seed.
@@ -196,4 +196,4 @@ shuffled to C-B-A and C-A-B, leading to possible morphs of C-A-A and C-B-B.}.
 mul & float & input is multiplied by this value before use \\
 add & float & input is then added to this value before use\\
 seed & int & random seed for note selection
-\endparams
+\end{tabularx}

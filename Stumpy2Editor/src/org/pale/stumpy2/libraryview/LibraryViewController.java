@@ -87,6 +87,36 @@ public class LibraryViewController extends Controller {
 	public static LibraryViewController getInstance(){
 		return instance;
 	}
+	
+	/**
+	 * Open a save dialog if either forceFile is true or the lib doesn't have a name already.
+	 * Save the library.
+	 * @param forceFile
+	 */
+	public void doSave(boolean forceFile){
+		try {
+			if (forceFile || library.save() == false) { // didn't have a name
+				JFileChooser fc = new JFileChooser();
+				File workingDirectory = new File(System.getProperty("user.dir"));
+				fc.setCurrentDirectory(workingDirectory);
+				fc.setFileFilter(new LibraryFileFilter());
+				fc.setAcceptAllFileFilterUsed(false);
+				int rv = fc.showSaveDialog(null);
+				if(rv == JFileChooser.APPROVE_OPTION){
+					File file = fc.getSelectedFile();
+					String f = LibraryFileFilter.appendExtensionIfRequired(file).getPath();
+					library.saveAs(f);
+				}
+				view.setTitleText(library.getFileName());
+			}
+		} catch (FileNotFoundException e) {
+			showError("cannot save : file not found");
+		} catch (MementoizationException e) {
+			showError("error in saving: "+e.getError());
+		}
+
+	}
+	
 	static LibraryViewController instance;
 
 	/**
@@ -183,29 +213,21 @@ public class LibraryViewController extends Controller {
 			@Override
 			public Command create() {
 				return new Command(false) {
-
 					@Override
 					public void execute() {
-						try {
-							if (library.save() == false) { // didn't have a name
-								JFileChooser fc = new JFileChooser();
-								File workingDirectory = new File(System.getProperty("user.dir"));
-								fc.setCurrentDirectory(workingDirectory);
-								fc.setFileFilter(new LibraryFileFilter());
-								fc.setAcceptAllFileFilterUsed(false);
-								int rv = fc.showSaveDialog(null);
-								if(rv == JFileChooser.APPROVE_OPTION){
-									File file = fc.getSelectedFile();
-									String f = LibraryFileFilter.appendExtensionIfRequired(file).getPath();
-									library.saveAs(f);
-								}
-								view.setTitleText(library.getFileName());
-							}
-						} catch (FileNotFoundException e) {
-							showError("cannot save : file not found");
-						} catch (MementoizationException e) {
-							showError("error in saving: "+e.getError());
-						}
+						doSave(false);
+					}
+				};
+			}
+		});
+
+		add("saveas", new CommandFactoryCheckLib() {
+			@Override
+			public Command create() {
+				return new Command(false) {
+					@Override
+					public void execute() {
+						doSave(true);
 					}
 				};
 			}

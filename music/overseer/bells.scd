@@ -19,7 +19,9 @@ MIDIFunc.noteOn({|veloc,num,chan,src|
 	f.postln;
 	"on ".post;
 	veloc.postln;
-	notes[num]=Synth(\risset,[\freq,f,\amp,veloc*0.002]);
+	if(notes[num] == nil){
+		notes[num]=Synth(\risset,[\freq,f,\amp,veloc*0.002]);
+		}
 });
 
 MIDIFunc.noteOff({|veloc,num,chan,src|
@@ -28,6 +30,7 @@ MIDIFunc.noteOff({|veloc,num,chan,src|
 	chan.postln;
 	src.postln;
 	notes[num].release;
+		notes[num]=nil;
 });
 
 
@@ -42,7 +45,7 @@ SynthDef(\risset, {|out= 0, pan= 0, freq= 400, amp= 1, dur= 2, t_trig= 1, gate=1
 		var env= EnvGen.ar(Env.perc(0.005, dur*3*durs[i], amps[i], -4.5), t_trig);
 		SinOsc.ar(freq*frqs[i]*2+dets[i], 0, amp*env*0.1);
 	});
-	var q = EnvGen.ar(Env.adsr(0,0.1,1,dur*0.5),gate,doneAction:2);
+	var q = EnvGen.ar(Env.adsr(0,0.1,1,1),gate,doneAction:2);
 	Out.ar(out,Pan2.ar(src,0.8.rand2,q));
 }).store;
 

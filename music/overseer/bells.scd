@@ -15,7 +15,7 @@ MIDIIn.connectAll;
 
 
 MIDIFunc.noteOn({|veloc,num,chan,src|
-	var f = pow(pow(2,1/17),num-60)*660.0;
+	var f = pow(pow(2,1/17),num-60)*880.0;
 	f.postln;
 	"on ".post;
 	veloc.postln;

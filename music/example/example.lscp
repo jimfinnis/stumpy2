@@ -5,6 +5,9 @@
 RESET
 
 SET VOLUME 0.35
+# These are to hopefully limit memory usage
+SET VOICES 32
+SET STREAMS 50
 
 CREATE MIDI_INPUT_DEVICE JACK NAME='LinuxSampler'
 SET MIDI_INPUT_PORT_PARAMETER 0 0 NAME='midi_in_0'

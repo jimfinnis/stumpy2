@@ -21,7 +21,7 @@ xvfb-run -a jack-rack jackrack &
 
 sleep 3
 
-sclang bells.scd &
+xvfb-run -a sclang bells.scd &
 
 sleep 3
 

@@ -19,7 +19,7 @@ zynaddsubfx -I jack -l silkpad.xmz -U &
 linuxsampler &
 sleep 3
 netcat localhost 8888 <example.lscp
-../build/music &
+../build/music $* &
 
 xvfb-run -a jack_mixer -c jackmixer --no-lash &
 xvfb-run -a jack-rack jackrack &

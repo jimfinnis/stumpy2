@@ -74,3 +74,24 @@ private:
     
 };
 static ClearComponent regclear;
+
+
+class WireframeComponent : public ComponentType {
+public:
+    WireframeComponent() : ComponentType("wire","state") {}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setOutput(0,tFlow,"flow");
+    }
+    
+    // this won't work.
+    virtual void run(ComponentInstance *ci,UNUSED int out){
+        Component *c = ci->component;
+        
+        glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+        tFlow->getInput(ci,0);
+        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    }
+    
+};
+static WireframeComponent regwire;

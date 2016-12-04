@@ -18,6 +18,7 @@
 TextureManager *TextureManager::inst=NULL;
 
 Texture::Texture(QString n) {
+    valid=false;
     name=NULL;
     ERRCHK;
     QByteArray ba = n.toLocal8Bit();
@@ -25,7 +26,12 @@ Texture::Texture(QString n) {
     
     if(strlen(fname)<3)
         throw Exception().set("silly texture file name '%s'",fname);
-    const char *ext = fname+(strlen(fname)-3);
+    
+    const char *dot = rindex(fname,'.');
+    if(!dot)
+        throw Exception().set("silly texture file name '%s'",fname);
+    
+    const char *ext = dot+1;
     
     
     const unsigned char *bytes;
@@ -34,23 +40,27 @@ Texture::Texture(QString n) {
     TGAFile *file=NULL;
     if(!strcasecmp("tga",ext)){
         file = new TGAFile(fname);
-    
+        
         if(!file->isValid())
             throw Exception().set("cannot open '%s'",fname);
-    
-    
+        
+        
         mWidth = file->getWidth();
         mHeight = file->getHeight();
         mHasAlpha = (file->getDepth()==32)?true:false;
         bytes = (const unsigned char *)file->getData();
         depth = file->getDepth();
+    } else if(!strcasecmp("jpg",ext) || !strcasecmp("jpeg",ext)){
+        printf("jpg not supported, oops : %s\n",fname);
+        return;
     } else {
         unsigned int err = lodepng::decode(img,mWidth,mHeight,fname);
         if(err)
             throw Exception().set("cannot open '%s': %s",fname,
                                   lodepng_error_text(err));
         bytes = &img[0]; // get data ptr
-        depth = 32;    }
+        depth = 32;    
+    }
     glGenTextures(1,&id);
     ERRCHK;	
     glBindTexture(GL_TEXTURE_2D,id);
@@ -67,10 +77,11 @@ Texture::Texture(QString n) {
     
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-//            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);        
+    //            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);        
     if(file)delete file;
     name = strdup(fname);
+    valid=true;
 }
 
 Texture::~Texture(){
@@ -87,12 +98,12 @@ void Texture::use(int sampler, int unit){
     ERRCHK;
     
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-//    if(mHasAlpha)
-//       glEnable(GL_BLEND);
-//    else
-//        glDisable(GL_BLEND);
-   
+    
+    //    if(mHasAlpha)
+    //       glEnable(GL_BLEND);
+    //    else
+    //        glDisable(GL_BLEND);
+    
 }
 
 Texture *TextureManager::createOrFind(QString name){
@@ -100,8 +111,13 @@ Texture *TextureManager::createOrFind(QString name){
         return textures.value(name);
     } else {
         Texture *t = new Texture(name);
-        textures.insert(name,t);
-        return t;
+        if(t->valid){
+            textures.insert(name,t);
+            return t;
+        } else {
+            delete t;
+            return NULL;
+        }
     }
 }
 
@@ -113,7 +129,7 @@ void GLerrorcheck(const char *file,int line){
 }
 
 void TextureManager::loadSet(const char *dirname,
-                                 std::vector<Texture *>&vec){
+                             std::vector<Texture *>&vec){
     DIR *dir = opendir(dirname);
     if(!dir)
         throw Exception().set("cannot open directory '%s'",dirname);

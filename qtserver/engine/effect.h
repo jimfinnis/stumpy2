@@ -161,6 +161,7 @@ public:
     Effect *meshUntex;
     Effect *meshTex;
     Effect *envMapTex;
+    Effect *flatTex;
 };
 
 

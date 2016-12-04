@@ -48,6 +48,7 @@ public:
     
     unsigned int mHeight,mWidth;
     const char *name;
+    bool valid;
 private:
     GLuint id;
     bool mHasAlpha;

@@ -31,8 +31,8 @@ void GLWidget::initializeGL(){
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
 
-    extern void loadPrims(),loadTextures(),loadEnvMaps();
-    loadPrims();loadTextures();loadEnvMaps();
+    extern void loadPrims(),loadTextures(),loadEnvMaps(),loadObjPrims();
+    loadPrims();loadTextures();loadEnvMaps();loadObjPrims();
     
     // have to do this AFTER things are loaded, because
     // this will initialise the components.

@@ -8,7 +8,7 @@ QT       += core gui opengl
 CONFIG  += debug
 TARGET = qtserver
 TEMPLATE = app
-LIBS += -lGLU
+LIBS += -lGLU -lIL -lILU -lILUT
 
 SOURCES += main.cpp \
     glwidget.cpp \

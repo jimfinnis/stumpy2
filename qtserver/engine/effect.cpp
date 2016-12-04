@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <161203.1357>
+//  Last Modified : <161204.1721>
 //
 //  Description	
 //
@@ -66,6 +66,8 @@ EffectManager::EffectManager(){
                            EDU_DIFFLIGHTS|EDU_AMBLIGHT|
                            EDU_SAMPLER|EDU_WORLDVIEW|EDU_FOG|
                            EDU_SAMPLER2|EDU_DIFFUSE2);
+    envMapTex->additive=true;
+    
     flatTex = new Effect("media/flattex.shr",
                          EDA_POS|
                          EDU_WORLDVIEWPROJ|EDU_DIFFUSECOL|
@@ -493,6 +495,7 @@ void Effect::setUniforms(){
 
 void Effect::setMaterial(float *diffuse,class Texture *texture)
 {
+    State *s = StateManager::getInstance()->get();
     if(has(EDU_DIFFUSECOL)){
         glUniform4fv(mDiffuseIdx,1,diffuse);
         ERRCHK;
@@ -502,6 +505,11 @@ void Effect::setMaterial(float *diffuse,class Texture *texture)
         texture->use(mSamplerIdx,0); // tell sampler to use unit 0, with the given texture
         ERRCHK;
     }
+    if(s->modes & STM_ADDITIVE)
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    else
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        
 }
 
 

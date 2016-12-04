@@ -8,23 +8,11 @@
 #include "serverbase/model.h"
 #include "engine/obj.h"
 
-// dir, mesh - MUST BE IN SYNC WITH BELOW
-static const char *meshNames[][2]=
-{
-    {"media/seahorse","seahorse.obj"},
-    {"media/wob","wob.obj"},
-    {NULL,NULL}
-};
+#include <dirent.h>
+#include <unistd.h>
 
-// MUST BE IN SYNC WITH ABOVE
-static const char *meshShortNames[]=
-{
-    "seahorse",
-    "wob",
-    NULL
-};
-    
-    
+static const char **meshNames;
+
 
 class ObjComponent : public ComponentType {
     EnumParameter *primType;
@@ -34,22 +22,52 @@ public:
     static int ct;
     /// called after GL is up.
     static void load(){
-        // load the meshes
-        for(ct=0;;ct++){
-            if(!meshNames[ct][0])break;
+        
+        // assumes media/meshes contains a directory for each mesh,
+        // with the .obj file inside the directory having the name
+        // of the directory. For example, "seahorse/seahorse.obj".
+        char wd[PATH_MAX];
+        getcwd(wd,PATH_MAX);
+        chdir("media/meshes");
+        DIR *dir = opendir(".");
+        
+        std::vector<const char *> names;
+        while(dirent *ent = readdir(dir)){
+            const char *name = ent->d_name;
+            if(strlen(name)>=3){
+                printf("Adding %s to objlist\n",name);
+                name = strdup(name);
+                names.push_back(name);
+            }
         }
-
+        
+        struct {
+            bool operator()(const char *a,const char *b){
+                return strcmp(a,b)<0;
+            }
+        } comparator;
+        
+        std::sort(names.begin(),names.end());
+        ct = names.size();
+        
+        meshNames = new const char * [ct+1];
         meshes = new ObjMesh *[ct];
-        for(int i=0;i<ct;i++){
-            meshes[i] = new ObjMesh(meshNames[i][0],meshNames[i][1]);
-            printf("Done %s/%s\n",meshNames[i][0],meshNames[i][1]);
+        for(size_t i=0;i<ct;i++){
+            meshNames[i] = names[i];
+            char buf[256];
+            strcpy(buf,names[i]);
+            strcat(buf,".obj");
+            printf("Loading %s/%s\n",names[i],buf);
+            meshes[i]=new ObjMesh(names[i],buf);
         }
+        meshNames[ct]=NULL; // terminator for enum param
+        chdir(wd);
     }
 
     ObjComponent() : ComponentType("obj","render"){}
     virtual void init() {
         setOutput(0,tFlow,"flow");
-        setParams(primType = new EnumParameter("mesh",meshShortNames,0),
+        setParams(primType = new EnumParameter("mesh",meshNames,0),
                   NULL);
     }
     

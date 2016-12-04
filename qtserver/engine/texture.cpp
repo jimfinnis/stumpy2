@@ -14,8 +14,38 @@
 #include <strings.h>
 #include <vector>
 #include <dirent.h>
+#include <unistd.h>
+
+#define ILUT_USE_OPENGL
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+
 
 TextureManager *TextureManager::inst=NULL;
+
+TextureManager::TextureManager(){
+    ilInit();
+    iluInit();
+    ilEnable(IL_CONV_PAL);
+    ilutRenderer(ILUT_OPENGL);
+    ilutEnable(ILUT_OPENGL_CONV);
+    
+}
+
+static void handleDevilErrors(const char *fname){
+    char wd[PATH_MAX];
+    
+    ILenum error = ilGetError ();
+    if (error != IL_NO_ERROR) {
+        getcwd(wd,PATH_MAX);
+        printf("Devil errors, CWD: %s\n",wd);
+        do {
+            printf ("- %s\n", iluErrorString (error));	
+        } while ((error = ilGetError ()));
+        printf("cannot load image: %s\n",fname);
+    }
+}
 
 Texture::Texture(QString n) {
     valid=false;
@@ -27,59 +57,28 @@ Texture::Texture(QString n) {
     if(strlen(fname)<3)
         throw Exception().set("silly texture file name '%s'",fname);
     
-    const char *dot = rindex(fname,'.');
-    if(!dot)
-        throw Exception().set("silly texture file name '%s'",fname);
+    ILuint img;
+    ilGenImages(1,&img);
+    ilBindImage(img);
     
-    const char *ext = dot+1;
-    
-    
-    const unsigned char *bytes;
-    std::vector<unsigned char> img;
-    int depth;
-    TGAFile *file=NULL;
-    if(!strcasecmp("tga",ext)){
-        file = new TGAFile(fname);
-        
-        if(!file->isValid())
-            throw Exception().set("cannot open '%s'",fname);
-        
-        
-        mWidth = file->getWidth();
-        mHeight = file->getHeight();
-        mHasAlpha = (file->getDepth()==32)?true:false;
-        bytes = (const unsigned char *)file->getData();
-        depth = file->getDepth();
-    } else if(!strcasecmp("jpg",ext) || !strcasecmp("jpeg",ext)){
-        printf("jpg not supported, oops : %s\n",fname);
+    if(!ilLoadImage(fname)){
+        handleDevilErrors(fname);
         return;
-    } else {
-        unsigned int err = lodepng::decode(img,mWidth,mHeight,fname);
-        if(err)
-            throw Exception().set("cannot open '%s': %s",fname,
-                                  lodepng_error_text(err));
-        bytes = &img[0]; // get data ptr
-        depth = 32;    
     }
-    glGenTextures(1,&id);
-    ERRCHK;	
+    
+    mWidth = ilGetInteger(IL_IMAGE_WIDTH);
+    mHeight = ilGetInteger(IL_IMAGE_HEIGHT);
+    
+    id = ilutGLBindTexImage();
+    handleDevilErrors(fname);
+    ilDeleteImages(1,&img);
+    
     glBindTexture(GL_TEXTURE_2D,id);
-    ERRCHK;
-    
-    if(depth==24)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-    else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-    ERRCHK;
-    
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    //            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);        
-    if(file)delete file;
     name = strdup(fname);
     valid=true;
 }
@@ -97,12 +96,6 @@ void Texture::use(int sampler, int unit){
     glUniform1i(sampler,unit); // tell the given sampler to use that unit
     ERRCHK;
     
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    
-    //    if(mHasAlpha)
-    //       glEnable(GL_BLEND);
-    //    else
-    //        glDisable(GL_BLEND);
     
 }
 

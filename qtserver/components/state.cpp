@@ -76,22 +76,23 @@ private:
 static ClearComponent regclear;
 
 
-class WireframeComponent : public ComponentType {
+class AdditiveComponent : public ComponentType {
 public:
-    WireframeComponent() : ComponentType("wire","state") {}
+    AdditiveComponent() : ComponentType("additive","state") {}
     virtual void init(){
         setInput(0,tFlow,"flow");
         setOutput(0,tFlow,"flow");
     }
     
-    // this won't work.
     virtual void run(ComponentInstance *ci,UNUSED int out){
         Component *c = ci->component;
         
-        glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+        StateManager *sm = StateManager::getInstance();
+        State *s = sm->push();
+        s->modes |= STM_ADDITIVE;
         tFlow->getInput(ci,0);
-        glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+        sm->pop();
     }
     
 };
-static WireframeComponent regwire;
+static AdditiveComponent regadditive;

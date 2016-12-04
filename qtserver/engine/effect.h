@@ -49,7 +49,10 @@ protected:
         gshader=0;
         program=0xffffffff;
         mName = name;
+        additive=false;
     }
+    
+    bool additive;
     
     /// 2nd stage - separated to avoid calling overridable methods from constructor
     Effect *init(){

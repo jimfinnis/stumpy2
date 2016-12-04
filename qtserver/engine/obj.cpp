@@ -19,6 +19,9 @@ struct Material {
     float diffuse[4];
 };
 
+static const int VERTEXBUFFER=0;
+static const int INDEXBUFFER=1;
+
 
 static int findOrCreateVert(std::vector<UNLITVERTEX>& verts,UNLITVERTEX &v){
 //    for(size_t i=0;i<verts.size();i++){

@@ -13,6 +13,12 @@
 
 static const char **meshNames;
 
+struct mycomparator {
+    bool operator()(const char *a,const char *b){
+        return strcmp(a,b)<0;
+    }
+} comparator;
+        
 
 class ObjComponent : public ComponentType {
     EnumParameter *primType;
@@ -41,13 +47,7 @@ public:
             }
         }
         
-        struct {
-            bool operator()(const char *a,const char *b){
-                return strcmp(a,b)<0;
-            }
-        } comparator;
-        
-        std::sort(names.begin(),names.end());
+        std::sort(names.begin(),names.end(),comparator);
         ct = names.size();
         
         meshNames = new const char * [ct+1];

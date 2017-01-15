@@ -1,0 +1,5 @@
+Deps:
+
+qt4 (w. QtOpenGL)
+DevIL image library (Ubuntu package libdevil-dev)
+

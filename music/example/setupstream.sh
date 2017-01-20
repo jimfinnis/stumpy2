@@ -3,7 +3,7 @@ diamond server -d  # just to make sure
 
 rm jobslist
 
-jackd -R -d alsa -r 44100 &
+jackd -R -d dummy -r 44100 &
 echo "Jack (allegedly) started"
 sleep 2
 jack_lsp || { echo "Jack startup failed"; exit 1;}
@@ -21,8 +21,8 @@ sleep 3
 netcat localhost 8888 <example.lscp
 ../build/music &
 
-jack_mixer -c jackmixer --no-lash &
-jack-rack jackrack &
+xvfb-run -a jack_mixer -c jackmixer --no-lash &
+xvfb-run -a jack-rack jackrack &
 
 
 sleep 3

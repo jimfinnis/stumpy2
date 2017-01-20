@@ -26,7 +26,7 @@ LOAD ENGINE SFZ 0
 SET CHANNEL VOLUME 0 1.0
 SET CHANNEL MIDI_INSTRUMENT_MAP 0 NONE
 SET CHANNEL AUDIO_OUTPUT_DEVICE 0 0
-LOAD INSTRUMENT NON_MODAL '/home/white/Documents/MuseScore2/Soundfonts/SalamanderGrandPianoV3.sfz' 0 0
+LOAD INSTRUMENT NON_MODAL '/home/ubuntu/Sounds/Salamander/SalamanderGrandPianoV3.sfz' 0 0
 
 
 #jsampler.fantasia: [channel]

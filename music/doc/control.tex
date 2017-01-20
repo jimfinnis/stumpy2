@@ -62,6 +62,16 @@ This is the output side of a connector, which can be used to
 organise complex patches. The input comes from an input
 connector with the same number.
 
+\comp{runslow}
+{Run components occasionally (useful for control data send,
+such as midi CC)}
+{input:$\times 6$:flow}{output:flow}
+This will only run the flow inputs if the current number of
+update ticks is a multiple of the \emph{steps} parameter.
+\startparams
+interval & int & interval at which to run inputs
+\end{tabularx}
+
 \clearpage
 \comp{crossfade}
 {Crossfader}

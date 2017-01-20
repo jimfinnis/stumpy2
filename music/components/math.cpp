@@ -12,6 +12,29 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
+class ConstantComponent : public ComponentType {
+    FloatParameter *pVal;
+public:
+    ConstantComponent() : ComponentType("const","maths"){}
+    virtual void init(){
+        setOutput(0,tFloat,"val");
+        setParams(pVal=new FloatParameter("val",-10,10,0),NULL);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        tFloat->setOutput(ci,0,pVal->get(c));
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        sprintf(buf,"%f",pVal->get(c));
+        return buf;
+    }
+};
+static ConstantComponent constreg;
+
+
+
+
 class AddComponent : public ComponentType {
 public:
     AddComponent() : ComponentType("add","maths"){}

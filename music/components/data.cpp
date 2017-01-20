@@ -7,6 +7,7 @@
 
 #define DIAMOND 1
 
+#include "../midi.h"
 #include "model.h"
 
 #include <lo/lo.h>
@@ -166,5 +167,64 @@ public:
     }
 };
 static OSCComponent OSCreg;
+
+
+
+
+struct CCData {
+    int prev;
+};
+
+
+/**
+ * Send CC msg over MIDI
+ */
+
+class MidiControlComponent : public ComponentType {
+    IntParameter *pChan,*pCC;
+    FloatParameter *pAdd,*pMul;
+public:
+    MidiControlComponent() : ComponentType("midi-cc","data"){
+    }
+    virtual void init() {
+        setInput(0,tFloat,"value");
+        setOutput(0,tFlow,"flow");
+        setParams(
+                  pChan=new IntParameter("chan",0,16,0),
+                  pCC=new IntParameter("cc",0,128,0),
+                  pMul=new FloatParameter("mul",-128,128,128),
+                  pAdd=new FloatParameter("add",0,128,0),
+                  NULL);
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        CCData *d = new CCData();
+        c->privateData = (void *)d;
+        d->prev=-10000;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete((CCData *)c->privateData);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        CCData *d = (CCData *)ci->privateData;
+        
+        float inf = c->isInputConnected(0)?tFloat->getInput(ci,0):0;
+        inf *= pMul->get(c);
+        inf += pAdd->get(c);
+        
+        int in = (int)inf;
+        
+        if(in!=d->prev){
+            d->prev = in;
+            simpleMidiCC(pChan->get(c),pCC->get(c),in);
+            c->dprintf("Sending %d on chan %d, ctor %d",
+                       in,pChan->get(c),pCC->get(c));
+        }
+    }
+};
+static MidiControlComponent midiccreg;
 
 

@@ -65,7 +65,7 @@ component
                     413 <name>
                 OR  nnn error
                 
-====== Editing commands =======
+====== Editing commands: fail codes are >1.  =======
 
 clear
 clear the entire library
@@ -121,7 +121,7 @@ set stored string
                 OR  nnn error
 
 run <pid>
-start a patch running
+start a patch running (make it the active patch)
                     000 OK 
                 OR  nnn error
 

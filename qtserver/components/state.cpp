@@ -74,3 +74,25 @@ private:
     
 };
 static ClearComponent regclear;
+
+
+class AdditiveComponent : public ComponentType {
+public:
+    AdditiveComponent() : ComponentType("additive","state") {}
+    virtual void init(){
+        setInput(0,tFlow,"flow");
+        setOutput(0,tFlow,"flow");
+    }
+    
+    virtual void run(ComponentInstance *ci,UNUSED int out){
+        Component *c = ci->component;
+        
+        StateManager *sm = StateManager::getInstance();
+        State *s = sm->push();
+        s->modes |= STM_ADDITIVE;
+        tFlow->getInput(ci,0);
+        sm->pop();
+    }
+    
+};
+static AdditiveComponent regadditive;

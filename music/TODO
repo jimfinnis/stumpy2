@@ -22,6 +22,8 @@ NOTE : * means done, - means not done
 
 * connectors
 * pages
+- chord morpher (takes N chords, morphs between them to produce
+intermediates somehow).
 - macros
 
 - Clocks don't go out of sync now, but it's really hard to change

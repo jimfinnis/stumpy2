@@ -48,6 +48,7 @@ public:
     
     unsigned int mHeight,mWidth;
     const char *name;
+    bool valid;
 private:
     GLuint id;
     bool mHasAlpha;
@@ -57,7 +58,8 @@ private:
 class TextureManager{
     static class TextureManager *inst;
 public:
-    TextureManager(){}
+    // initialises loaders and that
+    TextureManager();
     static TextureManager *getInstance(){
         if(!inst)
             inst = new TextureManager();

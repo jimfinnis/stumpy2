@@ -652,7 +652,7 @@
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
                <void property="encodedValue">
-                <string>8</string>
+                <string>11</string>
                </void>
                <void property="maxVal">
                 <int>100</int>
@@ -1133,7 +1133,7 @@
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
                <void property="encodedValue">
-                <string>8</string>
+                <string>13</string>
                </void>
                <void property="maxVal">
                 <int>100</int>
@@ -2274,7 +2274,7 @@
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
                <void property="encodedValue">
-                <string>29</string>
+                <string>31</string>
                </void>
                <void property="maxVal">
                 <int>100</int>

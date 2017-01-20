@@ -2,5 +2,6 @@
 <jack_mixer geometry="368x300">
 	<input_channel balance="0.000000" balance_midi_cc="12" name="Piano" type="stereo" volume="8.677686" volume_midi_cc="11"/>
 	<input_channel balance="0.000000" balance_midi_cc="14" name="Synth" type="stereo" volume="-4.214876" volume_midi_cc="13"/>
-	<main_mix_channel balance="0.000000" balance_midi_cc="8" volume="7.894737" volume_midi_cc="7"/>
+	<input_channel balance="0.000000" balance_midi_cc="16" name="PianoQuiet" type="stereo" volume="0.000000" volume_midi_cc="15"/>
+	<main_mix_channel balance="0.000000" balance_midi_cc="8" volume="7.894736" volume_midi_cc="7"/>
 </jack_mixer>

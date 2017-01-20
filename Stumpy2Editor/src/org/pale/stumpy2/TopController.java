@@ -99,7 +99,10 @@ public class TopController extends Controller {
 				return new Command(false) {
 					@Override
 					public void execute() {
-						Client.create("127.0.0.1", 65111);
+						String host = System.getenv("STUMPYHOST");
+						if(host==null)
+							host = "127.0.0.1";
+						Client.create(host, 65111);
 						if (Client.isConnected()) {
 							// sync the current library
 							PatchLibrary lib = LibraryViewController.getInstance().getLibrary();

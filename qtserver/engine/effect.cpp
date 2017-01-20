@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <160524.1300>
+//  Last Modified : <161204.1721>
 //
 //  Description	
 //
@@ -66,6 +66,15 @@ EffectManager::EffectManager(){
                            EDU_DIFFLIGHTS|EDU_AMBLIGHT|
                            EDU_SAMPLER|EDU_WORLDVIEW|EDU_FOG|
                            EDU_SAMPLER2|EDU_DIFFUSE2);
+    envMapTex->additive=true;
+    
+    flatTex = new Effect("media/flattex.shr",
+                         EDA_POS|
+                         EDU_WORLDVIEWPROJ|EDU_DIFFUSECOL|
+                         EDU_AMBLIGHT|EDU_FOG|
+                         EDA_TEXCOORDS|EDU_SAMPLER);
+                           
+    
     
     // separate to avoid calling overridable stuff from ctor.
 ///    prelitUntex->init();
@@ -73,6 +82,7 @@ EffectManager::EffectManager(){
     meshUntex->init();
     meshTex->init();
     envMapTex->init();
+    flatTex->init();
 }
 
 
@@ -88,7 +98,7 @@ EffectManager::EffectManager(){
 
 static int loadShader(GLenum type,const char *src)
 {
-    //    printf("READY TO COMPILE\n%s",src);
+//        printf("READY TO COMPILE\n%s",src);
     GLuint shader;
     GLint compiled;
     shader = glCreateShader(type);
@@ -145,7 +155,7 @@ void Effect::compile(){
     printf("Get attr done\n");
     GLint linked;
     glGetProgramiv(program,GL_LINK_STATUS,&linked);
-    ERRCHK;
+//    ERRCHK;
     if(!linked){
         GLint infolen;
         glGetProgramiv(program,GL_INFO_LOG_LENGTH,&infolen);
@@ -348,18 +358,18 @@ void Effect::end(){
 
 int Effect::getAttribute(const char *name){
     int i = glGetAttribLocation(program,name);
-    if(i<0)
-        throw Exception().set("attribute not found: %s",name);
-    //    printf("attr %s: %d\n",name,i);
+//    if(i<0)
+//        throw Exception().set("attribute not found: %s",name);
+    printf("attr %s: %d\n",name,i);
     return i;
 }
 
 int Effect::getUniform(const char *name)
 {
-    printf("%s\n",name);
     int i = glGetUniformLocation(program,name);
-    if(i<0)
-        throw Exception().set("uniform not found: %s",name);
+//    if(i<0)
+//        throw Exception().set("uniform not found: %s",name);
+    printf("uniform %s: %d\n",name,i);
     return i;
 }
 
@@ -485,6 +495,7 @@ void Effect::setUniforms(){
 
 void Effect::setMaterial(float *diffuse,class Texture *texture)
 {
+    State *s = StateManager::getInstance()->get();
     if(has(EDU_DIFFUSECOL)){
         glUniform4fv(mDiffuseIdx,1,diffuse);
         ERRCHK;
@@ -494,6 +505,11 @@ void Effect::setMaterial(float *diffuse,class Texture *texture)
         texture->use(mSamplerIdx,0); // tell sampler to use unit 0, with the given texture
         ERRCHK;
     }
+    if(s->modes & STM_ADDITIVE)
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    else
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        
 }
 
 

@@ -14,10 +14,41 @@
 #include <strings.h>
 #include <vector>
 #include <dirent.h>
+#include <unistd.h>
+
+#define ILUT_USE_OPENGL
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
+
 
 TextureManager *TextureManager::inst=NULL;
 
+TextureManager::TextureManager(){
+    ilInit();
+    iluInit();
+    ilEnable(IL_CONV_PAL);
+    ilutRenderer(ILUT_OPENGL);
+    ilutEnable(ILUT_OPENGL_CONV);
+    
+}
+
+static void handleDevilErrors(const char *fname){
+    char wd[PATH_MAX];
+    
+    ILenum error = ilGetError ();
+    if (error != IL_NO_ERROR) {
+        getcwd(wd,PATH_MAX);
+        printf("Devil errors, CWD: %s\n",wd);
+        do {
+            printf ("- %s\n", iluErrorString (error));	
+        } while ((error = ilGetError ()));
+        printf("cannot load image: %s\n",fname);
+    }
+}
+
 Texture::Texture(QString n) {
+    valid=false;
     name=NULL;
     ERRCHK;
     QByteArray ba = n.toLocal8Bit();
@@ -25,52 +56,31 @@ Texture::Texture(QString n) {
     
     if(strlen(fname)<3)
         throw Exception().set("silly texture file name '%s'",fname);
-    const char *ext = fname+(strlen(fname)-3);
     
+    ILuint img;
+    ilGenImages(1,&img);
+    ilBindImage(img);
     
-    const unsigned char *bytes;
-    std::vector<unsigned char> img;
-    int depth;
-    TGAFile *file=NULL;
-    if(!strcasecmp("tga",ext)){
-        file = new TGAFile(fname);
+    if(!ilLoadImage(fname)){
+        handleDevilErrors(fname);
+        return;
+    }
     
-        if(!file->isValid())
-            throw Exception().set("cannot open '%s'",fname);
+    mWidth = ilGetInteger(IL_IMAGE_WIDTH);
+    mHeight = ilGetInteger(IL_IMAGE_HEIGHT);
     
+    id = ilutGLBindTexImage();
+    handleDevilErrors(fname);
+    ilDeleteImages(1,&img);
     
-        mWidth = file->getWidth();
-        mHeight = file->getHeight();
-        mHasAlpha = (file->getDepth()==32)?true:false;
-        bytes = (const unsigned char *)file->getData();
-        depth = file->getDepth();
-    } else {
-        unsigned int err = lodepng::decode(img,mWidth,mHeight,fname);
-        if(err)
-            throw Exception().set("cannot open '%s': %s",fname,
-                                  lodepng_error_text(err));
-        bytes = &img[0]; // get data ptr
-        depth = 32;    }
-    glGenTextures(1,&id);
-    ERRCHK;	
     glBindTexture(GL_TEXTURE_2D,id);
-    ERRCHK;
-    
-    if(depth==24)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-    else
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,mWidth, mHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
-    ERRCHK;
-    
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-//            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);        
-    if(file)delete file;
     name = strdup(fname);
+    valid=true;
 }
 
 Texture::~Texture(){
@@ -86,13 +96,7 @@ void Texture::use(int sampler, int unit){
     glUniform1i(sampler,unit); // tell the given sampler to use that unit
     ERRCHK;
     
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-//    if(mHasAlpha)
-//       glEnable(GL_BLEND);
-//    else
-//        glDisable(GL_BLEND);
-   
+    
 }
 
 Texture *TextureManager::createOrFind(QString name){
@@ -100,8 +104,13 @@ Texture *TextureManager::createOrFind(QString name){
         return textures.value(name);
     } else {
         Texture *t = new Texture(name);
-        textures.insert(name,t);
-        return t;
+        if(t->valid){
+            textures.insert(name,t);
+            return t;
+        } else {
+            delete t;
+            return NULL;
+        }
     }
 }
 
@@ -113,7 +122,7 @@ void GLerrorcheck(const char *file,int line){
 }
 
 void TextureManager::loadSet(const char *dirname,
-                                 std::vector<Texture *>&vec){
+                             std::vector<Texture *>&vec){
     DIR *dir = opendir(dirname);
     if(!dir)
         throw Exception().set("cannot open directory '%s'",dirname);

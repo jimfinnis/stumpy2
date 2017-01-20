@@ -61,7 +61,7 @@ struct ChordData {
 class Chord : public ComponentType {
     static const int NUMCHORDS=4;
     StringParameter *pChords[NUMCHORDS];
-    IntParameter *pOctave;
+    IntParameter *pOctave,*pCycles;
     BoolParameter *pInversions,*pPrint;
     EnumParameter *pScale;
     
@@ -80,6 +80,7 @@ public:
                   pInversions = new BoolParameter("inversions",true),
                   pPrint = new BoolParameter("print",false),
                   pScale = new EnumParameter("scale",scaleNames,0),
+                  pCycles = new IntParameter("cycles",1,4,1),
                   NULL);
         
         // count notes in each scale
@@ -109,6 +110,7 @@ public:
         float select = tFloat->getInput(ci,1);
               
         int octave = pOctave->get(c)+2;
+        int cycles= pCycles->get(c);
         
         // select the active chord (input mod numchords)
         int isel = select;
@@ -130,13 +132,13 @@ public:
             float cent = getCentre(d->lastChord);
             if(cent<0.01){
                 // no last cord
-                b = construct(base,str,sc,sclen,0);
+                b = construct(base,str,sc,sclen,0,cycles);
             } else {
                 int found=0;
                 int mindist=10000;
                 BitField bs[11];
                 for(int i=0;i<11;i++){
-                    bs[i] = construct(base,str,sc,sclen,i-5);
+                    bs[i] = construct(base,str,sc,sclen,i-5,cycles);
                     float dist = fabsf(getCentre(bs[i])-cent);
                     if(dist<mindist){
                         mindist=dist;
@@ -147,7 +149,7 @@ public:
             }
         } else {
             // the easy way!
-            b = construct(base,str,sc,sclen,0);
+            b = construct(base,str,sc,sclen,0,cycles);
         }
         
         
@@ -193,11 +195,11 @@ private:
     // the chromatic notes 0,4,7 (i.e. a major triad)
     
     BitField construct(int base, const char *str, 
-                       const int *scale,int sclen,int inv){
+                       const int *scale,int sclen,int inv,int cycles){
         BitField b;
         b.clear();
         int len = strlen(str);
-        for(int i=0;i<len;i++){
+        for(int i=0;i<len*cycles;i++){
             int noteno = (i+inv)+(len*100);
             int octave = noteno/len;
             noteno %= len;
@@ -232,3 +234,150 @@ private:
 
 static Chord chordreg;
 
+
+
+// takes 2 chords, pads the shorter one with -1, morphs between them
+struct ChordMorpherData {
+    int count; // number of notes in padded input sequence
+    int *seq1,*seq2;
+    BitField chord1,chord2;
+    
+    void reset(){
+        seq1=seq2=NULL;
+        chord1.clear();
+        chord2.clear();
+    }
+    void clear(){
+        if(seq1)delete [] seq1;
+        if(seq2)delete [] seq2;
+        seq1=seq2=NULL;
+    }
+    
+    void regenFromChords(int seed,BitField& c1,BitField& c2){
+        //  delete old sequence data
+        clear();
+        
+        // count notes in both chords
+        int ct1=0,ct2=0;
+        for(int i=0;i<128;i++)
+            if(c1.get(i))ct1++;
+        for(int i=0;i<128;i++)
+            if(c2.get(i))ct2++;
+        
+        // get the biggest; thats the size we'll use
+        count = (ct1>ct2) ? ct1:ct2;
+        if(!count)return; // blank chords! Can't have that.
+        
+        // create the arrays and copy the chords into seq1,seq2,
+        // padding with -1 if required
+        seq1=new int[count];
+        seq2=new int[count];
+        int n1=0,n2=0;
+        for(int i=0;i<128;i++){
+            if(c1.get(i))seq1[n1++]=i;
+            if(c2.get(i))seq2[n2++]=i;
+        }
+        for(int i=n1;i<count;i++)seq1[i]=-1;
+        for(int i=n2;i<count;i++)seq2[i]=-1;
+        
+        // and shuffle
+        unsigned int rstate = seed;
+        shuf<int>(seq1,count,&rstate);
+        shuf<int>(seq2,count,&rstate);
+    }
+    
+    void morph(BitField& out,float t){
+        // only change the output chord if the inputs are valid
+        if(seq1 && seq2){
+            int n = (int)(t*(count+1));
+            for(int i=0;i<count;i++){
+                // get the note to set in the output
+                int note = (i>=n)?seq1[i]:seq2[i];
+//                printf("Setting note %d to %d (seq%d)\n",i,note,(i>=n)?1:2);
+                // set if not -1
+                if(note>=0)
+                    out.set(note,true);
+            }
+        } 
+    }
+};    
+
+
+class ChordMorpher : public ComponentType {
+    static const int NUMCHORDS=8;
+    FloatParameter *pAdd,*pMul;
+    IntParameter *pSeed;
+    
+public:
+    ChordMorpher() : ComponentType("chordmorpher","music"){}
+    virtual void init(){
+        width = 170;
+        setInput(0,tFloat,"input");
+        for(int i=0;i<NUMCHORDS;i++){
+            char buf[32];
+            sprintf(buf,"in %d",i);
+            setInput(i+1,tChord,strdup(buf));
+        }
+        setOutput(0,tChord,"out");
+        addParameter(pMul=new FloatParameter("mul",-100,100,1));
+        addParameter(pAdd=new FloatParameter("add",-100,100,0));
+        addParameter(pSeed=new IntParameter("seed",0,1000,0));
+    }
+    virtual void initComponentInstance(ComponentInstance *c){
+        ChordMorpherData *d = new ChordMorpherData();
+        c->privateData = (void *)d;
+    }
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        ChordMorpherData *d = (ChordMorpherData *)c->privateData;
+        d->clear();
+        delete d;
+    }
+        
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        ChordMorpherData *d = (ChordMorpherData *)ci->privateData;
+        float select = tFloat->getInput(ci,0);
+        int seed = pSeed->get(c);
+        select *= pMul->get(c);
+        select += pAdd->get(c);
+        
+        BitField outchord;
+        outchord.clear();
+        
+        // work out how many inputs are active - chords must be 
+        // connected from connection 1 upwards or they are ignored.
+        int numins;
+        for(numins=0;numins<NUMCHORDS;numins++)
+            if(!c->isInputConnected(numins+1))break;
+        
+        if(numins == 0){
+            // none, output a blank chord
+        } else if(numins == 1){
+            // 1, just copy it from the first
+            outchord = tChord->getInput(ci,1);
+        } else {
+            // work out which chords we are morphing between
+            if(select>0.99999)select=0.99999;
+            if(select<0)select=0;
+            float idx = select*(numins-1);
+            int fst=(int)idx;
+            BitField c1 = tChord->getInput(ci,fst+1);
+            BitField c2 = tChord->getInput(ci,fst+2);
+            // and the parameter within the morph
+            float t = idx-(float)fst;
+            
+            
+            c->dprintf("Morphing between inputs %d and %d, param %f\n",fst+1,fst+2,t);
+            
+            d->regenFromChords(seed,c1,c2); // FIX - IS SLOW
+            
+            d->morph(outchord,t);
+                
+            
+        }
+        
+        tChord->setOutput(ci,0,outchord);
+    }
+};   
+        
+static ChordMorpher cmreg;

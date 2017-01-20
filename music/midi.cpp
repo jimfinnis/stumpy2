@@ -222,10 +222,16 @@ void sendNoteOff(MidiPort *p,int chan,int note){
 void sendCC(MidiPort *p,int chan,int ctor,int val){
     chkjack();
     
+    if(ctor>127)ctor=127;
+    if(val>127)val=127;
+    if(val<0)val=0;
+    
     uint8_t data[3];
-    data[0]=(0b10110000)+(chan-1); // channels start at 1?
+    data[0]=(0b10110000)+chan; 
     data[1]=ctor;
     data[2]=val; 
+    
+    p->write(data,3);
 }
 
 
@@ -285,3 +291,7 @@ void simpleMidiPlay(int chan, int note, int vel,float dur){
     }
 }
 
+
+void simpleMidiCC(int chan, int ctor,int val){
+    sendCC(out,chan,ctor,val);
+}

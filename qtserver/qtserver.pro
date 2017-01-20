@@ -5,10 +5,10 @@
 #-------------------------------------------------
 
 QT       += core gui opengl
-#CONFIG  += debug
+CONFIG  += debug
 TARGET = qtserver
 TEMPLATE = app
-LIBS += -lGLU
+LIBS += -lGLU -lIL -lILU -lILUT
 
 SOURCES += main.cpp \
     glwidget.cpp \
@@ -19,6 +19,7 @@ SOURCES += main.cpp \
     engine/effect.cpp \
     engine/tga.cpp\
     engine/mesh.cpp\
+    engine/obj.cpp\
     engine/lodepng.cpp\
     serverbase/model.cpp\
     serverbase/errors.cpp\
@@ -29,6 +30,7 @@ SOURCES += main.cpp \
     components/add.cpp\
     components/light.cpp\
     components/prim.cpp\
+    components/objcomp.cpp\
     components/transforms.cpp\
     components/mul.cpp\
     components/ring.cpp\
@@ -42,7 +44,8 @@ SOURCES += main.cpp \
     components/funcs.cpp\
     components/linear.cpp\
     components/debug.cpp\
-    components/envmap.cpp
+    components/envmap.cpp\
+    components/flat.cpp
    
 
 HEADERS  += \
@@ -53,6 +56,7 @@ HEADERS  += \
     engine/maths.h \
     engine/texture.h \
     engine/mesh.h \
+    engine/obj.h \
     engine/vertexdata.h \
     engine/state.h \
     engine/effect.h \

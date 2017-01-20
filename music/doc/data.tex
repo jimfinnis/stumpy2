@@ -23,3 +23,14 @@ time.
 topic & string & name of the topic (e.g. \texttt{/foo})\\
 \end{tabularx}
 
+\comp{midi-cc}
+{Sends midi control change data}
+{in:float}{flow:flow}
+Sends a MIDI control data packet.
+\startparams
+chan & channel number (0-based)\\
+cc & controller number \\
+mul & float & value is multiplied by this\\
+add & float & added to the multiplied result
+\end{tabularx}
+

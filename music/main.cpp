@@ -28,6 +28,9 @@ int main(int argc,char *argv[]){
         Server server(65111);
         PatchLibrary lib;
         
+        if(argc>1)
+            lib.readFile(argv[1]);
+        
         server.setListener(new Controller(&lib,&server));
         for(;;){
             if(!server.process())break;

@@ -1,0 +1,4 @@
+<< 2 1.0 17/ pow>> !RootRatio
+
+:ratio |n:|
+    ?RootRatio ?n pow;

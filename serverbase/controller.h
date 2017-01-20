@@ -23,20 +23,6 @@ class Controller : public ServerListener {
     /// send the currently iterated component type
     void sendCurCT();
     
-    virtual void message(const char *s,int size){
-        char *q = (char *)s; // so we can block the final char
-        char *k = q;
-        
-        // trim unprintables off the end
-        while(*k && *k!=10 && *k!=13)k++;
-        *k=0;
-        
-        
-        printf("***** MSG: %s\n",s);
-        
-        process(q);
-    }
-    
     virtual void connect(){
         printf("***** CONNECT\n");
     }
@@ -154,15 +140,29 @@ class Controller : public ServerListener {
     
     
     PatchLibrary *library; //!< the library I'm controlling
-    Server *server; //!< the server I answer to
+    Responder *server; //!< the server I answer to
     
     
     
 public:
     
+    virtual void message(const char *s,int size){
+        char *q = (char *)s; // so we can block the final char
+        char *k = q;
+        
+        // trim unprintables off the end
+        while(*k && *k!=10 && *k!=13)k++;
+        *k=0;
+        
+        
+        printf("***** MSG: %s\n",s);
+        
+        process(q);
+    }
+    
     
     /// will register commands and set up model pointers, etc.
-    Controller(PatchLibrary *l,Server *s);
+    Controller(PatchLibrary *l,Responder *s);
 };
 
 

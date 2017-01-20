@@ -46,6 +46,7 @@ struct State {
         texture = NULL;
         texture2 = NULL;
         overrides = 0;
+        modes = 0;
         effect = NULL;
     }
     
@@ -84,6 +85,9 @@ struct State {
 #define STO_DIFFUSE 1
 #define STO_ALPHA 2
     int overrides;
+// other booleans
+#define STM_ADDITIVE 1
+    int modes;
     Vector diffuse; // w is ignored; it gets overwritten by alpha
     float alpha;
     

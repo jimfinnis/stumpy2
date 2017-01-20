@@ -68,6 +68,9 @@ public:
             active->run();
     }
     
+    /// read a load of server commands from a file using a controller
+    /// with a dummy Responder instead of a real server.
+    void readFile(const char *fn);
         
 };
 

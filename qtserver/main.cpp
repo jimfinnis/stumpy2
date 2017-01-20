@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "glwidget.h"
 #include "serverbase/util/time.h"
-
+#include "engine/obj.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,5 +1,0 @@
-<?xml version="1.0" ?>
-<jack_mixer geometry="368x300">
-	<input_channel balance="0.000000" balance_midi_cc="12" name="Bells1" type="stereo" volume="8.677686" volume_midi_cc="11"/>
-	<main_mix_channel balance="0.000000" balance_midi_cc="8" volume="7.894736" volume_midi_cc="7"/>
-</jack_mixer>

@@ -1,2 +1,10 @@
 Heh. Dishonored talks about a "17-note scale". Well, here is one.
 It's horrible.
+
+Requires:
+    supercollider
+    a2jmidid
+    jackmix (my curses-based jack mixer/fx rack)
+    
+Run with:
+    ./setup.sh overseer.pls

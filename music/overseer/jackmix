@@ -1,0 +1,42 @@
+master gain db 0.66 pan 0.5
+chans {
+  bells: gain db -1.93549(k7) 
+    pan 0.6
+    stereo
+    send reverb gain db 0 prefade ,
+
+  Rreverb: return reverb
+    gain db 4.70968(k6) 
+    pan 0.5
+    stereo
+}
+ctrl {
+  k5: diamond "/glove/knobs:5" in 0:1023,
+  k0: diamond "/glove/knobs:0" in 0:1023,
+  k2: diamond "/glove/knobs:2" in 0:1023,
+  k7: diamond "/glove/knobs:7" in 0:1023,
+  k4: diamond "/glove/knobs:4" in 0:1023,
+  k6: diamond "/glove/knobs:6" in 0:1023,
+  k1: diamond "/glove/knobs:1" in 0:1023,
+  k3: diamond "/glove/knobs:3" in 0:1023
+}
+chain {
+  reverb {
+    out left: "Left output", left: "Right output"
+    fx {
+      gverb left
+      in {
+        "Input" from LEFT
+      }
+      params {
+        "Early reflection level (dB)" -14.3011(k3) ,
+        "Dry signal level (dB)" -70,
+        "Roomsize (m)" 130.187(k0) ,
+        "Reverb time (s)" 15.9122(k1) ,
+        "Tail level (dB)" -39.7556(k4) ,
+        "Damping" 0.109482(k2) ,
+        "Input bandwidth" 0.75
+      }
+    }
+  }
+}

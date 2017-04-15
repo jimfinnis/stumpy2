@@ -1,7 +1,7 @@
 "SC_JACK_DEFAULT_OUTPUTS".setenv(
 	[
-		"jack_mixer:Bells1 L",
-		"jack_mixer:Bells1 R"
+		"jackmix:bells_L",
+		"jackmix:bells_R"
 	].join(",")
 );
 

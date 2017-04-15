@@ -15,23 +15,21 @@ sleep 1
 
 ../build/music $* &
 
-a2jmidid -u &
-xvfb-run -a jack_mixer -c jackmixer --no-lash &
-xvfb-run -a jack-rack jackrack &
 
-sleep 3
+~/jackmix/build/jackmix -n jackmix &
+
+sleep 4
 
 xvfb-run -a sclang bells.scd &
+sleep 2
+
+a2jmidid -u &
+
+jack_connect jackmix:out0 darkice:left
+jack_connect jackmix:out1 darkice:right
 
 sleep 3
-
-jack_connect "jack_mixer:MAIN L" jack_rack:in_1
-jack_connect "jack_mixer:MAIN R" jack_rack:in_2
-
-jack_connect jack_rack:out_1 darkice:left
-jack_connect jack_rack:out_2 darkice:right
-
-jack_connect stumpymusic:out "jack_mixer:midi in"
+jack_connect stumpymusic:out jackmix:midi
 jack_connect stumpymusic:out "a2j:SuperCollider (playback): in0"
 
 jobs -p >joblist

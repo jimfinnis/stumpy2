@@ -1,0 +1,53 @@
+master gain db 0 pan 0.5
+chans {
+  piano: gain db 0
+    pan 0.5
+    stereo
+    send rev gain db 0 prefade ,
+
+  pianoquiet: gain db 0
+    pan 0.5
+    stereo
+    send rev gain db 0 prefade ,
+
+  Rrev: return rev
+    gain db -5.78004
+    pan 0.5
+    stereo
+}
+ctrl {
+
+}
+chain {
+  rev {
+    out gverbL: "Left output", gverbR: "Right output"
+    fx {
+      gverb gverbL
+      in {
+        "Input" from LEFT
+      }
+      params {
+        "Early reflection level (dB)" 0,
+        "Dry signal level (dB)" -70,
+        "Roomsize (m)" 75.75,
+        "Reverb time (s)" 7.575,
+        "Tail level (dB)" -17.5,
+        "Damping" 0,
+        "Input bandwidth" 0.75
+      },
+      gverb gverbR
+      in {
+        "Input" from RIGHT
+      }
+      params {
+        "Early reflection level (dB)" 0,
+        "Dry signal level (dB)" -70,
+        "Roomsize (m)" 75.75,
+        "Reverb time (s)" 7.575,
+        "Tail level (dB)" -17.5,
+        "Damping" 0,
+        "Input bandwidth" 0.75
+      }
+    }
+  }
+}

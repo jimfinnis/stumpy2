@@ -235,3 +235,33 @@ public:
 };
 static PerlinComponent perlinreg;
 
+
+class ClampComponent : public ComponentType {
+public:
+    ClampComponent() : ComponentType("clamp","maths"){}
+    virtual void init() {
+        setInput(0,tFloat,"in");
+        setOutput(0,tFloat,"out");
+        setParams(
+                     pMin = new FloatParameter("min",-10,10,0),
+                     pMax = new FloatParameter("max",-10,10,1),
+                     NULL
+                     );
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        float in = tFloat->getInput(ci,0);
+        float mn = pMin->get(c);
+        float mx = pMax->get(c);
+        if(in<mn)in=mn;
+        else if(mn>mx)in=mx;
+        
+        tFloat->setOutput(ci,0,in);
+    }
+    
+private:
+    FloatParameter *pMin,*pMax;
+};
+
+static ClampComponent clampreg;

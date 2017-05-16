@@ -31,6 +31,15 @@ mul1 & float & multiplies $in1+add1$\\
 mul2 & float & multiplies $in2+add2$\\
 \end{tabularx}
 
+\comp{mul}
+{Clamps the input to a range}
+{in:input}{output clamped to range}
+Clamps the output to ensure it is within a given range.
+\startparams
+min & float & minimum value\\
+max & float & maximum value\\
+\end{tabularx}
+
 \clearpage
 \comp{func}
 {Performs one of a number of functions on the sum of the inputs.}

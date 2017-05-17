@@ -24,8 +24,8 @@ netcat localhost 8888 <piano.lscp
 
 a2jmidid -u &
 
-jack_connect jackmix:out0 system:playback_1
-jack_connect jackmix:out1 system:playback_2
+jack_connect jackmix:out0 darkice:left
+jack_connect jackmix:out1 darkice:right
 
 sleep 3
 jack_connect stumpymusic:out jackmix:midi

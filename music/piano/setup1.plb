@@ -79,14 +79,14 @@
               <string>x</string>
               <void method="set">
                <object idref="Point1"/>
-               <int>266</int>
+               <int>284</int>
               </void>
              </void>
              <void class="java.awt.Point" method="getField">
               <string>y</string>
               <void method="set">
                <object idref="Point1"/>
-               <int>131</int>
+               <int>116</int>
               </void>
              </void>
             </object>
@@ -121,10 +121,7 @@
             <void index="0">
              <array class="int" length="2">
               <void index="0">
-               <int>2</int>
-              </void>
-              <void index="1">
-               <int>1</int>
+               <int>28</int>
               </void>
              </array>
             </void>
@@ -153,14 +150,14 @@
               <string>x</string>
               <void method="set">
                <object idref="Point2"/>
-               <int>170</int>
+               <int>767</int>
               </void>
              </void>
              <void class="java.awt.Point" method="getField">
               <string>y</string>
               <void method="set">
                <object idref="Point2"/>
-               <int>49</int>
+               <int>27</int>
               </void>
              </void>
             </object>
@@ -193,7 +190,7 @@
                 <int>1</int>
                </void>
                <void property="encodedValue">
-                <string>1.3876000008285045</string>
+                <string>2.6926000001579524</string>
                </void>
                <void property="maxVal">
                 <double>3.0</double>
@@ -550,7 +547,7 @@
             <void index="0">
              <array class="int" length="2">
               <void index="0">
-               <int>2</int>
+               <int>28</int>
               </void>
              </array>
             </void>
@@ -1579,7 +1576,7 @@
             <void index="3">
              <array class="int" length="2">
               <void index="0">
-               <int>27</int>
+               <int>25</int>
               </void>
              </array>
             </void>
@@ -1999,7 +1996,7 @@
                 <int>8</int>
                </void>
                <void property="encodedValue">
-                <string>1</string>
+                <string>2</string>
                </void>
                <void property="maxVal">
                 <int>4</int>
@@ -2478,7 +2475,7 @@
             <void index="0">
              <array class="int" length="2">
               <void index="0">
-               <int>2</int>
+               <int>28</int>
               </void>
              </array>
             </void>
@@ -3079,7 +3076,7 @@
            <string>type</string>
            <void method="set">
             <object idref="Component$Memento23"/>
-            <string>perlin</string>
+            <string>noteplay</string>
            </void>
           </void>
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
@@ -3091,191 +3088,13 @@
               <string>x</string>
               <void method="set">
                <object idref="Point23"/>
-               <int>864</int>
-              </void>
-             </void>
-             <void class="java.awt.Point" method="getField">
-              <string>y</string>
-              <void method="set">
-               <object idref="Point23"/>
-               <int>303</int>
-              </void>
-             </void>
-            </object>
-           </void>
-          </void>
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>parameters</string>
-           <void method="set">
-            <object idref="Component$Memento23"/>
-            <array class="org.pale.stumpy2.model.Parameter$Memento" length="7">
-             <void index="0">
-              <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
-               <void property="encodedValue">
-                <string>2</string>
-               </void>
-               <void property="maxVal">
-                <int>8</int>
-               </void>
-               <void property="minVal">
-                <int>1</int>
-               </void>
-               <void property="name">
-                <string>octaves</string>
-               </void>
-              </object>
-             </void>
-             <void index="1">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>1</int>
-               </void>
-               <void property="encodedValue">
-                <string>0.5</string>
-               </void>
-               <void property="maxVal">
-                <double>1.0</double>
-               </void>
-               <void property="name">
-                <string>persistence</string>
-               </void>
-              </object>
-             </void>
-             <void index="2">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>2</int>
-               </void>
-               <void property="encodedValue">
-                <string>8.200000000000003</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>mul-in-x</string>
-               </void>
-              </object>
-             </void>
-             <void index="3">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>3</int>
-               </void>
-               <void property="encodedValue">
-                <string>1.0</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>mul-in-y</string>
-               </void>
-              </object>
-             </void>
-             <void index="4">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>4</int>
-               </void>
-               <void property="encodedValue">
-                <string>0.0</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>add-in</string>
-               </void>
-              </object>
-             </void>
-             <void index="5">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>5</int>
-               </void>
-               <void property="encodedValue">
-                <string>1.0</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>mul-out</string>
-               </void>
-              </object>
-             </void>
-             <void index="6">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="ID">
-                <int>6</int>
-               </void>
-               <void property="encodedValue">
-                <string>0.0</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>add-out</string>
-               </void>
-              </object>
-             </void>
-            </array>
-           </void>
-          </void>
-          <void property="inputData">
-           <array class="[I" length="2"/>
-          </void>
-          <void property="runOutputAlways">
-           <array class="boolean" length="2">
-            <void index="1">
-             <boolean>true</boolean>
-            </void>
-           </array>
-          </void>
-         </object>
-        </void>
-        <void method="add">
-         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento24">
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>type</string>
-           <void method="set">
-            <object idref="Component$Memento24"/>
-            <string>noteplay</string>
-           </void>
-          </void>
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>location</string>
-           <void method="set">
-            <object idref="Component$Memento24"/>
-            <object class="java.awt.Point" id="Point24">
-             <void class="java.awt.Point" method="getField">
-              <string>x</string>
-              <void method="set">
-               <object idref="Point24"/>
                <int>795</int>
               </void>
              </void>
              <void class="java.awt.Point" method="getField">
               <string>y</string>
               <void method="set">
-               <object idref="Point24"/>
+               <object idref="Point23"/>
                <int>437</int>
               </void>
              </void>
@@ -3285,7 +3104,7 @@
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>parameters</string>
            <void method="set">
-            <object idref="Component$Memento24"/>
+            <object idref="Component$Memento23"/>
             <array class="org.pale.stumpy2.model.Parameter$Memento" length="7">
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
@@ -3341,7 +3160,7 @@
                 <int>3</int>
                </void>
                <void property="encodedValue">
-                <string>1.0</string>
+                <string>0.5401000007614494</string>
                </void>
                <void property="maxVal">
                 <double>1.0</double>
@@ -3360,7 +3179,7 @@
                 <int>4</int>
                </void>
                <void property="encodedValue">
-                <string>4</string>
+                <string>0</string>
                </void>
                <void property="maxVal">
                 <int>4</int>
@@ -3410,14 +3229,14 @@
             <void index="1">
              <array class="int" length="2">
               <void index="0">
-               <int>25</int>
+               <int>26</int>
               </void>
              </array>
             </void>
             <void index="2">
              <array class="int" length="2">
               <void index="0">
-               <int>25</int>
+               <int>24</int>
               </void>
               <void index="1">
                <int>1</int>
@@ -3432,31 +3251,31 @@
          </object>
         </void>
         <void method="add">
-         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento25">
+         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento24">
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>type</string>
            <void method="set">
-            <object idref="Component$Memento25"/>
+            <object idref="Component$Memento24"/>
             <string>thuemorse</string>
            </void>
           </void>
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>location</string>
            <void method="set">
-            <object idref="Component$Memento25"/>
-            <object class="java.awt.Point" id="Point25">
+            <object idref="Component$Memento24"/>
+            <object class="java.awt.Point" id="Point24">
              <void class="java.awt.Point" method="getField">
               <string>x</string>
               <void method="set">
-               <object idref="Point25"/>
-               <int>869</int>
+               <object idref="Point24"/>
+               <int>885</int>
               </void>
              </void>
              <void class="java.awt.Point" method="getField">
               <string>y</string>
               <void method="set">
-               <object idref="Point25"/>
-               <int>358</int>
+               <object idref="Point24"/>
+               <int>297</int>
               </void>
              </void>
             </object>
@@ -3465,7 +3284,7 @@
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>parameters</string>
            <void method="set">
-            <object idref="Component$Memento25"/>
+            <object idref="Component$Memento24"/>
             <array class="org.pale.stumpy2.model.Parameter$Memento" length="5">
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
@@ -3549,10 +3368,14 @@
             <void index="0">
              <array class="int" length="2">
               <void index="0">
-               <int>23</int>
+               <int>2</int>
               </void>
-              <void index="1">
-               <int>1</int>
+             </array>
+            </void>
+            <void index="2">
+             <array class="int" length="2">
+              <void index="0">
+               <int>27</int>
               </void>
              </array>
             </void>
@@ -3564,93 +3387,30 @@
          </object>
         </void>
         <void method="add">
-         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento26">
+         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento25">
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>type</string>
            <void method="set">
-            <object idref="Component$Memento26"/>
-            <string>time</string>
-           </void>
-          </void>
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>location</string>
-           <void method="set">
-            <object idref="Component$Memento26"/>
-            <object class="java.awt.Point" id="Point26">
-             <void class="java.awt.Point" method="getField">
-              <string>x</string>
-              <void method="set">
-               <object idref="Point26"/>
-               <int>893</int>
-              </void>
-             </void>
-             <void class="java.awt.Point" method="getField">
-              <string>y</string>
-              <void method="set">
-               <object idref="Point26"/>
-               <int>122</int>
-              </void>
-             </void>
-            </object>
-           </void>
-          </void>
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>parameters</string>
-           <void method="set">
-            <object idref="Component$Memento26"/>
-            <array class="org.pale.stumpy2.model.Parameter$Memento" length="1">
-             <void index="0">
-              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
-               <void property="encodedValue">
-                <string>1.0</string>
-               </void>
-               <void property="maxVal">
-                <double>100.0</double>
-               </void>
-               <void property="minVal">
-                <double>-100.0</double>
-               </void>
-               <void property="name">
-                <string>rate</string>
-               </void>
-              </object>
-             </void>
-            </array>
-           </void>
-          </void>
-          <void property="inputData">
-           <array class="[I" length="0"/>
-          </void>
-          <void property="runOutputAlways">
-           <array class="boolean" length="1"/>
-          </void>
-         </object>
-        </void>
-        <void method="add">
-         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento27">
-          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
-           <string>type</string>
-           <void method="set">
-            <object idref="Component$Memento27"/>
+            <object idref="Component$Memento25"/>
             <string>vel</string>
            </void>
           </void>
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>location</string>
            <void method="set">
-            <object idref="Component$Memento27"/>
-            <object class="java.awt.Point" id="Point27">
+            <object idref="Component$Memento25"/>
+            <object class="java.awt.Point" id="Point25">
              <void class="java.awt.Point" method="getField">
               <string>x</string>
               <void method="set">
-               <object idref="Point27"/>
+               <object idref="Point25"/>
                <int>800</int>
               </void>
              </void>
              <void class="java.awt.Point" method="getField">
               <string>y</string>
               <void method="set">
-               <object idref="Point27"/>
+               <object idref="Point25"/>
                <int>492</int>
               </void>
              </void>
@@ -3660,12 +3420,12 @@
           <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
            <string>parameters</string>
            <void method="set">
-            <object idref="Component$Memento27"/>
+            <object idref="Component$Memento25"/>
             <array class="org.pale.stumpy2.model.Parameter$Memento" length="2">
              <void index="0">
               <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
                <void property="encodedValue">
-                <string>1.0</string>
+                <string>0.57</string>
                </void>
                <void property="maxVal">
                 <double>1.0</double>
@@ -3709,7 +3469,253 @@
             <void index="1">
              <array class="int" length="2">
               <void index="0">
+               <int>23</int>
+              </void>
+             </array>
+            </void>
+           </array>
+          </void>
+          <void property="runOutputAlways">
+           <array class="boolean" length="1"/>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento26">
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>type</string>
+           <void method="set">
+            <object idref="Component$Memento26"/>
+            <string>gate</string>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>location</string>
+           <void method="set">
+            <object idref="Component$Memento26"/>
+            <object class="java.awt.Point" id="Point26">
+             <void class="java.awt.Point" method="getField">
+              <string>x</string>
+              <void method="set">
+               <object idref="Point26"/>
+               <int>867</int>
+              </void>
+             </void>
+             <void class="java.awt.Point" method="getField">
+              <string>y</string>
+              <void method="set">
+               <object idref="Point26"/>
+               <int>372</int>
+              </void>
+             </void>
+            </object>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>parameters</string>
+           <void method="set">
+            <object idref="Component$Memento26"/>
+            <array class="org.pale.stumpy2.model.Parameter$Memento" length="3">
+             <void index="0">
+              <object class="org.pale.stumpy2.model.paramtypes.FloatParam$Memento">
+               <void property="encodedValue">
+                <string>0.5</string>
+               </void>
+               <void property="maxVal">
+                <double>10.0</double>
+               </void>
+               <void property="name">
+                <string>level</string>
+               </void>
+              </object>
+             </void>
+             <void index="1">
+              <object class="org.pale.stumpy2.model.paramtypes.BoolParam$Memento">
+               <void property="ID">
+                <int>1</int>
+               </void>
+               <void property="encodedValue">
+                <string>y</string>
+               </void>
+               <void property="name">
+                <string>gate high</string>
+               </void>
+              </object>
+             </void>
+             <void index="2">
+              <object class="org.pale.stumpy2.model.paramtypes.BoolParam$Memento">
+               <void property="ID">
+                <int>2</int>
+               </void>
+               <void property="encodedValue">
+                <string>n</string>
+               </void>
+               <void property="name">
+                <string>oneshot</string>
+               </void>
+              </object>
+             </void>
+            </array>
+           </void>
+          </void>
+          <void property="inputData">
+           <array class="[I" length="2">
+            <void index="0">
+             <array class="int" length="2">
+              <void index="0">
                <int>24</int>
+              </void>
+             </array>
+            </void>
+            <void index="1">
+             <array class="int" length="2">
+              <void index="0">
+               <int>24</int>
+              </void>
+              <void index="1">
+               <int>1</int>
+              </void>
+             </array>
+            </void>
+           </array>
+          </void>
+          <void property="runOutputAlways">
+           <array class="boolean" length="1"/>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento27">
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>type</string>
+           <void method="set">
+            <object idref="Component$Memento27"/>
+            <string>clockdiv</string>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>location</string>
+           <void method="set">
+            <object idref="Component$Memento27"/>
+            <object class="java.awt.Point" id="Point27">
+             <void class="java.awt.Point" method="getField">
+              <string>x</string>
+              <void method="set">
+               <object idref="Point27"/>
+               <int>879</int>
+              </void>
+             </void>
+             <void class="java.awt.Point" method="getField">
+              <string>y</string>
+              <void method="set">
+               <object idref="Point27"/>
+               <int>243</int>
+              </void>
+             </void>
+            </object>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>parameters</string>
+           <void method="set">
+            <object idref="Component$Memento27"/>
+            <array class="org.pale.stumpy2.model.Parameter$Memento" length="1">
+             <void index="0">
+              <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
+               <void property="encodedValue">
+                <string>32</string>
+               </void>
+               <void property="maxVal">
+                <int>32</int>
+               </void>
+               <void property="minVal">
+                <int>1</int>
+               </void>
+               <void property="name">
+                <string>div</string>
+               </void>
+              </object>
+             </void>
+            </array>
+           </void>
+          </void>
+          <void property="inputData">
+           <array class="[I" length="1">
+            <void index="0">
+             <array class="int" length="2">
+              <void index="0">
+               <int>20</int>
+              </void>
+             </array>
+            </void>
+           </array>
+          </void>
+          <void property="runOutputAlways">
+           <array class="boolean" length="1"/>
+          </void>
+         </object>
+        </void>
+        <void method="add">
+         <object class="org.pale.stumpy2.model.Component$Memento" id="Component$Memento28">
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>type</string>
+           <void method="set">
+            <object idref="Component$Memento28"/>
+            <string>clockdiv</string>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>location</string>
+           <void method="set">
+            <object idref="Component$Memento28"/>
+            <object class="java.awt.Point" id="Point28">
+             <void class="java.awt.Point" method="getField">
+              <string>x</string>
+              <void method="set">
+               <object idref="Point28"/>
+               <int>280</int>
+              </void>
+             </void>
+             <void class="java.awt.Point" method="getField">
+              <string>y</string>
+              <void method="set">
+               <object idref="Point28"/>
+               <int>48</int>
+              </void>
+             </void>
+            </object>
+           </void>
+          </void>
+          <void class="org.pale.stumpy2.model.Component$Memento" method="getField">
+           <string>parameters</string>
+           <void method="set">
+            <object idref="Component$Memento28"/>
+            <array class="org.pale.stumpy2.model.Parameter$Memento" length="1">
+             <void index="0">
+              <object class="org.pale.stumpy2.model.paramtypes.IntParam$Memento">
+               <void property="encodedValue">
+                <string>2</string>
+               </void>
+               <void property="maxVal">
+                <int>32</int>
+               </void>
+               <void property="minVal">
+                <int>1</int>
+               </void>
+               <void property="name">
+                <string>div</string>
+               </void>
+              </object>
+             </void>
+            </array>
+           </void>
+          </void>
+          <void property="inputData">
+           <array class="[I" length="1">
+            <void index="0">
+             <array class="int" length="2">
+              <void index="0">
+               <int>2</int>
               </void>
              </array>
             </void>

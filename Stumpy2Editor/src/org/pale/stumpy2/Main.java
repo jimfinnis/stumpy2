@@ -3,6 +3,7 @@ package org.pale.stumpy2;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
+import org.pale.stumpy2.client.Client;
 import org.pale.stumpy2.componentview.ComponentBoxView;
 import org.pale.stumpy2.libraryview.LibraryMenu;
 import org.pale.stumpy2.libraryview.LibraryViewController;
@@ -32,7 +33,7 @@ public class Main {
 	public static void main(String[] args){
 		
 		final JFrame frame = new JFrame(); // our all-encompassing main frame
-		frame.setTitle("Stumpy Editor: RUBY RELATIVE");
+		frame.setTitle("Stumpy Editor: MAGENTA THERMOMETER");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		control = new CControl(frame);
@@ -101,5 +102,20 @@ public class Main {
 
 		frame.setBounds(40,40,400,400);
 		frame.setVisible(true);
+		
+		if(args.length>0){
+			// there's a file to load - server MUST be running. Connect and
+			// load file.
+			try {
+				TopController.getInstance().handle("connect");
+				if(!Client.isConnected()){
+					throw new RuntimeException("Cannot connect - server not running?");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			TopController.getInstance().openLib(args[0]);
+		}
 	}
 }

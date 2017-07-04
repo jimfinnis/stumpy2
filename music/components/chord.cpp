@@ -10,6 +10,9 @@
 #include "util.h"
 
 #include <math.h>
+#include <ctype.h>
+
+
 
 // takes a root note, generates a chord (bitfield) from it
 // by selecting a set of (diatonic) intervals from it, into
@@ -31,6 +34,133 @@
 #define DEFCHORD "024" 
 
 #include "scaledata.h"
+
+
+
+// used my the autochord system, mainly. But handy. Format:
+// noteletter[#|b][mode].
+// Returns the scale as a ptr to a static array,
+// only parsing stuff before the first null/space.
+
+int *parseScale(const char *s){
+    static int ret[8];
+    
+    // first, get the base note.
+    if(!isalpha(*s))return NULL;
+    
+    int bni = tolower(*s++)-'c'; // get basenote based on C, wrap a and b around.
+    if(bni>4)return NULL;
+    if(bni<0)bni+=7;
+    if(bni<0)return NULL;
+    
+    // get that note's actual MIDI value
+    static const int basenotes[] ={24,26,28,29,31,33,35};
+    int base = basenotes[bni];
+    
+    // get any sharp or flat
+    if(*s=='#'){s++; base++;}
+    else if(*s=='b'){s++; base--;}
+    // next three chars should be a mode. If there's a space, then there's no mode (and
+    // it's Ionian/Major)
+    int mode = 0; // ionian default
+    if(*s && isalpha(*s) && s[1] && isalpha(s[1]) && s[2] && isalpha(s[2])){
+        char modename[4];
+        modename[0]=tolower(s[0]);
+        modename[1]=tolower(s[1]);
+        modename[2]=tolower(s[2]);
+        modename[3]=0;
+        const char *chordModes[] = {
+            "ion","dor","phr","lyd","mix","aeo","loc",
+        };
+        if(!strcmp(modename,"min"))mode=5;
+        else {
+            for(int i=0;i<7;i++){
+                if(!strcmp(modename,chordModes[i])){mode=i;break;}
+            }
+        }
+    }
+    
+    // these are the semitone intervals for major.
+    static const int major[] = {2,2,1,2,2,2,1};
+    // build the scale from the base using the semitones and the mode.
+    int n=base;
+    for(int i=0;i<8;i++){
+        ret[i]=n;
+        n+=major[(i+mode)%7];
+    }
+    
+    return ret;
+}
+
+// parse a chord, by getting the scale and then the notes for the chord
+// (by default 1,3,5).
+
+int *parseChord(char *s,int *len){
+    static int ret[8];
+    
+    // first get the scale
+    
+    char *scstr = strtok(s," ");
+    int *scale = parseScale(scstr);
+    if(!scale)return NULL;
+    
+    // set up the basic notes as indices into the scale. If -ve, a note is skipped.
+    int notes[8];int notect=3;
+    notes[0]=0;
+    notes[1]=2;
+    notes[2]=4;
+    // then iterate through space-separated modifiers.
+    while(char *s = strtok(NULL," ")){
+        if(!strcasecmp(s,"sus2"))notes[1]=1;
+        else if(!strcasecmp(s,"all")){
+            for(int i=0;i<8;i++){
+                notes[i]=i;
+            }
+            notect=8;break;
+        }
+        else if(!strcasecmp(s,"sus4"))notes[1]=3;
+        else if(!strcasecmp(s,"no3"))notes[1]=-1;
+        else if(isdigit(*s))notes[notect++]=(*s-'0')-1;
+    }
+    
+    // construct the chord
+    int outct=0;
+    for(int i=0;i<notect;i++){
+//        printf("%d\n",notes[i]);
+        if(notes[i]<8)
+            ret[outct++]=scale[notes[i]];
+    }
+    if(len)*len=outct;
+    while(outct<8)
+        ret[outct++]=-1;
+    
+    return ret;
+}
+
+static char *noteName(int i){
+    static char buf[32];
+    static const char *notes[]={"C","C#","D","D#",
+        "E","F","F#","G",
+        "G#","A","A#","B"};
+    sprintf(buf,"%s%d(%d)",notes[(i-24)%12],(i-24)/12,i);
+    return buf;
+}
+
+
+// get the centroid of a chord, used for measuring
+// inversions
+static float getCentre(const BitField& b){
+    float t=0;
+    int ct=0;
+    for(int i=0;i<128;i++){
+        if(b.get(i)){
+            t+=i; ct++;
+        }
+    }
+    if(ct)
+        return t/(float)ct;
+    else return 0;
+}
 
 /*
 static const char *scaleNames[]= {
@@ -87,7 +217,7 @@ public:
         for(int i=0;scaleData[i][0]>=0;i++){
             int ct;
             for(ct=0;scaleData[i][ct]>=0;ct++){}
-            printf("Scale %d, len %d\n",i,ct);
+//            printf("Scale %d, len %d\n",i,ct);
             scaleLengths[i]=ct;
         }
     }
@@ -165,15 +295,11 @@ public:
         tChord->setOutput(ci,0,b2);
         
         
-        
         if(pPrint->get(c)){
-            static const char *notes[]={"C","C#","D","D#",
-                                      "E","F","F#","G",
-                                      "G#","A","A#","B"};
             bool qqq=false;
-            for(int i=24;i<128;i++){
+            for(int i=0;i<128;i++){
                 if(b2.get(i)){
-                    printf("%s%d(%d) ",notes[(i-24)%12],(i-24)/12,i);
+                    printf("%s ",noteName(i));
                     qqq=true;
                 }
             }
@@ -216,20 +342,6 @@ private:
         return b;
     }
     
-    // get the centroid of a chord, used for measuring
-    // inversions
-    float getCentre(const BitField& b){
-        float t=0;
-        int ct=0;
-        for(int i=0;i<128;i++){
-            if(b.get(i)){
-                t+=i; ct++;
-            }
-        }
-        if(ct)
-            return t/(float)ct;
-        else return 0;
-    }
 };
 
 static Chord chordreg;
@@ -381,3 +493,162 @@ public:
 };   
         
 static ChordMorpher cmreg;
+
+
+
+
+
+// this is more cunning - it generates a whole set of chords (which you may choose to
+// wire into a chordmorpher) from strings.
+// Chord string format:
+//
+//
+
+#define ACNUMCHORDS 4
+
+struct ChordDataAC {
+    BitField lastChord;
+    BitField chord;
+    bool done;
+};
+
+
+class AutoChorder : public ComponentType {
+    
+    StringParameter *pChords[ACNUMCHORDS];
+    IntParameter *pOctave,*pCycles;
+    BoolParameter *pInversions,*pPrint;
+    
+public:
+    AutoChorder() : ComponentType("autochorder","music"){}
+    virtual void init(){
+        width = 170;
+        
+        setParams(pInversions = new BoolParameter("inversions",true),
+                  pOctave = new IntParameter("octave",0,5,2),
+                  pCycles = new IntParameter("cycles",1,4,1),
+                  pPrint = new BoolParameter("print",false),
+                  NULL
+                  );
+        
+        for(int i=0;i<ACNUMCHORDS;i++){
+            char buf[32];
+            sprintf(buf,"chord %d",i);
+            char *p=strdup(buf);
+            setOutput(i,tChord,p);
+            addParameter(pChords[i]=new StringParameter(p,"Cmaj"));
+        }
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        ChordDataAC *d = new ChordDataAC[ACNUMCHORDS];
+        c->privateData = (void *)d;
+        for(int i=0;i<ACNUMCHORDS;i++){
+            d[i].lastChord.clear();
+            d[i].done=false;
+        }
+        
+        regenerate(c);
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete []  ((ChordDataAC *)c->privateData);
+    }
+    
+    // given notes in a chord, number of those, an inversion number and the
+    // number of cycles to do, get a chord bitfield.
+    BitField construct(int *notes,int len,int inv,int cycles){
+        BitField b;
+        b.clear();
+        for(int i=0;i<len*cycles;i++){
+            int noteno = (i+inv)+len*100; // inv may be -ve
+            int octave = noteno/len-100;
+            int note = notes[noteno%len];
+            
+            //printf("%d: noteno%d->%d, note %d, oct %d\n",i,noteno,noteno%len,note,octave);
+            note += octave*12;
+            if(note>=0 && note<128)
+                b.set(note,true);
+        }
+        return b;
+    }
+    
+    void regenerate(ComponentInstance *ci){
+        Component *c = ci->component;
+        ChordDataAC *d = (ChordDataAC *)ci->privateData;
+        
+        int octave = pOctave->get(c);
+        int cycles= pCycles->get(c);
+        
+        for(int i=0;i<ACNUMCHORDS;i++){
+            const char *s = pChords[i]->get(c);
+            char chrd[256]; // have to copy, parseChord uses strtok
+            strcpy(chrd,s);
+            int len;
+            int *notes = parseChord(chrd,&len);
+            
+            BitField b;
+            if(pInversions->get(c)){
+                float cent = getCentre(d[i].lastChord);
+                if(cent<0.01)
+                    b = construct(notes,len,0,cycles);
+                else {
+                    int found = 0;
+                    int mindist = 10000;
+                    BitField bs[11];
+                    for(int i=0;i<11;i++){
+                        bs[i] = construct(notes,len,i-5,cycles);
+                        float dist = fabsf(getCentre(bs[i])-cent);
+                        if(dist<mindist){
+                            mindist=dist;
+                            found = i;
+                        }
+                    }
+                    b = bs[found];
+                }
+            } else {
+                b = construct(notes,len,0,cycles);
+            }
+            d[i].lastChord = b;
+            d[i].done = true;
+            d[i].chord.clear();
+            for(int j=0;j<128;j++){
+                if(b.get(j)){
+                    c->dprintf("Note %d is set in chorder -> %d\n",j,j+12*octave);
+                    d[i].chord.set(j+12*octave,true);
+                }
+            }
+        }            
+    }
+    
+    virtual void onParamChanged(ComponentInstance *ci, UNUSED Parameter *p){
+        regenerate(ci);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        ChordDataAC *d = (ChordDataAC *)ci->privateData;
+        
+        if(!d[0].done)
+            regenerate(ci); // just in case
+        
+        BitField& b = d[out].chord;
+        if(pPrint->get(c)){
+            bool qqq=false;
+            for(int i=0;i<128;i++){
+                if(b.get(i)){
+                    printf("%s ",noteName(i));
+                    qqq=true;
+                }
+            }
+            if(qqq)putchar('\n');
+        }
+        tChord->setOutput(ci,out,b);
+        
+        
+        
+    }
+    
+
+};
+static AutoChorder acreg;

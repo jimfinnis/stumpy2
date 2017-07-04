@@ -5,7 +5,8 @@ subgroups.
 
 \comp{chord}
 {Generate a chord, whose notes can be selected and played by
-\emph{chordplay} or \emph{noteplay} etc.}
+\emph{chordplay} or \emph{noteplay} etc.. See ``autochorder'' for a 
+higher-level version.}
 {base:float, select:float}{chord:chord}
 This component is used to generate a set of notes -- a chord -- given
 a base note and a chord selector.
@@ -183,7 +184,7 @@ them one at a time rather than just picking a random element each time.
 This produces a better distribution.
 \end{tabularx}
 
-\comp{chordmorpher}{Given a set of chords, morph between them to produce ``intermediate'' chords with notes from each}
+\comp{chordmorpher}{Morph between chords}
 {morph:float, $8\times$input:chord}{out:chord}
 The input is in the range [0,1]. First, the two chords which should be morphed between are selected, then these
 are interpolated by shuffling both chords, padding the shortest chord with null notes to the length of the other chord,
@@ -196,4 +197,46 @@ shuffled to C-B-A and C-A-B, leading to possible morphs of C-A-A and C-B-B.}.
 mul & float & input is multiplied by this value before use \\
 add & float & input is then added to this value before use\\
 seed & int & random seed for note selection
+\end{tabularx}
+
+\clearpage
+\comp{autochorder}{A simpler, higher-level chord generator -- see ``chord''}
+{}{$4\times$output:chord}
+Generates sets of notes for a note or chord player using chord names.
+
+The names are in the form \emph{LetterMode Mods...}
+
+The letter is A-G (upper or lower case) and may be followed by a sharp or flat.
+The mode is one of the following:
+maj, min, ion, dor, phr, lyd, mix, aeo, loc. Modifiers are:
+\begin{itemize}
+\item all (generates all notes in the scale, not just the chord)
+\item sus2
+\item sus4
+\item no3
+\item \emph{digit} (adds the note of this degree in the scale to the chord)
+\end{itemize}
+Some valid chords are:
+\begin{itemize}
+\item Amin
+\item Amaj sus4
+\item Gbmin sus2 7
+\end{itemize}
+
+The \emph{octave} parameter (times 12) is added to the resulting 
+notes.
+If the \emph{inversions} parameter is true, the new chord is compared with
+the previous played chord and the inversion which gives the notes
+closest to the previous chord is used.
+\startparams
+chord 1 & string & the string for a chord (see above)\\
+chord 2 & string & the string for a chord (see above)\\
+chord 3 & string & the string for a chord (see above)\\
+chord 4 & string & the string for a chord (see above)\\
+octave & int & the octave number\\
+inversions & boolean & if true, use an inversion which makes the notes
+as close to the previous chord as possible\\
+print & boolean & if true, print the resulting notes to stdout\\
+cycles & int & the number of octaves of notes to generate (useful in
+chord morphing, elsewhere keep to 1).
 \end{tabularx}

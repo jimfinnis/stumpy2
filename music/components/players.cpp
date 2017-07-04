@@ -189,7 +189,6 @@ public:
             int minnote=-1;
             for(int i=0;i<128;i++){
                 if(b.get(i)){
-//                    printf("Note set: %d\n",i);
                     n = i + trans;
                     if(minnote<0)minnote=n;
                     if(n>=0 && n<128)

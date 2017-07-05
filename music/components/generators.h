@@ -37,7 +37,7 @@ public:
     // by hand, between each run, but the first MUST
     // be done for us.
     int next(){
-        printf("%p - cur %d len %d\n",this,cur,len);
+//        printf("%p - cur %d len %d\n",this,cur,len);
         val = seq[cur++];
         cur %= len;
         didcycle = (cur==0);

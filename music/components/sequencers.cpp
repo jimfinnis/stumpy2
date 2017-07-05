@@ -70,7 +70,7 @@ public:
                 // we're stepping
                 d->n++;
                 if(d->n == len){
-                    printf("Cycle!\n");
+                    c->dprintf("Cycle!\n");
                     done = 1;
                     d->cycles++;
                     d->n=0;
@@ -80,19 +80,19 @@ public:
                 // just carry on
                 
                 if(isalnum(s[d->n])){
-                    printf("Next note is VALID\n");
+                    c->dprintf("Next note is VALID\n");
                     // do a duration scan
                     d->dur = 1;
                     const char *pp = s+d->n;
                     for(int n=1;pp[n] && !isalnum(pp[n]);n++){
                         d->dur++;
                     }
-                    printf("Duration is %f\n",d->dur);
+                    c->dprintf("Duration is %f\n",d->dur);
                     
                     // set the output
                     d->output=hexdigit(s[d->n]);
                     tick=1;
-                    printf("Output is %d\n",d->output);
+                    c->dprintf("Output is %d\n",d->output);
                 }
             }
         }

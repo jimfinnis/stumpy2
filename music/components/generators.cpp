@@ -11,15 +11,15 @@
 #include "../globals.h"
 #include "generators.h"
 
-#define IN_TICK 0
-#define IN_GATE 1
-#define IN_REGEN 2
-#define IN_REWIND 3
+#define INTM_TICK 0
+#define INTM_GATE 1
+#define INTM_REGEN 2
+#define INTM_REWIND 3
 
-#define OUT_TICK 0
-#define OUT_OUTPUT 1
-#define OUT_CYCLETICK 2
-#define OUT_CYCLECOUNT 3
+#define OUTTM_TICK 0
+#define OUTTM_OUTPUT 1
+#define OUTTM_CYCLETICK 2
+#define OUTTM_CYCLECOUNT 3
 
 
 struct TMData {
@@ -33,18 +33,18 @@ class ThueMorse : public ComponentType {
     IntParameter *pLen,*pDepth;
     StringParameter *pPerms;
     BoolParameter *pSymmetric,*pAutoRegen;
-          
+    
 public:
     ThueMorse() : ComponentType("thuemorse","generators"){}
     virtual void init(){
-        setInput(IN_TICK,tInt,"tick");
-        setInput(IN_GATE,tFloat,"gate");
-        setInput(IN_REGEN,tInt,"regenerate");
-        setInput(IN_REWIND,tInt,"restart");
-        setOutput(OUT_TICK,tInt,"event tick");
-        setOutput(OUT_OUTPUT,tFloat,"output");
-        setOutput(OUT_CYCLETICK,tInt,"cycle tick");
-        setOutput(OUT_CYCLECOUNT,tFloat,"cycle count");
+        setInput(INTM_TICK,tInt,"tick");
+        setInput(INTM_GATE,tFloat,"gate");
+        setInput(INTM_REGEN,tInt,"regenerate");
+        setInput(INTM_REWIND,tInt,"restart");
+        setOutput(OUTTM_TICK,tInt,"event tick");
+        setOutput(OUTTM_OUTPUT,tFloat,"output");
+        setOutput(OUTTM_CYCLETICK,tInt,"cycle tick");
+        setOutput(OUTTM_CYCLECOUNT,tFloat,"cycle count");
         
         setParams(
                   pLen = new IntParameter("length",3,100,5),
@@ -84,14 +84,14 @@ public:
         Component *c = ci->component;
         TMData *d = (TMData *)ci->privateData;
         
-        int tick = tInt->getInput(ci,IN_TICK);
-        float gate = (!c->isInputConnected(IN_GATE))?1:
-        tFloat->getInput(ci,IN_GATE);
+        int tick = tInt->getInput(ci,INTM_TICK);
+        float gate = (!c->isInputConnected(INTM_GATE))?1:
+        tFloat->getInput(ci,INTM_GATE);
         
-        if(tInt->getInput(ci,IN_REWIND))
+        if(tInt->getInput(ci,INTM_REWIND))
             d->gen->rewind();
         
-        int regen = pAutoRegen->get(c)?1:tInt->getInput(ci,IN_REGEN);
+        int regen = pAutoRegen->get(c)?1:tInt->getInput(ci,INTM_REGEN);
         
         int outtick=0;
         int outcycletick=0;
@@ -119,10 +119,103 @@ public:
             // output only when the output changes
         }
         // these are impulses and so update all the time
-        tFloat->setOutput(ci,OUT_OUTPUT,d->output);
-        tFloat->setOutput(ci,OUT_CYCLECOUNT,d->cyclecount);
-        tInt->setOutput(ci,OUT_CYCLETICK,outcycletick);
-        tInt->setOutput(ci,OUT_TICK,outtick);
+        tFloat->setOutput(ci,OUTTM_OUTPUT,d->output);
+        tFloat->setOutput(ci,OUTTM_CYCLECOUNT,d->cyclecount);
+        tInt->setOutput(ci,OUTTM_CYCLETICK,outcycletick);
+        tInt->setOutput(ci,OUTTM_TICK,outtick);
     }
 };
 static ThueMorse tmreg;
+
+#define INRW_TICK 0
+#define INRW_GATE 1
+#define OUTRW_TICK 0
+#define OUTRW_OUTPUT 1
+
+struct RWData {
+    int cur;
+    int dir;
+};
+
+class RandomWalk : public ComponentType {
+    StringParameter *pVals;
+    BoolParameter *pWrap;
+    FloatParameter *pDirChangeProb;
+    
+public:
+    RandomWalk() : ComponentType("randomwalk","generators"){}
+    virtual void init(){
+        setInput(INRW_TICK,tInt,"tick");
+        setInput(INRW_GATE,tFloat,"gate");
+        
+        setOutput(OUTRW_TICK,tInt,"event tick");
+        setOutput(OUTRW_OUTPUT,tFloat,"output");
+        
+        setParams(
+                  pVals = new StringParameter("vals","012345679"),
+                  pWrap = new BoolParameter("wrap",true),
+                  pDirChangeProb = new FloatParameter("dirchangeprob",0,1,0.7f),
+                  NULL);
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        RWData *d = new RWData();
+        c->privateData = (void *)d;
+        d->cur=-1; // will reset to middle
+        d->dir=1;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *ci){
+        RWData *d = (RWData *)ci->privateData;
+        delete d;
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        
+        if(out == OUTRW_TICK){
+            Component *c = ci->component;
+            RWData *d = (RWData *)ci->privateData;
+            int tick = tInt->getInput(ci,INTM_TICK);
+            float gate = (!c->isInputConnected(INTM_GATE))?1:
+            tFloat->getInput(ci,INTM_GATE);
+            
+            int outval=0;
+            int tickout=0;
+            
+            if(gate>0.5f && tick){
+                const char *s = pVals->get(c);
+                int len = strlen(s);
+                if(len){
+                    if(d->cur < 0 )
+                        d->cur = len/2;
+                    
+                    if(d->cur<0){
+                        if(pWrap->get(c))
+                            d->cur = len-1;
+                        else {
+                            d->cur=0;
+                            d->dir *= -1;
+                        }
+                    } else if(d->cur==len){
+                        if(pWrap->get(c))
+                            d->cur = 0;
+                        else {
+                            d->cur=len-1;
+                            d->dir *= -1;
+                        }
+                    } else if(drand48()<pDirChangeProb->get(c)){
+                        d->dir *= -1;
+                    }
+                    
+                    outval = hexdigit(s[d->cur]);
+                    tickout=1;
+                    d->cur += d->dir;
+                }
+            }
+            tInt->setOutput(ci,OUTRW_TICK,tickout);
+            tFloat->setOutput(ci,OUTRW_OUTPUT,outval);
+        }
+    }
+};
+
+static RandomWalk regrandw;

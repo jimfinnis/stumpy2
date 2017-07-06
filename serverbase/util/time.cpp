@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <time.h>
 #include "time.h"
 
@@ -34,10 +35,37 @@ void init(){
     clock_gettime(CLOCK_MONOTONIC,&progstart);
 }
 
+static double pauselag=0;
+static double pausestart=0;
+static bool paused=false;
+
 double now(){
+    if(paused){
+        return pausestart;
+    }
+    timespec t;
+    clock_gettime(CLOCK_MONOTONIC,&t);
+    return time_diff(progstart,t)-pauselag;
+}
+
+double realnow(){
     timespec t;
     clock_gettime(CLOCK_MONOTONIC,&t);
     return time_diff(progstart,t);
+}
+
+void pause(){
+    if(!paused){
+        pausestart=realnow();
+        paused=true;
+    }
+}
+
+void restart(){
+    if(paused){
+        paused=false;
+        pauselag+=realnow()-pausestart;
+    }
 }
 
 uint32_t ticks(){
@@ -49,3 +77,5 @@ void tick(){
 }
 
 }
+
+

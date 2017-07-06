@@ -9,7 +9,10 @@
 
 namespace Time {
 void init();
-double now();
+double now(); // takes pause()/restart() into account
+double realnow(); // disregarding pauses
+void pause();
+void restart();
 uint32_t ticks();
 void tick();
 };

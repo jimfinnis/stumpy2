@@ -138,6 +138,8 @@ public:
                             data[0] = in.buffer[0];
                             data[1] = in.buffer[1];
                             data[2] = in.buffer[2];
+                            if(p->listener)
+                                p->processEvent(data);
                             data+=3;
                         }
                     }
@@ -239,9 +241,11 @@ void sendCC(MidiPort *p,int chan,int ctor,int val){
 
 static MidiPort *in,*out;
 static float noteEnds[16][128];
-void simpleMidiInit(){
+void simpleMidiInit(MidiPortListener *l){
     initMidi("stumpymusic");
     in = midiCreateInput("in");
+    if(l)
+        in->setListener(l);
     out = midiCreateOutput("out");
     for(int c=0;c<16;c++){
         for(int i=0;i<128;i++)

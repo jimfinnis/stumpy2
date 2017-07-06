@@ -117,6 +117,70 @@ public:
 };
 static Clock regclock;
 
+
+
+// produces regular ticks, type 2 (timed in seconds)
+class AbsClock : public ComponentType {
+    IntParameter *pPower2;
+    FloatParameter *pMul,*pAdd,*pGapSecs;
+    static const int NUMOUTS=4;
+public:
+    AbsClock() : ComponentType("absclock","time"){}
+    virtual void init(){
+        setParams(pPower2 = new IntParameter("poweroftwo",-4,4,0),
+                  pMul = new FloatParameter("mul",0.1,3,1),
+                  pAdd = new FloatParameter("add",-100,100,0),
+                  pGapSecs = new FloatParameter("gapsecs",0,1,0),
+                  NULL);
+        
+        for(int i=0;i<NUMOUTS;i++)
+            setOutput(i,tInt,"tick");
+    }
+    
+    virtual void initComponentInstance(ComponentInstance *c){
+        ClockData *d = new ClockData();
+        c->privateData = (void *)d;
+        d->start = Time::now();
+        for(int i=0;i<NUMOUTS;i++)
+            d->prevq[i]=-1;
+    }
+    
+    virtual void shutdownComponentInstance(ComponentInstance *c){
+        delete ((ClockData *)c->privateData);
+    }
+    
+    virtual void run(ComponentInstance *ci,int out){
+        ClockData *d = (ClockData *)ci->privateData;
+        Component *c = ci->component;
+        
+        // get time interval, this time absolute
+        float interval= powf(2.0,(float)pPower2->get(c)) * pMul->get(c) + pAdd->get(c);
+        
+        float gap = pGapSecs->get(c);
+        float tout = Time::now()-gap*(float)out;
+        
+        // then fmod that time with the interval
+        float q = fmod(tout,interval);
+        // when this crosses zero is when we should tick.
+        int tick = (q<d->prevq[out])?1:0;
+        d->prevq[out]=q;
+        
+        tInt->setOutput(ci,out,tick);
+    }
+    virtual const char *getExtraText(Component *c,char *buf){
+        float t= powf(2.0,(float)pPower2->get(c))
+              * pMul->get(c) + pAdd->get(c);
+        
+        sprintf(buf,"%.3f",t);
+        return buf;
+    }
+};
+static AbsClock regabsclock;
+
+
+
+
+
 class TickCombiner : public ComponentType {
     static const int NUMINS = 4;
 public:

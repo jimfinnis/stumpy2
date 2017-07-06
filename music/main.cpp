@@ -16,11 +16,40 @@
 
 ChordCon *tChord;
 
+bool midirecvd=false;
+class MidiListener : public MidiPortListener {
+public:
+    virtual void onNoteOn(int chan,int vel,int key){
+        midirecvd=true;
+    }
+    virtual void onNoteOff(int chan,int vel,int key){}
+    virtual void onCC(int chan,int vel,int key){}
+};
+
 int main(int argc,char *argv[]){
     
-    simpleMidiInit();
+    MidiListener midiListener;
+    
+    simpleMidiInit(&midiListener);
     // create (and register) new connection types
     tChord = new ChordCon();
+    
+    
+    // crude command line parsing
+    
+    char *filename=NULL;
+    bool midisync=false;
+    for(int i=1;i<argc;i++){
+        char *s = argv[i];
+        if(*s=='-'){
+            switch(s[1]){
+                // -s : wait for a midi noteon on any channel before starting music
+            case 's':midisync = true;break;
+            default:
+                printf("usage: music [-s] [file.pls]\n");
+            }
+        }else filename = s;
+    }
     
     
     Time::init();
@@ -28,16 +57,24 @@ int main(int argc,char *argv[]){
         Server server(65111);
         PatchLibrary lib;
         
-        if(argc>1)
-            lib.readFile(argv[1]);
+        if(filename)
+            lib.readFile(filename);
         
         server.setListener(new Controller(&lib,&server));
+        
+        if(midisync)Time::pause();
+        
         for(;;){
             if(!server.process())break;
             lib.run();
             Time::tick();
             usleep(1000);
             simpleMidiUpdate();
+            if(midirecvd){
+                printf("Note received, syncing\n");
+                Time::restart();
+                midirecvd=false;
+            }
         }
     } catch(int x) {
         simpleMidiShutdown();

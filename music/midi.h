@@ -25,7 +25,7 @@ void sendNoteOn(MidiPort *p,int chan,int note,int vel);
 void sendNoteOff(MidiPort *p,int chan,int note);
 void sendCC(MidiPort *p,int chan,int ctor,int val);
 
-void simpleMidiInit();
+void simpleMidiInit(MidiPortListener *l);
 void simpleMidiShutdown();
 void simpleMidiUpdate();
 void simpleMidiPlay(int chan, int note, int vel,float dur);

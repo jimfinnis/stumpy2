@@ -14,7 +14,7 @@
 
 
 #if DIAMOND
-#define NUMDIAMONDCONNS 6
+#define NUMDIAMONDCONNS 10
 #include <diamondapparatus/diamondapparatus.h>
 class DiamondInComponent : public ComponentType {
     FloatParameter *pAdd[NUMDIAMONDCONNS],*pMul[NUMDIAMONDCONNS];
@@ -34,6 +34,7 @@ public:
     }
         
     virtual void init() {
+        width=170;
         addParameter(pTopic=new StringParameter("topic","data"));
         
         for(int i=0;i<NUMDIAMONDCONNS;i++){

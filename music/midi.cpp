@@ -200,6 +200,9 @@ void shutdownMidi(){
     }
 }
 
+
+
+
 void sendNoteOn(MidiPort *p,int chan,int note,int vel){
     chkjack();
     
@@ -240,7 +243,7 @@ void sendCC(MidiPort *p,int chan,int ctor,int val){
 
 
 static MidiPort *in,*out;
-static float noteEnds[16][128];
+static double noteEnds[16][128];
 void simpleMidiInit(MidiPortListener *l){
     initMidi("stumpymusic");
     in = midiCreateInput("in");

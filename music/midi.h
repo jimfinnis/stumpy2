@@ -28,7 +28,7 @@ void sendCC(MidiPort *p,int chan,int ctor,int val);
 void simpleMidiInit(MidiPortListener *l);
 void simpleMidiShutdown();
 void simpleMidiUpdate();
-void simpleMidiPlay(int chan, int note, int vel,float dur);
+void simpleMidiPlay(int chan, int note, int vel,float dur,bool suppressRetrig);
 void simpleMidiCC(int chan, int ctor,int val);
 
 #endif /* __MIDI_H */

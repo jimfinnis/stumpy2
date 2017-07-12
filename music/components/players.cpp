@@ -86,7 +86,7 @@ public:
             }
             if(ct){
                 vel *= gVel;
-                simpleMidiPlay(pChan->get(c),gTrans+notes[d->curNote],vel,dur);
+                simpleMidiPlay(pChan->get(c),gTrans+notes[d->curNote],vel,dur,true); // always suppress retrig
                 d->curNote++;
                 if(d->curNote==ct){
                     d->curNote=-1;
@@ -102,12 +102,6 @@ public:
 static ChordPlay cpreg;
 
 
-
-struct NPData {
-    bool playing;
-    float noteStarts[128]; // when last notes started on this key
-    float noteDurs[128]; // length of last note on this key
-};
 
 class NotePlay : public ComponentType {
     FloatParameter *pVelMod,*pDur,*pVel;
@@ -140,21 +134,13 @@ public:
     }
     
     virtual void initComponentInstance(ComponentInstance *c){
-        NPData *d = new NPData();
-        c->privateData = (void *)d;
-        for(int i=0;i<128;i++){
-            d->noteStarts[i]=-100;
-            d->noteDurs[i]=0;
-        }
     }
     
     virtual void shutdownComponentInstance(ComponentInstance *c){
-        delete ((NPData *)c->privateData);
     }
     
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
-        NPData *d = (NPData *)ci->privateData;
         
         float gate = (!c->isInputConnected(0))?1:
         tFloat->getInput(ci,0);
@@ -170,7 +156,7 @@ public:
             b = gChord;
         
         float durmul = c->isInputConnected(5) ? tFloat->getInput(ci,5) : 1.0f;
-        bool suppressRetrigBeforeComplete = pSuppressRetrig->get(c);
+        bool suppressRetrig = pSuppressRetrig->get(c);
         
         if(gate>0.5 && notetrig){
             c->dprintf("triggered");
@@ -207,13 +193,8 @@ public:
                 // get true MIDI note
                 noteidx = notes[noteidx]+oct*octaves*12;
                 while(noteidx>(128-12))noteidx-=12;
-
-                if(!suppressRetrigBeforeComplete || 
-                   now-d->noteStarts[noteidx] > d->noteDurs[noteidx]){
-                    simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur);
-                    d->noteStarts[noteidx]=now;
-                    d->noteDurs[noteidx]=dur;
-                }
+                
+                simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur,suppressRetrig);
             }
         }
     }

@@ -282,7 +282,7 @@ void simpleMidiUpdate(){
     }
 }
 
-void simpleMidiPlay(int chan, int note, int vel,float dur){
+void simpleMidiPlay(int chan, int note, int vel,float dur,bool suppressRetrig){
     printf("PLAY %d, %d, vel %d, dur %f\n",
            chan,note,vel,dur);
     
@@ -293,8 +293,10 @@ void simpleMidiPlay(int chan, int note, int vel,float dur){
     }
     
     if(chan>=0 && chan<16 && note>=0 && note<128){
-        noteEnds[chan][note] = Time::now()+dur;
-        sendNoteOn(out,chan,note,vel);
+        if(!suppressRetrig || noteEnds[chan][note]<0){
+            noteEnds[chan][note] = Time::now()+dur;
+            sendNoteOn(out,chan,note,vel);
+        }
     }
 }
 

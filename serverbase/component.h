@@ -389,6 +389,7 @@ public:
         slot = -1;
         type = NULL;
         paramVals = NULL;
+        debug=false;
     }
     
         

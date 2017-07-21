@@ -322,35 +322,8 @@ MouseWheelListener {
 		return selected;
 	}
 
-	/**
-	 * Select all components which intersect a given rectangle
-	 * 
-	 * @param r
-	 */
-	public void selectWithin(final Rectangle r) {
-		patch.visitAll(new Visitor() {
-			@Override
-			public void visitComponent(Component c) {
-				if (c.page==curpage && r.intersects(c.rect))
-					select(c);
-			}
-		});
-	}
 
-	/**
-	 * Unselect all components which intersect a given rectangle
-	 * 
-	 * @param r
-	 */
-	public void unselectWithin(final Rectangle r) {
-		patch.visitAll(new Visitor() {
-			@Override
-			public void visitComponent(Component c) {
-				if (c.page==curpage && r.intersects(c.rect))
-					unselect(c);
-			}
-		});
-	}
+
 
 	/**
 	 * Unselect all components
@@ -616,7 +589,7 @@ MouseWheelListener {
 		patch.visitAll(new Visitor() {
 			@Override
 			public void visitComponent(Component c) {
-				if (r.contains(c.rect))
+				if (r.contains(c.rect) && c.page == curpage)
 					select(c);
 			}
 		});

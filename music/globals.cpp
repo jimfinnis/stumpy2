@@ -11,6 +11,7 @@ float gVel=1.0f;
 int gTrans=0;
 int gEnforcedOct=-100;
 BitField gChord;
+bool gDebugMidi = false;
 
 // init those globals which can't be constructed
 void initGlobals(){

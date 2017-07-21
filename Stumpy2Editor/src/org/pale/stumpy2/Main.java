@@ -33,7 +33,7 @@ public class Main {
 	public static void main(String[] args){
 		
 		final JFrame frame = new JFrame(); // our all-encompassing main frame
-		frame.setTitle("Stumpy Editor: MAGENTA THERMOMETER");
+		frame.setTitle("Stumpy Editor: FUCHSIA PILLOW (21/07/17)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		control = new CControl(frame);

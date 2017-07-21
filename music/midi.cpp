@@ -227,6 +227,9 @@ void sendNoteOff(MidiPort *p,int chan,int note){
 void sendCC(MidiPort *p,int chan,int ctor,int val){
     chkjack();
     
+    if(gDebugMidi){
+        printf("CC %d on chan %d, %d\n",ctor,chan,val);
+    }
     if(ctor>127)ctor=127;
     if(val>127)val=127;
     if(val<0)val=0;
@@ -283,9 +286,11 @@ void simpleMidiUpdate(){
 }
 
 void simpleMidiPlay(int chan, int note, int vel,float dur,bool suppressRetrig){
-    printf("PLAY %d, %d, vel %d, dur %f\n",
-           chan,note,vel,dur);
-    
+    if(gDebugMidi){
+        printf("PLAY %d, %d, vel %d, dur %f\n",
+               chan,note,vel,dur);
+    }
+        
     // oct enforce, octaves based on C
     if(gEnforcedOct>-100){
         note %=12;

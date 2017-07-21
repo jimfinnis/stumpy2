@@ -57,7 +57,7 @@ public class PatchViewPopup extends PopupMenu {
                 @Override
                 public void execute() {
                     try {
-                        patch.addComponent(typeName, point);
+                        patch.addComponent(typeName, point, canvas.curpage);
                         canvas.repaint();
                     } catch (UnknownComponentTypeException e) {
                         controller.showError("unknown component " + typeName);
@@ -185,7 +185,7 @@ public class PatchViewPopup extends PopupMenu {
                         Set<Component> set = canvas.getSelected();
                         if(set.size() == 1){
                         	for(Component c: set){
-                        		patch.notifyChange(new PatchChange(PatchChangeType.DEBUG, c));
+                        		patch.notifyChange(new PatchChange(PatchChangeType.DEBUG, c,canvas.curpage));
 
                         	}
                         }

@@ -20,6 +20,10 @@ extern int gTrans;
 // -ve if not enforced.
 extern int gEnforcedOct;
 
+// debug midi, there's a component for this.
+extern bool gDebugMidi;
+
+
 // the current "chord as state" - the chord used by single-chord-input 
 // components whose chord input is not wired up.
 extern BitField gChord;

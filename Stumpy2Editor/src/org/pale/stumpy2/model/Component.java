@@ -121,8 +121,9 @@ public class Component implements Visitable {
 	 * @param pos
 	 *            position in canvas
 	 */
-	Component(Patch patch, ComponentType type, Point pos) {
+	Component(Patch patch, ComponentType type, Point pos, int page) {
 		this.patch = patch;
+		this.page = page;
 		this.id = idcounter++;
 		this.type = type;
 		this.inputs = new Input[type.getInputCount()];

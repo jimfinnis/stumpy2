@@ -296,8 +296,8 @@ public class ComponentType {
 	 * @param pos
 	 *            position in canvas
 	 */
-	Component create(Patch p,Point pos) {
-		return new Component(p,this, pos);
+	Component create(Patch p,Point pos, int page) {
+		return new Component(p,this, pos, page);
 	}
 
 	/**

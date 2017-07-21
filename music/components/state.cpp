@@ -111,3 +111,29 @@ public:
 };
 
 static ChordState chordstatereg;
+
+
+class DebugMidiState : public ComponentType {
+    static const int NUMINS = 4;
+public:
+    DebugMidiState() : ComponentType("debugmidi","state"){}
+    virtual void init(){
+        for(int i=0;i<NUMINS;i++){
+            setInput(i,tFlow,"flow");
+        }
+        setOutput(0,tFlow,"flow");
+    }
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        
+        bool oldc = gDebugMidi;
+        gDebugMidi = true;
+        
+        for(int i=0;i<NUMINS;i++){
+            tFlow->getInput(ci,i);
+        }
+        gDebugMidi=oldc;
+    }
+};
+    
+static DebugMidiState debugmidireg;

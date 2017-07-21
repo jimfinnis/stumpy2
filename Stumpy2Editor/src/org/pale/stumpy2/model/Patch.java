@@ -143,14 +143,14 @@ public class Patch {
 	 * @throws NoCurrentPatchException
 	 */
 
-	public Component addComponent(String name, Point pos)
+	public Component addComponent(String name, Point pos, int curpage)
 			throws UnknownComponentTypeException, NoCurrentPatchException {
 
 		System.out.println("Trying to make "+name);
 
 		ComponentType t = ComponentTypeRegistry.getInstance().getComponentType(
 				name);
-		Component c = t.create(this,pos);
+		Component c = t.create(this,pos,curpage);
 		components.addLast(c);
 
 		notifyChange(new PatchChangeListener.PatchChange(PatchChangeType.ADD, c));

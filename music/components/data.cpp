@@ -41,8 +41,9 @@ public:
             setOutput(i,tFloat,"out");
             char buf[32];
             sprintf(buf,"mul %d",i);
-            addParameter(pMul[i]=new FloatParameter("mul",-100,100,1));
-            addParameter(pAdd[i]=new FloatParameter("add",-100,100,1));
+            addParameter(pMul[i]=new FloatParameter(strdup(buf),-100,100,1));
+            sprintf(buf,"add %d",i);
+            addParameter(pAdd[i]=new FloatParameter(strdup(buf),-100,100,0));
         }
     }
     

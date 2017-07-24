@@ -100,24 +100,20 @@ static MulComponent mulreg;
 static const char *funcNames[]=
 {
     "sin(x+y)","cos(x+y)","gauss(x+y)",
-    "x % y" , "abs(x+y)",
+    "x % y" , "abs(x+y)","tanh(x+y)",
     NULL
 };
 
 inline float dofunc(float x,float y,int i){
     switch(i){
-    case 0:
-        return sinf(x+y);
-    case 1:
-        return cosf(x+y);
-    case 2:
-        x=x+y;
+    case 0:return sinf(x+y);
+    case 1:return cosf(x+y);
+    case 2:x=x+y;
         return (1.0f/(2.0f*3.1415927f))*
               powf(2.71828f,-0.5f*x*x);
-    case 3:
-        return fmodf(x,y);
-    case 4:
-        return fabsf(x+y);
+    case 3:return fmodf(x,y);
+    case 4:return fabsf(x+y);
+    case 5:return tanhf(x+y);
     }
     return 0;
 }
@@ -255,7 +251,7 @@ public:
         float mn = pMin->get(c);
         float mx = pMax->get(c);
         if(in<mn)in=mn;
-        else if(mn>mx)in=mx;
+        else if(in>mx)in=mx;
         
         tFloat->setOutput(ci,0,in);
     }

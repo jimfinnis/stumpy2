@@ -193,8 +193,8 @@ public:
                 // get true MIDI note
                 noteidx = notes[noteidx]+oct*octaves*12;
                 while(noteidx>(128-12))noteidx-=12;
-                
-                simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur,suppressRetrig);
+                if(vel>0)
+                    simpleMidiPlay(pChan->get(c),gTrans+noteidx,vel,dur,suppressRetrig);
             }
         }
     }

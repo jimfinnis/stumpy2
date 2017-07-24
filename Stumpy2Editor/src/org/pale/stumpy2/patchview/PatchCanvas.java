@@ -73,8 +73,10 @@ MouseWheelListener {
 
 				break;
 			case KeyEvent.VK_HOME:
+			case KeyEvent.VK_NUMPAD4:
 				changePage(-1);
 				break;
+			case KeyEvent.VK_NUMPAD6:
 			case KeyEvent.VK_END:
 				changePage(1);
 				break;

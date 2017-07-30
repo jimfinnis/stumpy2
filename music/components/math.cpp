@@ -277,9 +277,10 @@ public:
         for(int i=0;i<NUMINS;i++){
             char buf[32];
             sprintf(buf,"thresh %d",i);
+            addParameter(pThresh[i] = 
+                         new FloatParameter(strdup(buf),-10,10,0));
             sprintf(buf,"output %d",i);
-            addParameter(pThresh[i] = new FloatParameter(buf,-10,10,0));
-            setOutput(i,tFloat,buf);
+            setOutput(i,tFloat,strdup(buf));
         }
     }
 

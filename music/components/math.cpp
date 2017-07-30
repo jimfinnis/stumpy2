@@ -287,10 +287,14 @@ public:
     virtual void run(ComponentInstance *ci,int out){
         Component *c = ci->component;
         float in = tFloat->getInput(ci,0);
+        c->dprintf("Getting output %d: in is %f",in);
         in *= pMul->get(c);
         in += pAdd->get(c);
-        
-        float r = (in<pThresh[out]->get(c) < 0) ? 0 : 1;
+        c->dprintf("post mul/add in is %f",in);
+        float thresh=pThresh[out]->get(c);
+        float r = (in<thresh) ? 0 : 1;
+        c->dprintf("Thresh %d is %f, output is %f",out,thresh,r);
+                   
         
         
         tFloat->setOutput(ci,out,r);

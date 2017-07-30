@@ -259,5 +259,43 @@ public:
 private:
     FloatParameter *pMin,*pMax;
 };
-
 static ClampComponent clampreg;
+
+// several thresholds set, will output 0 or 1 to the corresponding
+// output if input is above or below threshold.
+
+class LowHighComponent : public ComponentType {
+    static const int NUMINS = 4;
+    FloatParameter *pMul,*pAdd,*pThresh[NUMINS];
+public:
+    
+    LowHighComponent() : ComponentType("lowhigh","maths"){}
+    virtual void init() {
+        setInput(0,tFloat,"in");
+        addParameter(pMul=new FloatParameter("mul",-10,10,1));
+        addParameter(pAdd=new FloatParameter("add",-10,10,0));
+        for(int i=0;i<NUMINS;i++){
+            char buf[32];
+            sprintf(buf,"thresh %d",i);
+            sprintf(buf,"output %d",i);
+            addParameter(pThresh[i] = new FloatParameter(buf,-10,10,0));
+            setOutput(i,tFloat,buf);
+        }
+    }
+
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        float in = tFloat->getInput(ci,0);
+        in *= pMul->get(c);
+        in += pAdd->get(c);
+        
+        float r = (in<pThresh[out]->get(c) < 0) ? 0 : 1;
+        
+        
+        tFloat->setOutput(ci,out,r);
+    }
+    
+private:
+};
+
+static LowHighComponent lohireg;

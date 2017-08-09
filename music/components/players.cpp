@@ -40,7 +40,7 @@ public:
     virtual void initComponentInstance(ComponentInstance *c){
         CPData *d = new CPData();
         c->privateData = (void *)d;
-        d->curNote=0;
+        d->curNote=-1;
     }
     
     virtual void shutdownComponentInstance(ComponentInstance *c){
@@ -55,6 +55,7 @@ public:
             // tick! start playing the chord
             d->curNote = 0;
             d->startTime = Time::now();
+            c->dprintf("triggered");
         }
         
         // have to always call this.
@@ -70,6 +71,7 @@ public:
     
         float nextTime = d->startTime + gap*(float)d->curNote;
         if(Time::now() > nextTime && d->curNote>=0){
+            c->dprintf("Note play, curnote=%d",d->curNote);
             float dur = durmul*pDur->get(c)*(float)(1<<pDurPow2->get(c));
             dur *= 60.0/gTempo; // convert beats to seconds
             float vel = pVel->get(c) + pVelMod->get(c)*velmod;
@@ -80,18 +82,30 @@ public:
             for(int i=0;i<128;i++){
                 if(b.get(i)){
                     int n = i + trans;
-                    if(n>=0 && n<128)
+                    if(n>=0 && n<128){
+                        c->dprintf("Adding note %d (%d+trans %d)",i,n,trans);
                         notes[ct++]=n;
+                    }
+                    else
+                        c->dprintf("Note %d (%d+trans %d) out of range",i,trans);
                 }
             }
             if(ct){
+                c->dprintf("Count is %d",ct);
                 vel *= gVel;
-                simpleMidiPlay(pChan->get(c),gTrans+notes[d->curNote],vel,dur,true); // always suppress retrig
-                d->curNote++;
-                if(d->curNote==ct){
+                if(d->curNote<ct){
+                    c->dprintf("Playing note %d: %d [global trans %d]",
+                               d->curNote,
+                               gTrans+notes[d->curNote],gTrans);
+                    simpleMidiPlay(pChan->get(c),gTrans+notes[d->curNote],vel,dur,true); // always suppress retrig
+                    d->curNote++;
+                } else {
+                    c->dprintf("End of chord.");
                     d->curNote=-1;
                 }
-            }
+            } else
+                c->dprintf("count zero");
+                  
         }
     }        
     virtual const char *getExtraText(Component *c,char *buf){

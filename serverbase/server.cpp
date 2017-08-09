@@ -161,6 +161,7 @@ bool Server::process() {
 
 void Server::output(const char *s){
     printf("Sending reply: %s\n",s);
-    write(clientfd,s,strlen(s));
+    if(!write(clientfd,s,strlen(s)))
+        printf("send failed?\n");
 }
 

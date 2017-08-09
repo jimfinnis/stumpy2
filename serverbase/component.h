@@ -16,6 +16,7 @@
 #define UNUSED __attribute__((unused))
 
 #include "util/exception.h"
+#include "util/time.h"
 #include "list.h"
 #include "intkeyedhash.h"
 #include "errors.h"
@@ -302,10 +303,8 @@ public:
         if(debug){
             va_list args;
             va_start(args,s);
-            
-            printf("[%s] : %s\n",type->name,buf);
-        
             vsprintf(buf,s,args);
+            printf("[%s] %f: %s\n",type->name,Time::now(),buf);
             va_end(args);
         }
     }

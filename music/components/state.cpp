@@ -84,6 +84,44 @@ public:
 static Transposer transreg;
 
 
+class OctLimit : public ComponentType {
+    IntParameter *pMinOct,*pMaxOct;
+    BoolParameter *pMinOctOn,*pMaxOctOn;
+    static const int NUMINS = 4;
+public:
+    OctLimit() : ComponentType("octavelimit","state"){}
+    virtual void init(){
+        setParams(
+                  pMinOctOn=new BoolParameter("minoct on",false),
+                  pMinOct=new IntParameter("minoct",-1,6,2),
+                  pMaxOctOn=new BoolParameter("maxoct on",false),
+                  pMaxOct=new IntParameter("maxoct",-1,6,3),NULL);
+        for(int i=0;i<NUMINS;i++){
+            setInput(i,tFlow,"flow");
+        }
+        setOutput(0,tFlow,"flow");
+    }
+    virtual void run(ComponentInstance *ci,int out){
+        Component *c = ci->component;
+        
+        int oldmin = gMinOct, oldmax = gMaxOct;
+        
+        if(pMinOctOn->get(c))
+            gMinOct = pMinOct->get(c);
+        if(pMaxOctOn->get(c))
+            gMaxOct = pMaxOct->get(c);
+        
+        
+        for(int i=0;i<NUMINS;i++){
+            tFlow->getInput(ci,1+i);
+        }
+        
+        gMinOct = oldmin;
+        gMaxOct = oldmax;
+    }
+};
+static OctLimit octlimreg;
+
 class ChordState : public ComponentType {
     static const int NUMINS = 4;
 public:

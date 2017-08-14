@@ -27,6 +27,8 @@ static void chkjack(){
         throw "jack not connected";
 }
 
+static bool noteDebug[16][128]; // whether gDebugMidi was on when note started
+
 #define DATABUFSIZE 2048
 
 class MidiPort {
@@ -206,6 +208,9 @@ void shutdownMidi(){
 void sendNoteOn(MidiPort *p,int chan,int note,int vel){
     chkjack();
     
+    if(gDebugMidi){
+        printf("ON %d, %d, %d\n",chan,note,vel);
+    }
     uint8_t data[3];
     data[0]=144+chan;
     data[1]=note;
@@ -217,6 +222,10 @@ void sendNoteOn(MidiPort *p,int chan,int note,int vel){
 void sendNoteOff(MidiPort *p,int chan,int note){
     chkjack();
     
+    if(noteDebug[chan][note]){
+        printf("OFF %d, %d\n",chan,note);
+        noteDebug[chan][note]=false;
+    }
     uint8_t data[3];
     data[0]=128+chan;
     data[1]=note;
@@ -247,6 +256,7 @@ void sendCC(MidiPort *p,int chan,int ctor,int val){
 
 static MidiPort *in,*out;
 static double noteEnds[16][128];
+
 void simpleMidiInit(MidiPortListener *l){
     initMidi("stumpymusic");
     in = midiCreateInput("in");
@@ -254,8 +264,10 @@ void simpleMidiInit(MidiPortListener *l){
         in->setListener(l);
     out = midiCreateOutput("out");
     for(int c=0;c<16;c++){
-        for(int i=0;i<128;i++)
+        for(int i=0;i<128;i++){
             noteEnds[c][i]=-1;
+            noteDebug[c][i]=false;
+        }
     }
 }
 
@@ -286,10 +298,6 @@ void simpleMidiUpdate(){
 }
 
 void simpleMidiPlay(int chan, int note, int vel,float dur,bool suppressRetrig){
-    if(gDebugMidi){
-        printf("PLAY %d, %d, vel %d, dur %f\n",
-               chan,note,vel,dur);
-    }
         
     // oct enforce, octaves based on C
     if(gEnforcedOct>-100){
@@ -297,9 +305,26 @@ void simpleMidiPlay(int chan, int note, int vel,float dur,bool suppressRetrig){
         note += (gEnforcedOct+1)*12;
     }
     
-    if(chan>=0 && chan<16 && note>=0 && note<128){
+    // oct limiting
+    int oct = (note/12)-1; // note 0 is C in octave -1.
+    if(gMinOct>-100){
+        if(oct<gMinOct)
+            note = (note%12)+(gMinOct+1)*12;
+    }
+    if(gMaxOct>-100){
+        if(oct>gMinOct)
+            note = (note%12)+(gMaxOct+1)*12;
+    }
+        
+    if(gDebugMidi){
+        printf("PLAY %d, %d, vel %d, dur %f\n",
+               chan,note,vel,dur);
+    }
+    
+    if(vel>0 && chan>=0 && chan<16 && note>=0 && note<128){
         if(!suppressRetrig || noteEnds[chan][note]<0){
             noteEnds[chan][note] = Time::now()+dur;
+            noteDebug[chan][note]=gDebugMidi;
             sendNoteOn(out,chan,note,vel);
         }
     }

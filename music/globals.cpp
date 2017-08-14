@@ -10,6 +10,7 @@ float gTempo=100.0f;
 float gVel=1.0f;
 int gTrans=0;
 int gEnforcedOct=-100;
+int gMinOct=-100,gMaxOct=-100;
 BitField gChord;
 bool gDebugMidi = false;
 

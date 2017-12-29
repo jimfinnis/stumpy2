@@ -82,7 +82,7 @@ obvious.)
 The source code for the editor can be found in the ''StumpyEditor''
 directory: it's a Java swing app using the Docking Frames framework
 (http://www.docking-frames.org/). A JAR is included in the release,
-however, as '''client.jar'''.
+however, as '''Stumpy2Editor.jar'''.
 
 When the client is open, a toolbar will appear. Before doing anything
 else, use the arrow-out-of-box icon to connect to a running application

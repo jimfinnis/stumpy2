@@ -34,7 +34,7 @@ class Patch {
     /// case all the instances will have to resize.
     
     int allocateNewComponentSlot(){
-        if(firstFree<0)
+        if(firstFree>=INITIALPOOLSIZE)
             // TODO  - ADD GROW CODE HERE
             throw Exception("patch component pool out of memory");
         int id = firstFree;

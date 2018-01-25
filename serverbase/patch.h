@@ -22,7 +22,7 @@ class PatchInstance;
 
 class Patch {
     friend class PatchInstance;
-    static const int INITIALPOOLSIZE = 128; 
+    static const int INITIALPOOLSIZE = 1024; 
     static const int NUMCONNECTORS = 128;
     
     int *freeList; //!< the freelist for the component instance data pools

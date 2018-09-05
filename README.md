@@ -173,7 +173,7 @@ not be registered until you hit enter.
 
 # What happens during an update
 The server calls the output component, which calls all its inputs
-in turn (look at the source [https://github.com/jimfinnis/stumpy2/blob/master/qtserver/components/output.cpp](here).
+in turn (look at the source [here](https://github.com/jimfinnis/stumpy2/blob/master/qtserver/components/output.cpp).
 Each of those components runs, which may involve getting inputs (flows
 or otherwise) - and each of the those input components calls their
 inputs and so on, recursively. In general, if two components connect

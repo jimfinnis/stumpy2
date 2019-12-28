@@ -7,8 +7,8 @@
  */
 
 
-#ifndef __EXCEPTION_H
-#define __EXCEPTION_H
+#ifndef __EXCEPT_H
+#define __EXCEPT_H
 
 #include <string.h>
 #include <stdio.h>
@@ -85,4 +85,4 @@ public:
 /// macro producing a RuntimeException with the file's name and line number
 #define RUNT(x) throw RuntimeException(x,__FILE__,__LINE__)
 
-#endif /* __EXCEPTION_H */
+#endif /* __EXCEPT_H */

@@ -47,7 +47,7 @@ struct State {
         texture2 = NULL;
         overrides = 0;
         modes = 0;
-        effect = NULL;
+        renderStyle = DEFAULT;
     }
     
     /// LIGHT states
@@ -73,11 +73,16 @@ struct State {
     
     // texture if any (overrides material)
     class Texture *texture;
-    class Effect *effect;
     
     // extra stuff
     class Texture *texture2;
     Vector diffuse2;
+    
+    // special rendering styles
+    static const int DEFAULT=0;
+    static const int FLAT=1;
+    static const int ENVMAP=2;
+    int renderStyle;
     
     // other overrides are determined by some flags
     
@@ -85,7 +90,7 @@ struct State {
 #define STO_DIFFUSE 1
 #define STO_ALPHA 2
     int overrides;
-// other booleans
+// other booleans;
 #define STM_ADDITIVE 1
     int modes;
     Vector diffuse; // w is ignored; it gets overwritten by alpha

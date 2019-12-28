@@ -45,12 +45,19 @@ varying float vFog;
 
 void main()
 {
+// colour from texture itself
     vec4 texCol = texture2D(sTex,vTexCoords);
+
+// colour from environment map
     vec4 mapCol = texture2D(sTex2,vTexCoordsMap);
 
+// modulate envmap with envmap diffuse colour
     vec4 colmap = colDiffuse2*mapCol;
+
+// get vertex colour
     vec4 baseCol = vec4(vCol.x,vCol.y,vCol.z,vCol.w);
-    vec4 col = baseCol*texCol;
+// modulate with the basic texture colour
+    vec4 col = texCol*baseCol;
     
     col = colmap+col;
     col = min(col,1.0);

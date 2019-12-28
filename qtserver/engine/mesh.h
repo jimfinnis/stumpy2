@@ -12,7 +12,7 @@
  *  Author        : $Author$
  *  Created By    : Jim Finnis
  *  Created       : Tue May 4 14:27:17 2010
- *  Last Modified : <160523.2340>
+ *  Last Modified : <191228.1357>
  *
  *  Description	
  *
@@ -60,17 +60,6 @@ public:
     /// draw me 
     virtual void render(Matrix *world);
     
-    /// set effect to render textured submeshes with
-    void setTexEffect(class Effect *e)
-    {
-        mTexEffect = e;
-    }
-    /// set effect to render untextured submeshes with
-    void setUntexEffect(class Effect *e)
-    {
-        mUntexEffect = e;
-    }
-    
     /// used for batch rendering of many identical meshes. This binds
     /// the vertex and index buffers of the nth SingleMesh. Assumes there's
     /// only one material in it!
@@ -106,12 +95,11 @@ protected:
     // render untextured components
     virtual void renderUntex(Matrix *world);
     
-    /// these are the actual meshes (a Mesh can be made up of several submeshes within the xfile)
+    /// these are the actual meshes
+    // (a Mesh can be made up of several submeshes within the xfile)
     
-    struct SingleMesh *mSubMeshes[16];
+    struct SingleMesh *mSubMeshes[16]; // struct defined in mesh.cpp
     int mNumSubMeshes; 
-    Effect *mTexEffect; // if null, use default effects!
-    Effect *mUntexEffect; // if null, use default effects!
     
     bool hasuntex; // does it have textured materials?
     bool hastex; // does it have untextured materials?    

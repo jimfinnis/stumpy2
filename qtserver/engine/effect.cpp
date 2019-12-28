@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Mon May 10 15:57:47 2010
-//  Last Modified : <161204.1721>
+//  Last Modified : <191228.1531>
 //
 //  Description	
 //
@@ -66,7 +66,13 @@ EffectManager::EffectManager(){
                            EDU_DIFFLIGHTS|EDU_AMBLIGHT|
                            EDU_SAMPLER|EDU_WORLDVIEW|EDU_FOG|
                            EDU_SAMPLER2|EDU_DIFFUSE2);
-    envMapTex->additive=true;
+    
+    envMapUnTex = new Effect("media/envmapun.shr",
+                           EDA_POS|EDA_NORM|
+                           EDU_WORLDVIEWPROJ|EDU_NORMMAT|EDU_DIFFUSECOL|
+                           EDU_DIFFLIGHTS|EDU_AMBLIGHT|
+                           EDU_WORLDVIEW|EDU_FOG|
+                           EDU_SAMPLER2|EDU_DIFFUSE2);
     
     flatTex = new Effect("media/flattex.shr",
                          EDA_POS|
@@ -82,7 +88,34 @@ EffectManager::EffectManager(){
     meshUntex->init();
     meshTex->init();
     envMapTex->init();
+    envMapUnTex->init();
     flatTex->init();
+}
+
+
+Effect *EffectManager::getEffectForCurrentState(bool textured){
+    State *s = StateManager::getInstance()->get();
+    if(textured){
+        switch(s->renderStyle){
+        case State::ENVMAP:
+            return envMapTex;
+        case State::FLAT:
+            return flatTex;
+        case State::DEFAULT:
+        default:
+            return meshTex;
+        }
+    } else {
+        switch(s->renderStyle){
+        case State::ENVMAP:
+            return envMapUnTex;
+        case State::FLAT:
+            printf("Flat untex not impl.\n");
+        case State::DEFAULT:
+        default:
+            return meshUntex;
+        }
+    }
 }
 
 

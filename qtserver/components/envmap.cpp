@@ -63,19 +63,20 @@ public:
         float modg = tFloat->getInput(ci,3);
         float modb = tFloat->getInput(ci,4);
         
+        // a = amount, is used to multiply the diffuse envmap colour (see below)
         float a = pA->get(c) + moda*pModA->get(c);
         
         int n = pTex->get(c) % ct;
         StateManager *sm = StateManager::getInstance();
         State *s = sm->push();
         s->texture2 = textures[n];
-        // the envmap is added on, so we modify the colours
+        // the envmap is additive in the shader, so we modify the colours
         // rather than the alpha
         s->diffuse2.x = a*(pR->get(c) + modr*pModR->get(c));
         s->diffuse2.y = a*(pG->get(c) + modg*pModG->get(c));
         s->diffuse2.z = a*(pB->get(c) + modb*pModB->get(c));
         s->diffuse2.w = 1;
-        s->effect = EffectManager::getInstance()->envMapTex;
+        s->renderStyle = State::ENVMAP;
         ci->getInput(0);
         sm->pop();
     }

@@ -12,7 +12,7 @@
 //  Author        : $Author$
 //  Created By    : Jim Finnis
 //  Created       : Tue May 4 14:28:42 2010
-//  Last Modified : <161203.1647>
+//  Last Modified : <191228.1503>
 //
 //  Description	
 //
@@ -212,8 +212,6 @@ void Mesh::drawForBatch(int n)
 
 Mesh::Mesh(const char *dir, const char *name)
 {
-    mTexEffect = NULL;
-    mUntexEffect = NULL;
     hasuntex = hastex = hasalpha = false;
     mName = strdup(name);
     mDir = strdup(dir);
@@ -1025,17 +1023,8 @@ void Mesh::renderTex(Matrix *world)
     State *st = StateManager::getInstance()->get();
     
     // start the effect
-    Effect *eff;
-    
-    // use the mesh's special tex effect if there is one.
-    if(mTexEffect)
-        eff = mTexEffect;
-    else if(st->effect)
-        eff = st->effect;
-    else
-        // otherwise use the standard.
-        eff = EffectManager::getInstance()->meshTex;
-    
+    Effect *eff = EffectManager::getInstance()->
+          getEffectForCurrentState(true);
     
 //    printf("Using eff %s\n",eff->getFileName());
     eff->begin();
@@ -1095,8 +1084,8 @@ void SingleMesh::renderTex(Effect *eff)
 void Mesh::renderUntex(Matrix *world)
 {
         // start the effect
-    Effect *eff = mUntexEffect?mUntexEffect:
-    EffectManager::getInstance()->meshUntex;
+    Effect *eff = EffectManager::getInstance()->
+          getEffectForCurrentState(false);
     
 //    printf("Using eff %s\n",eff->getFileName());
     eff->begin();

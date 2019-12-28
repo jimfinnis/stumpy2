@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT       += core gui opengl widgets
 CONFIG  += debug
 TARGET = qtserver
 TEMPLATE = app

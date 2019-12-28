@@ -233,14 +233,9 @@ void ObjMesh::renderTex(Matrix *world){
     State *s = StateManager::getInstance()->get();
     
     // start the effect
-    Effect *eff;
+    Effect *eff = EffectManager::getInstance()->
+          getEffectForCurrentState(true);
     
-    // use the state's effect if there is one.
-    if(s->effect)
-        eff = s->effect;
-    else
-        // otherwise use the standard.
-        eff = EffectManager::getInstance()->meshTex;
     eff->begin();
     // upload the matrices
     eff->setUniforms();
@@ -281,14 +276,9 @@ void ObjMesh::renderUntex(Matrix *world){
     State *s = StateManager::getInstance()->get();
     
     // start the effect
-    Effect *eff;
+    Effect *eff = EffectManager::getInstance()->
+          getEffectForCurrentState(false);
     
-    // use the state's effect if there is one.
-    if(s->effect)
-        eff = s->effect;
-    else
-        // otherwise use the standard.
-        eff = EffectManager::getInstance()->meshUntex;
     eff->begin();
     // upload the matrices
     eff->setUniforms();

@@ -26,7 +26,7 @@ public:
         
         StateManager *sm = StateManager::getInstance();
         State *s = sm->push();
-        s->effect = EffectManager::getInstance()->flatTex;
+        s->renderStyle = State::FLAT;
         ci->getInput(0);
         sm->pop();
     }

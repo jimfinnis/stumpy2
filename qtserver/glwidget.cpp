@@ -9,7 +9,7 @@
 #include <QApplication>
 
 GLWidget::GLWidget(QWidget *parent) :
-QGLWidget(parent)
+QOpenGLWidget(parent)
 {
     
     fullsc=false;

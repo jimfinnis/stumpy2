@@ -1,13 +1,13 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QKeyEvent>
 
 #include "serverbase/model.h"
 #include "serverbase/server.h"
 
-class GLWidget : public QGLWidget
+class GLWidget : public QOpenGLWidget
 {
     Q_OBJECT
           
@@ -31,7 +31,7 @@ public:
             quit();
             break;
         default:
-            QGLWidget::keyPressEvent(e);
+            QOpenGLWidget::keyPressEvent(e);
         }
     }    
     

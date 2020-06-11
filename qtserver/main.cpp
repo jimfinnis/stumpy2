@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <stdio.h>
 #include "glwidget.h"
 #include "serverbase/util/time.h"

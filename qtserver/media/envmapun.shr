@@ -1,0 +1,61 @@
+%%vertex
+
+#include <media/uniforms.inc>
+
+uniform mat4 matWorldViewProj;
+uniform mat4 matWorldView;
+uniform mat3 matNormal;
+attribute vec3 aNormal;
+attribute vec4 aPosition;
+
+uniform vec4 colDiffuse;
+varying vec4 vCol;
+varying vec2 vTexCoordsMap;
+varying float vFog;
+
+void main()
+{
+    vec3 e = normalize(vec3(matWorldView * aPosition));
+    vec3 normal = normalize(matNormal*aNormal);
+    float eyedist = gl_Position.z;
+    vFog = smoothstep(uFogDist[0],uFogDist[1],eyedist);
+
+    vec3 r = e-(2.0*dot(normal,e)*normal);  
+    vec3 r2 = normalize(r+vec3(0,0,1));
+    vTexCoordsMap = (r2.xy*0.5)+0.5;
+
+    vCol = colDiffuse;
+    gl_Position = matWorldViewProj * aPosition;
+}
+
+%%fragment
+
+uniform sampler2D sTex2;
+
+uniform vec4 uFogCol;
+uniform vec4 colDiffuse;
+uniform vec4 colDiffuse2;
+
+varying vec4 vCol;
+varying vec2 vTexCoordsMap;
+varying float vFog;
+
+void main()
+{
+// colour from environment map
+    vec4 mapCol = texture2D(sTex2,vTexCoordsMap);
+
+// modulate envmap with diffuse colour
+    vec4 colmap = colDiffuse2*mapCol;
+// get vertex colour
+    vec4 baseCol = vec4(vCol.x,vCol.y,vCol.z,vCol.w);
+
+    vec4 col = baseCol*colDiffuse;
+    
+    col = colmap*col;
+    col = min(col,1.0);
+    
+    gl_FragColor = mix(col,uFogCol,vFog);
+    
+}
+
